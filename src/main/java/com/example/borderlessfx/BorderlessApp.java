@@ -1,5 +1,6 @@
 package com.example.borderlessfx;
 
+import com.example.dpsmeter.DpsMeter;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -27,24 +28,20 @@ public class BorderlessApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Création du contenu principal
-        BorderlessWindow mainWindow = new BorderlessWindow();
-        
-        // Configuration de la scène
+        DpsMeter dpsMeter = new DpsMeter();
+        BorderlessWindow mainWindow = new BorderlessWindow(dpsMeter);
+
         Scene scene = new Scene(mainWindow, 400, 300);
         scene.setFill(Color.TRANSPARENT);
-        
-        // Configuration du stage (fenêtre)
+
         primaryStage.initStyle(StageStyle.TRANSPARENT);
         primaryStage.setTitle("BorderlessFX");
         primaryStage.setScene(scene);
         primaryStage.setAlwaysOnTop(true);
-        primaryStage.setOpacity(1.0); // Opacité par défaut à 100%
-        
-        // Ajout des gestionnaires d'événements pour permettre le déplacement de la fenêtre
+        primaryStage.setOpacity(1.0);
+
         setupWindowDragging(mainWindow, primaryStage);
-        
-        // Affichage de la fenêtre
+
         primaryStage.show();
     }
     

@@ -53,6 +53,7 @@ Thumbs.db
 .parcel-cache
 
 # Divers
+.gradle/
 .vercel
 .next
 out/

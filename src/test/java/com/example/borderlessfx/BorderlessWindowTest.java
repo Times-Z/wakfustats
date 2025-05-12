@@ -29,7 +29,7 @@ public class BorderlessWindowTest {
     @Start
     public void start(Stage stage) {
         this.stage = stage;
-        this.window = new BorderlessWindow();
+        this.window = new BorderlessWindow(new VBox());
         Scene scene = new Scene(window, 400, 300);
         stage.setScene(scene);
         stage.show();
