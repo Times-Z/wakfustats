@@ -37,9 +37,9 @@ public class OverlayApp extends Application {
         FetchPlayerUseCase fetchPlayer = new FetchPlayerUseCase(playersData);
         UpdatePlayerDamagesUseCase updatePlayerDamages = new UpdatePlayerDamagesUseCase(playersData);
 
-        DamagesWindow damagesWindow = new DamagesWindow(fetchPlayer, updatePlayerDamages);
+        MainWindow mainWindow = new MainWindow(fetchPlayer, updatePlayerDamages);
 
-        Scene scene = new Scene(damagesWindow, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        Scene scene = new Scene(mainWindow, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         scene.setFill(Color.rgb(18, 18, 18));
 
         primaryStage.initStyle(StageStyle.UNDECORATED);
@@ -50,13 +50,13 @@ public class OverlayApp extends Application {
 
         primaryStage.setResizable(true);
 
-        setupWindowResizingAndDragging(damagesWindow, primaryStage);
+        setupWindowResizingAndDragging(mainWindow, primaryStage);
         primaryStage.show();
 
-        simulateDamageUpdates(damagesWindow, updatePlayerDamages);
+        simulateDamageUpdates(mainWindow, updatePlayerDamages);
     }
 
-    private void setupWindowResizingAndDragging(DamagesWindow root, Stage stage) {
+    private void setupWindowResizingAndDragging(MainWindow root, Stage stage) {
         final int RESIZE_BORDER = 5;
         final double[] dragOffsetX = new double[1];
         final double[] dragOffsetY = new double[1];
@@ -144,9 +144,9 @@ public class OverlayApp extends Application {
     }
 
 
-    private void simulateDamageUpdates(DamagesWindow damagesWindow, UpdatePlayerDamages updatePlayerDamages) {
+    private void simulateDamageUpdates(MainWindow mainWindow, UpdatePlayerDamages updatePlayerDamages) {
         // Simulate display updates every 100ms
-        Timeline displayTimeline = new Timeline(new KeyFrame(Duration.millis(100), e -> damagesWindow.updateDisplay()));
+        Timeline displayTimeline = new Timeline(new KeyFrame(Duration.millis(100), e -> mainWindow.updateDisplay()));
         displayTimeline.setCycleCount(Timeline.INDEFINITE);
         displayTimeline.play();
 

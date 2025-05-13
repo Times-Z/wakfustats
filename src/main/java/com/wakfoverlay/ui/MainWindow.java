@@ -21,7 +21,7 @@ import java.util.List;
 
 import static javafx.scene.layout.Priority.ALWAYS;
 
-public class DamagesWindow extends VBox {
+public class MainWindow extends VBox {
     private final List<String> EVOLUTIVE_RECTANGLE_COLORS = Arrays.asList(
             "#33fffe", "#EE1DED", "#7DFA00", "#FF4A00", "#FBE33B", "#6D1FA9"
     );
@@ -32,7 +32,7 @@ public class DamagesWindow extends VBox {
     private final FetchPlayer fetchPlayer;
     private final UpdatePlayerDamages updatePlayerDamages;
 
-    public DamagesWindow(FetchPlayer players, UpdatePlayerDamages updatePlayerDamages) {
+    public MainWindow(FetchPlayer players, UpdatePlayerDamages updatePlayerDamages) {
         this.setStyle("-fx-background-color: rgb(18, 18, 18); -fx-border-color: rgb(51, 51, 51); -fx-border-width: 1;");
         this.setSpacing(2);
         this.setPadding(new Insets(5, 5, 5, 5));
