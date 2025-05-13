@@ -32,7 +32,7 @@ dependencies {
 }
 
 application {
-    mainClassName = 'com.example.borderlessfx.BorderlessApp'
+    mainClassName = 'com.wakfoverlay.ui.OverlayApp'
 }
 
 test {

@@ -1,38 +1,31 @@
-package com.example.dpsmeter;
+package com.wakfoverlay.ui;
 
-import com.example.player.Player;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import com.wakfoverlay.domain.player.model.Player;
+import com.wakfoverlay.domain.player.model.Players;
+import com.wakfoverlay.domain.player.port.primary.FetchPlayer;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.util.Duration;
 
-import java.util.Arrays;
+public class DamagesWindow extends VBox {
+    private final FetchPlayer fetchPlayer;
 
-public class DpsMeter extends VBox {
-    private final StubPlayersData stubPlayersData;
-
-    public DpsMeter() {
+    public DamagesWindow(FetchPlayer players) {
         this.setSpacing(2);
-        this.stubPlayersData = new StubPlayersData(this);
-        updateDisplay(); // Appel initial pour afficher les données
+        this.fetchPlayer = players;
     }
 
     public void updateDisplay() {
         this.getChildren().clear();
 
-        Player[] players = stubPlayersData.getPlayers();
-        // Tri des joueurs par dégats décroissants
-        Arrays.sort(players, (p1, p2) -> Integer.compare(p2.damages(), p1.damages()));
+        Players rankedPlayers = fetchPlayer.rankedPlayers();
+        int totalDamages = rankedPlayers.players().stream().mapToInt(Player::damages).sum();
 
-        int totalDamages = Arrays.stream(players).mapToInt(Player::damages).sum();
-
-        for (int i = 0; i < players.length; i++) {
-            Player player = players[i];
+        for (int i = 0; i < rankedPlayers.players().size(); i++) {
+            Player player = rankedPlayers.players().get(i);
 
             HBox playerBox = new HBox();
             playerBox.setSpacing(5);
