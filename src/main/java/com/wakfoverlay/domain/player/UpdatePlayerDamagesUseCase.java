@@ -17,6 +17,11 @@ public record UpdatePlayerDamagesUseCase(
     }
 
     @Override
+    public void resetPlayersDamages() {
+        playersData.resetPlayersDamages();
+    }
+
+    @Override
     public void updatePlayers() {
         Players players = playersData.allPlayers();
 

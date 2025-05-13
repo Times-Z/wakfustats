@@ -35,4 +35,9 @@ public class InMemoryPlayersData implements PlayersData {
 
         return new Players(players);
     }
+
+    @Override
+    public void resetPlayersDamages() {
+        players.replaceAll(it -> new Player(it.name(), 0));
+    }
 }

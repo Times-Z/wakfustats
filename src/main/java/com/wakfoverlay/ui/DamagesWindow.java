@@ -3,6 +3,7 @@ package com.wakfoverlay.ui;
 import com.wakfoverlay.domain.player.model.Player;
 import com.wakfoverlay.domain.player.model.Players;
 import com.wakfoverlay.domain.player.port.primary.FetchPlayer;
+import com.wakfoverlay.domain.player.port.primary.UpdatePlayerDamages;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
@@ -29,13 +30,15 @@ public class DamagesWindow extends VBox {
     private final Pane resizeHandle;
 
     private final FetchPlayer fetchPlayer;
+    private final UpdatePlayerDamages updatePlayerDamages;
 
-    public DamagesWindow(FetchPlayer players) {
+    public DamagesWindow(FetchPlayer players, UpdatePlayerDamages updatePlayerDamages) {
         this.setStyle("-fx-background-color: rgb(18, 18, 18); -fx-border-color: rgb(51, 51, 51); -fx-border-width: 1;");
         this.setSpacing(2);
         this.setPadding(new Insets(5, 5, 5, 5));
 
         this.fetchPlayer = players;
+        this.updatePlayerDamages = updatePlayerDamages;
 
         HBox titleBar = createTitleBar();
         this.getChildren().add(titleBar);
@@ -101,10 +104,13 @@ public class DamagesWindow extends VBox {
         Pane spacer = new Pane();
         HBox.setHgrow(spacer, ALWAYS);
 
+        Button resetButton = createIconButton("🔄", "#3498db");
+        resetButton.setOnAction(event -> resetStats());
+
         Button closeButton = createIconButton("✖", "#e74c3c");
         closeButton.setOnAction(event -> closeWindow());
 
-        titleBar.getChildren().addAll(label, spacer, closeButton);
+        titleBar.getChildren().addAll(label, spacer, resetButton, closeButton);
 
         return titleBar;
     }
@@ -121,6 +127,10 @@ public class DamagesWindow extends VBox {
                         "-fx-cursor: hand;"
         );
         return button;
+    }
+
+    private void resetStats() {
+        updatePlayerDamages.resetPlayersDamages();
     }
 
     private void closeWindow() {

@@ -37,7 +37,7 @@ public class OverlayApp extends Application {
         FetchPlayerUseCase fetchPlayer = new FetchPlayerUseCase(playersData);
         UpdatePlayerDamagesUseCase updatePlayerDamages = new UpdatePlayerDamagesUseCase(playersData);
 
-        DamagesWindow damagesWindow = new DamagesWindow(fetchPlayer);
+        DamagesWindow damagesWindow = new DamagesWindow(fetchPlayer, updatePlayerDamages);
 
         Scene scene = new Scene(damagesWindow, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         scene.setFill(Color.rgb(18, 18, 18));
