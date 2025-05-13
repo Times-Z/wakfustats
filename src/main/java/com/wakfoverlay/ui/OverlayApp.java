@@ -4,6 +4,7 @@ import com.wakfoverlay.domain.player.FetchPlayerUseCase;
 import com.wakfoverlay.domain.player.UpdatePlayerDamagesUseCase;
 import com.wakfoverlay.domain.player.port.primary.UpdatePlayerDamages;
 import com.wakfoverlay.domain.player.port.secondary.PlayersData;
+import com.wakfoverlay.exposition.TheAnalyzer;
 import com.wakfoverlay.infrastructure.InMemoryPlayersData;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -36,6 +37,9 @@ public class OverlayApp extends Application {
         PlayersData playersData = new InMemoryPlayersData();
         FetchPlayerUseCase fetchPlayer = new FetchPlayerUseCase(playersData);
         UpdatePlayerDamagesUseCase updatePlayerDamages = new UpdatePlayerDamagesUseCase(playersData);
+
+        TheAnalyzer analyzer = new TheAnalyzer("src/test/resources/wakfu.log");
+        analyzer.readLogFile();
 
         MainWindow mainWindow = new MainWindow(fetchPlayer, updatePlayerDamages);
 
