@@ -3,9 +3,10 @@ package com.wakfoverlay.ui;
 import com.wakfoverlay.domain.player.FetchPlayerUseCase;
 import com.wakfoverlay.domain.player.UpdatePlayerDamagesUseCase;
 import com.wakfoverlay.domain.player.port.primary.UpdatePlayerDamages;
-import com.wakfoverlay.domain.player.port.secondary.PlayersData;
+import com.wakfoverlay.domain.player.port.secondary.PlayersRepository;
 import com.wakfoverlay.exposition.TheAnalyzer;
-import com.wakfoverlay.infrastructure.InMemoryPlayersData;
+import com.wakfoverlay.exposition.UserPreferences;
+import com.wakfoverlay.infrastructure.InMemoryPlayersRepository;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -34,10 +35,12 @@ public class OverlayApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Setup dependencies manually
-        PlayersData playersData = new InMemoryPlayersData();
-        FetchPlayerUseCase fetchPlayer = new FetchPlayerUseCase(playersData);
-        UpdatePlayerDamagesUseCase updatePlayerDamages = new UpdatePlayerDamagesUseCase(playersData);
-        TheAnalyzer theAnalyzer = new TheAnalyzer();
+        PlayersRepository playersRepository = new InMemoryPlayersRepository();
+        FetchPlayerUseCase fetchPlayer = new FetchPlayerUseCase(playersRepository);
+        UpdatePlayerDamagesUseCase updatePlayerDamages = new UpdatePlayerDamagesUseCase(playersRepository);
+        // TODO: not a big fan of this -> circular dependency
+        UserPreferences userPreferences = new UserPreferences(this.getClass());
+        TheAnalyzer theAnalyzer = new TheAnalyzer(userPreferences);
 
         MainWindow mainWindow = new MainWindow(fetchPlayer, updatePlayerDamages, theAnalyzer);
 
@@ -147,13 +150,13 @@ public class OverlayApp extends Application {
 
 
     private void simulateDamageUpdates(MainWindow mainWindow, UpdatePlayerDamages updatePlayerDamages) {
-        // Simulate display updates every 100ms
-        Timeline displayTimeline = new Timeline(new KeyFrame(Duration.millis(100), e -> mainWindow.updateDisplay()));
+        // Simulate display updates every xms
+        Timeline displayTimeline = new Timeline(new KeyFrame(Duration.millis(2000), e -> mainWindow.updateDisplay()));
         displayTimeline.setCycleCount(Timeline.INDEFINITE);
         displayTimeline.play();
 
-        // Simulate player damage updates every 100ms
-        Timeline updatePlayersTimeline = new Timeline(new KeyFrame(Duration.millis(100), e -> updatePlayerDamages.updatePlayers()));
+        // Simulate player damage updates every xms
+        Timeline updatePlayersTimeline = new Timeline(new KeyFrame(Duration.millis(2000), e -> updatePlayerDamages.updatePlayers()));
         updatePlayersTimeline.setCycleCount(Timeline.INDEFINITE);
         updatePlayersTimeline.play();
     }

@@ -4,6 +4,7 @@ import com.wakfoverlay.domain.player.model.Players;
 import com.wakfoverlay.domain.player.port.primary.FetchPlayer;
 import com.wakfoverlay.domain.player.port.primary.UpdatePlayerDamages;
 import com.wakfoverlay.exposition.TheAnalyzer;
+import com.wakfoverlay.exposition.UserPreferences;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
@@ -144,7 +145,8 @@ public class MainWindow extends VBox {
     public void updateDisplay() {
         contentContainer.getChildren().clear();
 
-        TheAnalyzer.FileReadStatus status = theAnalyzer.readLogFile(selectedFilePath);
+//        TheAnalyzer.FileReadStatus status = theAnalyzer.readLogFile(selectedFilePath);
+        TheAnalyzer.FileReadStatus status = theAnalyzer.readNewLogLines(selectedFilePath);
 
         if (status != TheAnalyzer.FileReadStatus.SUCCESS) {
             showStatusMessage(getMessageForStatus(status));

@@ -3,27 +3,27 @@ package com.wakfoverlay.domain.player;
 import com.wakfoverlay.domain.player.model.Player;
 import com.wakfoverlay.domain.player.model.Players;
 import com.wakfoverlay.domain.player.port.primary.UpdatePlayerDamages;
-import com.wakfoverlay.domain.player.port.secondary.PlayersData;
+import com.wakfoverlay.domain.player.port.secondary.PlayersRepository;
 
 import java.util.Random;
 
 public record UpdatePlayerDamagesUseCase(
-        PlayersData playersData
+        PlayersRepository playersRepository
 ) implements UpdatePlayerDamages {
 
     @Override
     public Players update(Player player, Integer damages) {
-        return playersData.updatePlayer(player, damages);
+        return playersRepository.updatePlayer(player, damages);
     }
 
     @Override
     public void resetPlayersDamages() {
-        playersData.resetPlayersDamages();
+        playersRepository.resetPlayersDamages();
     }
 
     @Override
     public void updatePlayers() {
-        Players players = playersData.allPlayers();
+        Players players = playersRepository.allPlayers();
 
         Random random = new Random();
         int index = random.nextInt(players.players().size());
@@ -31,6 +31,6 @@ public record UpdatePlayerDamagesUseCase(
 
         int damages = random.nextInt(300 - 100 + 1) + 50;
 
-        playersData.updatePlayer(player, damages);
+        playersRepository.updatePlayer(player, damages);
     }
 }
