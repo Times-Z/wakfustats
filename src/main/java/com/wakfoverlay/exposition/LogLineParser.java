@@ -4,7 +4,6 @@ import com.wakfoverlay.domain.player.FetchPlayerUseCase;
 import com.wakfoverlay.domain.player.model.Player;
 import com.wakfoverlay.domain.player.port.primary.UpdatePlayerDamages;
 
-import java.util.Objects;
 import java.util.regex.Matcher;
 
 public class LogLineParser {
@@ -31,11 +30,9 @@ public class LogLineParser {
             return;
         }
 
-        boolean isSpellCast = parseSpellCast(line);
-
-        if (!isSpellCast) {
-            parseDamages(line);
-        }
+        parseSpellCast(line);
+        parseStatusEffect(line);
+        parseDamages(line);
     }
 
     private boolean parseSpellCast(String line) {
@@ -68,7 +65,8 @@ public class LogLineParser {
         Matcher damagesMatcher = regexProvider.damagesPattern().matcher(line);
 
         if (damagesMatcher.matches()) {
-            String damages = damagesMatcher.group(2).replaceAll("\\s+", "");;
+            String damages = damagesMatcher.group(2).replaceAll("\\s+", "");
+            ;
             if (damages.trim().isEmpty()) {
                 System.out.println("Valeur de dégâts non identifiée dans la ligne de dégâts: " + line);
                 return;
@@ -86,6 +84,32 @@ public class LogLineParser {
                     new Player(lastSpellCaster.name(), lastSpellCaster.damages()),
                     damageValue
             );
+        }
+    }
+
+    private void parseStatusEffect(String line) {
+        Matcher statusEffectMatcher = regexProvider.statusEffectPattern().matcher(line);
+
+        if (statusEffectMatcher.matches()) {
+            String characterName = statusEffectMatcher.group(1);
+            if (characterName == null || characterName.trim().isEmpty()) {
+                System.out.println("Personnage non identifié dans la ligne d'effet de statut: " + line);
+                return;
+            }
+
+            String statusEffect = statusEffectMatcher.group(2);
+            if (statusEffect == null || statusEffect.trim().isEmpty()) {
+                System.out.println("Nom d'effet de statut non identifié dans la ligne d'effet de statut: " + line);
+                return;
+            }
+
+            String statusLevel = statusEffectMatcher.group(3);
+            if (statusLevel == null || statusLevel.trim().isEmpty()) {
+                System.out.println("Level d'effet de statut non identifié dans la ligne d'effet de statut: " + line);
+                return;
+            }
+
+            System.out.println("Effet de statut appliqué à " + characterName + ": " + statusEffect + " (Niveau: " + statusLevel + ")");
         }
     }
 }
