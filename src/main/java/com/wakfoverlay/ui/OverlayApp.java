@@ -37,7 +37,7 @@ public class OverlayApp extends Application {
         PlayersRepository playersRepository = new InMemoryPlayersRepository();
         FetchPlayerUseCase fetchPlayer = new FetchPlayerUseCase(playersRepository);
         UpdatePlayerDamagesUseCase updatePlayerDamages = new UpdatePlayerDamagesUseCase(playersRepository);
-        TheAnalyzer theAnalyzer = new TheAnalyzer(updatePlayerDamages);
+        TheAnalyzer theAnalyzer = new TheAnalyzer(fetchPlayer, updatePlayerDamages);
 
         MainWindow mainWindow = new MainWindow(fetchPlayer, updatePlayerDamages, theAnalyzer);
 
@@ -147,7 +147,7 @@ public class OverlayApp extends Application {
 
 
     private void updateData(MainWindow mainWindow) {
-        Timeline displayTimeline = new Timeline(new KeyFrame(Duration.millis(2000), e -> mainWindow.updateDisplay()));
+        Timeline displayTimeline = new Timeline(new KeyFrame(Duration.millis(1000), e -> mainWindow.updateDisplay()));
         displayTimeline.setCycleCount(Timeline.INDEFINITE);
         displayTimeline.play();
     }
