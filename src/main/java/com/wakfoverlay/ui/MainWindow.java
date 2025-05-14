@@ -44,9 +44,7 @@ public class MainWindow extends VBox {
         this.contentContainer.setSpacing(2);
         this.contentScrollPane = createScrollPane();
 
-        WindowResizer resizer = new WindowResizer(this);
-
-        this.getChildren().addAll(titleBar, contentScrollPane, resizer.getResizeHandle());
+        this.getChildren().addAll(titleBar, contentScrollPane);
 
         updateDisplay();
     }

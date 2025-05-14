@@ -2,55 +2,119 @@ package com.wakfoverlay.ui;
 
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.layout.Pane;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 public class WindowResizer {
-    private final Node parent;
-    private final Pane resizeHandle;
+    private final Node root;
+    private final Stage stage;
+    private static final int RESIZE_BORDER = 5;
 
-    public WindowResizer(Node parent) {
-        this.parent = parent;
-        this.resizeHandle = createResizeHandle();
-        setupResizeHandlers();
+    private double xOffset = 0;
+    private double yOffset = 0;
+    private final double[] dragOffsetX = new double[1];
+    private final double[] dragOffsetY = new double[1];
+    private final double[] initWidth = new double[1];
+    private final double[] initHeight = new double[1];
+
+    public WindowResizer(Node root, Stage stage) {
+        this.root = root;
+        this.stage = stage;
+        setupResizeAndDragHandlers();
     }
 
-    public Pane getResizeHandle() {
-        return resizeHandle;
+    public void setupResizeAndDragHandlers() {
+        root.setOnMouseMoved(this::handleMouseMove);
+        root.setOnMousePressed(this::handleMousePressed);
+        root.setOnMouseDragged(this::handleMouseDragged);
     }
 
-    private Pane createResizeHandle() {
-        Pane handle = new Pane();
-        handle.setPrefHeight(5);
-        handle.setMaxHeight(5);
-        handle.setMinHeight(5);
-        handle.setStyle("-fx-background-color: transparent;");
-        handle.setCursor(Cursor.S_RESIZE);
-        return handle;
-    }
-
-    private void setupResizeHandlers() {
-        final double[] startY = new double[1];
-        final double[] startHeight = new double[1];
-
-        resizeHandle.setOnMousePressed(event -> {
-            startY[0] = event.getScreenY();
-            if (parent.getScene() != null && parent.getScene().getWindow() != null) {
-                startHeight[0] = parent.getScene().getWindow().getHeight();
+    private void handleMouseMove(MouseEvent event) {
+        if (event.getX() <= RESIZE_BORDER) {
+            if (event.getY() <= RESIZE_BORDER) {
+                root.setCursor(Cursor.NW_RESIZE);
+            } else if (event.getY() >= stage.getHeight() - RESIZE_BORDER) {
+                root.setCursor(Cursor.SW_RESIZE);
+            } else {
+                root.setCursor(Cursor.W_RESIZE);
             }
-            event.consume();
-        });
+        } else if (event.getX() >= stage.getWidth() - RESIZE_BORDER) {
+            if (event.getY() <= RESIZE_BORDER) {
+                root.setCursor(Cursor.NE_RESIZE);
+            } else if (event.getY() >= stage.getHeight() - RESIZE_BORDER) {
+                root.setCursor(Cursor.SE_RESIZE);
+            } else {
+                root.setCursor(Cursor.E_RESIZE);
+            }
+        } else if (event.getY() <= RESIZE_BORDER) {
+            root.setCursor(Cursor.N_RESIZE);
+        } else if (event.getY() >= stage.getHeight() - RESIZE_BORDER) {
+            root.setCursor(Cursor.S_RESIZE);
+        } else {
+            root.setCursor(Cursor.DEFAULT);
+        }
+    }
 
-        resizeHandle.setOnMouseDragged(event -> {
-            if (parent.getScene() != null && parent.getScene().getWindow() != null) {
-                Stage stage = (Stage) parent.getScene().getWindow();
-                double deltaY = event.getScreenY() - startY[0];
-                double newHeight = startHeight[0] + deltaY;
-                if (newHeight > 100) {
+    private void handleMousePressed(MouseEvent event) {
+        if (root.getCursor() != Cursor.DEFAULT) {
+            dragOffsetX[0] = event.getScreenX();
+            dragOffsetY[0] = event.getScreenY();
+            initWidth[0] = stage.getWidth();
+            initHeight[0] = stage.getHeight();
+            event.consume();
+        } else {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
+        }
+    }
+
+    private void handleMouseDragged(MouseEvent event) {
+        if (root.getCursor() != Cursor.DEFAULT) {
+            double deltaX = event.getScreenX() - dragOffsetX[0];
+            double deltaY = event.getScreenY() - dragOffsetY[0];
+
+            if (root.getCursor() == Cursor.E_RESIZE ||
+                    root.getCursor() == Cursor.NE_RESIZE ||
+                    root.getCursor() == Cursor.SE_RESIZE) {
+                double newWidth = initWidth[0] + deltaX;
+                if (newWidth >= stage.getMinWidth()) {
+                    stage.setWidth(newWidth);
+                }
+            }
+
+            if (root.getCursor() == Cursor.S_RESIZE ||
+                    root.getCursor() == Cursor.SE_RESIZE ||
+                    root.getCursor() == Cursor.SW_RESIZE) {
+                double newHeight = initHeight[0] + deltaY;
+                if (newHeight >= stage.getMinHeight()) {
                     stage.setHeight(newHeight);
                 }
             }
+
+            if (root.getCursor() == Cursor.W_RESIZE ||
+                    root.getCursor() == Cursor.NW_RESIZE ||
+                    root.getCursor() == Cursor.SW_RESIZE) {
+                double newWidth = initWidth[0] - deltaX;
+                if (newWidth >= stage.getMinWidth()) {
+                    stage.setX(event.getScreenX());
+                    stage.setWidth(newWidth);
+                }
+            }
+
+            if (root.getCursor() == Cursor.N_RESIZE ||
+                    root.getCursor() == Cursor.NW_RESIZE ||
+                    root.getCursor() == Cursor.NE_RESIZE) {
+                double newHeight = initHeight[0] - deltaY;
+                if (newHeight >= stage.getMinHeight()) {
+                    stage.setY(event.getScreenY());
+                    stage.setHeight(newHeight);
+                }
+            }
+
             event.consume();
-        });
+        } else {
+            stage.setX(event.getScreenX() - xOffset);
+            stage.setY(event.getScreenY() - yOffset);
+        }
     }
 }
