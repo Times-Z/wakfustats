@@ -20,17 +20,4 @@ public record UpdatePlayerDamagesUseCase(
     public void resetPlayersDamages() {
         playersRepository.resetPlayersDamages();
     }
-
-    @Override
-    public void updatePlayers() {
-        Players players = playersRepository.allPlayers();
-
-        Random random = new Random();
-        int index = random.nextInt(players.players().size());
-        Player player = players.players().get(index);
-
-        int damages = random.nextInt(300 - 100 + 1) + 50;
-
-        playersRepository.updatePlayer(player, damages);
-    }
 }

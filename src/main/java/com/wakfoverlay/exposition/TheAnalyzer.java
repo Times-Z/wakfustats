@@ -9,8 +9,8 @@ public class TheAnalyzer {
     private final LogLineParser logLineParser;
     private String currentFilePath;
 
-    public TheAnalyzer(UserPreferences userPreferences, UpdatePlayerDamages updatePlayerDamages) {
-        this.logFileReader = new LogFileReader(userPreferences);
+    public TheAnalyzer(UpdatePlayerDamages updatePlayerDamages) {
+        this.logFileReader = new LogFileReader();
         this.logLineParser = new LogLineParser(updatePlayerDamages);
         this.currentFilePath = null;
     }

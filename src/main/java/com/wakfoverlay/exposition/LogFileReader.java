@@ -13,10 +13,8 @@ import java.util.stream.Stream;
 
 public class LogFileReader {
     private final Map<String, Long> filePositions = new HashMap<>();
-    private final UserPreferences userPreferences;
 
-    public LogFileReader(UserPreferences userPreferences) {
-        this.userPreferences = userPreferences;
+    public LogFileReader() {
     }
 
     public ReadResult readNewLines(String filePath) {

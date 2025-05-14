@@ -30,21 +30,18 @@ public class MainWindow extends VBox {
 
     private String selectedFilePath;
 
-    public MainWindow(FetchPlayer fetchPlayer, UpdatePlayerDamages updatePlayerDamages,
-                      TheAnalyzer theAnalyzer) {
+    public MainWindow(FetchPlayer fetchPlayer, UpdatePlayerDamages updatePlayerDamages, TheAnalyzer theAnalyzer) {
         this.fetchPlayer = fetchPlayer;
         this.updatePlayerDamages = updatePlayerDamages;
         this.theAnalyzer = theAnalyzer;
         this.userPreferences = new UserPreferences(MainWindow.class);
+        this.selectedFilePath = userPreferences.getFilePath();
 
         setupWindowAppearance();
-
-        this.selectedFilePath = userPreferences.getFilePath();
 
         TitleBar titleBar = createTitleBar();
         this.contentContainer = new VBox();
         this.contentContainer.setSpacing(2);
-
         this.contentScrollPane = createScrollPane();
 
         WindowResizer resizer = new WindowResizer(this);
@@ -52,6 +49,25 @@ public class MainWindow extends VBox {
         this.getChildren().addAll(titleBar, contentScrollPane, resizer.getResizeHandle());
 
         updateDisplay();
+    }
+
+    public void updateDisplay() {
+        contentContainer.getChildren().clear();
+
+        FileReadStatus status = theAnalyzer.readNewLogLines(selectedFilePath);
+
+        if (status != FileReadStatus.SUCCESS) {
+            showStatusMessage(getMessageForStatus(status));
+            return;
+        }
+
+        Players rankedPlayers = fetchPlayer.rankedPlayers();
+
+        if (rankedPlayers.players().isEmpty()) {
+            return;
+        }
+
+        showPlayerList(rankedPlayers);
     }
 
     private void setupWindowAppearance() {
@@ -133,25 +149,6 @@ public class MainWindow extends VBox {
         if (stage != null) {
             stage.close();
         }
-    }
-
-    public void updateDisplay() {
-        contentContainer.getChildren().clear();
-
-        FileReadStatus status = theAnalyzer.readNewLogLines(selectedFilePath);
-
-        if (status != FileReadStatus.SUCCESS) {
-            showStatusMessage(getMessageForStatus(status));
-            return;
-        }
-
-        Players rankedPlayers = fetchPlayer.rankedPlayers();
-
-        if (rankedPlayers.players().isEmpty()) {
-            return;
-        }
-
-        showPlayerList(rankedPlayers);
     }
 
     private String getMessageForStatus(FileReadStatus status) {

@@ -2,7 +2,6 @@ package com.wakfoverlay.ui;
 
 import com.wakfoverlay.domain.player.FetchPlayerUseCase;
 import com.wakfoverlay.domain.player.UpdatePlayerDamagesUseCase;
-import com.wakfoverlay.domain.player.port.primary.UpdatePlayerDamages;
 import com.wakfoverlay.domain.player.port.secondary.PlayersRepository;
 import com.wakfoverlay.exposition.TheAnalyzer;
 import com.wakfoverlay.exposition.UserPreferences;
@@ -38,9 +37,7 @@ public class OverlayApp extends Application {
         PlayersRepository playersRepository = new InMemoryPlayersRepository();
         FetchPlayerUseCase fetchPlayer = new FetchPlayerUseCase(playersRepository);
         UpdatePlayerDamagesUseCase updatePlayerDamages = new UpdatePlayerDamagesUseCase(playersRepository);
-        // TODO: not a big fan of this -> circular dependency
-        UserPreferences userPreferences = new UserPreferences(this.getClass());
-        TheAnalyzer theAnalyzer = new TheAnalyzer(userPreferences, updatePlayerDamages);
+        TheAnalyzer theAnalyzer = new TheAnalyzer(updatePlayerDamages);
 
         MainWindow mainWindow = new MainWindow(fetchPlayer, updatePlayerDamages, theAnalyzer);
 
@@ -58,7 +55,7 @@ public class OverlayApp extends Application {
         setupWindowResizingAndDragging(mainWindow, primaryStage);
         primaryStage.show();
 
-        simulateDamageUpdates(mainWindow, updatePlayerDamages);
+        updateData(mainWindow);
     }
 
     private void setupWindowResizingAndDragging(MainWindow root, Stage stage) {
@@ -149,15 +146,9 @@ public class OverlayApp extends Application {
     }
 
 
-    private void simulateDamageUpdates(MainWindow mainWindow, UpdatePlayerDamages updatePlayerDamages) {
-        // Simulate display updates every xms
+    private void updateData(MainWindow mainWindow) {
         Timeline displayTimeline = new Timeline(new KeyFrame(Duration.millis(2000), e -> mainWindow.updateDisplay()));
         displayTimeline.setCycleCount(Timeline.INDEFINITE);
         displayTimeline.play();
-
-        // Simulation désactivée pour permettre l'analyse des logs réels
-        // Timeline updatePlayersTimeline = new Timeline(new KeyFrame(Duration.millis(2000), e -> updatePlayerDamages.updatePlayers()));
-        // updatePlayersTimeline.setCycleCount(Timeline.INDEFINITE);
-        // updatePlayersTimeline.play();
     }
 }

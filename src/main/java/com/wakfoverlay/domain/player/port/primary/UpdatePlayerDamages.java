@@ -6,6 +6,4 @@ import com.wakfoverlay.domain.player.model.Players;
 public interface UpdatePlayerDamages {
     Players update(Player player, Integer damages);
     void resetPlayersDamages();
-    // TODO: remove when real data is available
-    void updatePlayers();
 }

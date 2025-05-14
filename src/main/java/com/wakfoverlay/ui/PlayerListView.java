@@ -64,7 +64,7 @@ public class PlayerListView extends VBox {
         pane.setPrefSize(100, 20);
         HBox.setHgrow(pane, ALWAYS);
 
-        Rectangle border = new Rectangle(0, 0, 100, 20);
+        Rectangle border = new Rectangle(0, 0, 150, 20);
         border.setStroke(Color.GRAY);
         border.setFill(Color.TRANSPARENT);
 
