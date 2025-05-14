@@ -40,7 +40,7 @@ public class OverlayApp extends Application {
         UpdatePlayerDamagesUseCase updatePlayerDamages = new UpdatePlayerDamagesUseCase(playersRepository);
         // TODO: not a big fan of this -> circular dependency
         UserPreferences userPreferences = new UserPreferences(this.getClass());
-        TheAnalyzer theAnalyzer = new TheAnalyzer(userPreferences);
+        TheAnalyzer theAnalyzer = new TheAnalyzer(userPreferences, updatePlayerDamages);
 
         MainWindow mainWindow = new MainWindow(fetchPlayer, updatePlayerDamages, theAnalyzer);
 

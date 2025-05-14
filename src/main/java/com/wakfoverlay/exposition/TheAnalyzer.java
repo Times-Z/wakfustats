@@ -1,5 +1,7 @@
 package com.wakfoverlay.exposition;
 
+import com.wakfoverlay.domain.player.port.primary.UpdatePlayerDamages;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -9,15 +11,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TheAnalyzer {
     private final List<String> logLines = new ArrayList<>();
-    private long lastReadPosition = 0;
+    private long lastReadPosition;
     private final UserPreferences userPreferences;
+    private final UpdatePlayerDamages updatePlayerDamages;
 
-    public TheAnalyzer(UserPreferences userPreferences) {
+    public TheAnalyzer(UserPreferences userPreferences, UpdatePlayerDamages updatePlayerDamages) {
         this.userPreferences = userPreferences;
         this.lastReadPosition = userPreferences.getLastReadPosition(0);
+        this.updatePlayerDamages = updatePlayerDamages;
     }
 
 //    public FileReadStatus readLogFile(String filePath) {
@@ -61,18 +67,10 @@ public class TheAnalyzer {
             return FileReadStatus.FILE_NOT_FOUND;
         }
 
-        try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
-            if (file.length() < lastReadPosition) {
-                lastReadPosition = 0;
-            }
-
-            file.seek(lastReadPosition);
-            String line;
-            while ((line = file.readLine()) != null) {
-                logLines.add(line);
-                System.out.println(line); // TODO: remove this line
-            }
-            lastReadPosition = file.getFilePointer();
+        try (Stream<String> lines = Files.lines(path)) {
+            List<String> newLines = lines.skip(lastReadPosition).toList();
+            logLines.addAll(newLines);
+            lastReadPosition += newLines.size();
             userPreferences.saveLastReadPosition(lastReadPosition);
         } catch (IOException e) {
             System.err.println("Erreur lors de la lecture du fichier : " + e.getMessage());

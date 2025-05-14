@@ -17,19 +17,16 @@ import static javafx.scene.layout.Priority.ALWAYS;
 
 public class MainWindow extends VBox {
 
-    // Services
     private final FetchPlayer fetchPlayer;
     private final UpdatePlayerDamages updatePlayerDamages;
     private final TheAnalyzer theAnalyzer;
     private final UserPreferences userPreferences;
 
-    // UI Components
     private final ScrollPane contentScrollPane;
     private final VBox contentContainer;
     private PlayerListView playerListView;
     private StatusMessageView statusMessageView;
 
-    // État
     private String selectedFilePath;
 
     public MainWindow(FetchPlayer fetchPlayer, UpdatePlayerDamages updatePlayerDamages,
@@ -134,12 +131,6 @@ public class MainWindow extends VBox {
         if (stage != null) {
             stage.close();
         }
-    }
-
-    public void resetPreferences() {
-        userPreferences.clearPreferences();
-        this.selectedFilePath = null;
-        updateDisplay();
     }
 
     public void updateDisplay() {
