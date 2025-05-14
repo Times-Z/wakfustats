@@ -27,15 +27,15 @@ public class LogLineParser {
         }
 
         parseSpellCast(line);
-        parseDamages(line);
+//        parseDamages(line);
     }
 
     private void parseSpellCast(String line) {
         Matcher castSpellMatcher = regexProvider.castSpellPattern().matcher(line);
 
         if (castSpellMatcher.matches()) {
-            String character = castSpellMatcher.group(1);
-            if (character == null || character.trim().isEmpty()) {
+            String characterName = castSpellMatcher.group(1);
+            if (characterName == null || characterName.trim().isEmpty()) {
                 System.out.println("Personnage non identifié dans la ligne de sort: " + line);
             }
 
@@ -44,8 +44,8 @@ public class LogLineParser {
                 System.out.println("Nom de sort non identifié dans la ligne de sort: " + line);
             }
 
-            // TODO: Ajouter une action à effectuer pour les sorts
-
+            System.out.println("Sort lancé par " + characterName + ": " + spellName);
+            updatePlayerDamages.update(new Player(characterName, 0), 0);
         }
     }
 
@@ -53,8 +53,8 @@ public class LogLineParser {
         Matcher damagesMatcher = regexProvider.damagesPattern().matcher(line);
 
         if (damagesMatcher.matches()) {
-            String character = damagesMatcher.group(1);
-            if (character == null || character.trim().isEmpty()) {
+            String characterName = damagesMatcher.group(1);
+            if (characterName == null || characterName.trim().isEmpty()) {
                 System.out.println("Personnage non identifié dans la ligne de dégâts: " + line);
             }
 

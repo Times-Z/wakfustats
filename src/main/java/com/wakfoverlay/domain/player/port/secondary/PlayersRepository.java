@@ -5,6 +5,6 @@ import com.wakfoverlay.domain.player.model.Players;
 
 public interface PlayersRepository {
     Players allPlayers();
-    Players updatePlayer(Player player, int damages);
-    void resetPlayersDamages();
+    Players addOrUpdate(Player player, int damages);
+    void resetPlayers();
 }
