@@ -6,9 +6,9 @@ public class RegexProvider {
     private final Pattern CAST_SPELL_PATTERN = Pattern
             .compile(".*\\[Information\\s*\\(jeu\\)\\]\\s*(.*)\\s+lance\\s+le\\s+sort\\s+(.*)");
     private final Pattern DAMAGES_PATTERN = Pattern
-            .compile(".*\\[Information\\s*\\(jeu\\)\\]\\s*([^:]+):\\s*([+-]\\d+)\\s+PV\\s+\\((.*)\\)");
+            .compile(".*\\[Information\\s*\\(jeu\\)\\]\\s*([^:]+):\\s*([-]\\d+)\\s+PV\\s+\\((.*)\\)");
     private final Pattern HEALS_PATTERN = Pattern
-            .compile(".*\\[Information\\s*\\(jeu\\)\\]\\s*([^:]+):\\s*([+-]\\d+)\\s+PV\\s+\\((.*)\\)");
+            .compile(".*\\[Information\\s*\\(jeu\\)\\]\\s*([^:]+):\\s*([+]\\d+)\\s+PV\\s+\\((.*)\\)");
 
     public Pattern castSpellPattern() {
         return CAST_SPELL_PATTERN;
