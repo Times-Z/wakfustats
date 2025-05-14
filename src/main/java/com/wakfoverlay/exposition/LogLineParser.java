@@ -26,8 +26,8 @@ public class LogLineParser {
             return;
         }
 
+        parseDamages(line);
         parseSpellCast(line);
-//        parseDamages(line);
     }
 
     private void parseSpellCast(String line) {
@@ -68,7 +68,7 @@ public class LogLineParser {
                 System.out.println("Élément non identifié dans la ligne de dégâts: " + line);
             }
 
-            // TODO: Ajouter une action à effectuer pour les sorts
+            System.out.println("Dégâts infligés par " + characterName + ": " + damagesStr + " (" + element + ")");
         }
     }
 }

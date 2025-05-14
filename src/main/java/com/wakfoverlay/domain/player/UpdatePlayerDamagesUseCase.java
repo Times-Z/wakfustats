@@ -11,7 +11,8 @@ public record UpdatePlayerDamagesUseCase(
 
     @Override
     public Players update(Player player, Integer damages) {
-        return playersRepository.addOrUpdate(player, damages);
+        Player updatedPlayer = new Player(player.name(), player.damages() + damages);
+        return playersRepository.addOrUpdate(updatedPlayer);
     }
 
     @Override

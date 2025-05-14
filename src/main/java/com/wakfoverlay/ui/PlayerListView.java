@@ -20,6 +20,9 @@ public class PlayerListView extends VBox {
             "#33fffe", "#EE1DED", "#7DFA00", "#FF4A00", "#FBE33B", "#6D1FA9"
     );
 
+    private static final int NAME_MAX_LENGTH = 20;
+    private static final double NAME_COLUMN_WIDTH = 120;
+
     public PlayerListView(Players playersData) {
         this.setSpacing(2);
 
@@ -43,19 +46,43 @@ public class PlayerListView extends VBox {
         playerBox.setSpacing(10);
 
         Label nameLabel = createNameLabel(player);
+        HBox nameContainer = new HBox(nameLabel);
+        nameContainer.setPrefWidth(NAME_COLUMN_WIDTH);
+        nameContainer.setMinWidth(NAME_COLUMN_WIDTH);
 
         Pane damageBar = createDamageBar(player, index, totalDamages);
 
         Label damageLabel = createDamageLabel(player, totalDamages);
 
-        playerBox.getChildren().addAll(nameLabel, damageBar, damageLabel);
+        playerBox.getChildren().addAll(nameContainer, damageBar, damageLabel);
         return playerBox;
     }
 
     private Label createNameLabel(Player player) {
-        Label label = new Label(player.name());
+        String displayName = player.name();
+        String fullName = player.name();
+
+        if (displayName.length() > NAME_MAX_LENGTH) {
+            displayName = displayName.substring(0, NAME_MAX_LENGTH - 3) + "...";
+        }
+
+        Label label = new Label(displayName);
         label.setStyle("-fx-text-fill: white; -fx-font-size: 12px;");
-        label.setMinWidth(50);
+
+        label.setUserData(fullName);
+
+        label.textProperty().bind(javafx.beans.binding.Bindings.createStringBinding(() -> {
+            if (label.getScene() != null && label.getScene().getWindow() != null &&
+                    label.getScene().getWindow().getWidth() > 500) {
+                return fullName;
+            } else {
+                if (fullName.length() > NAME_MAX_LENGTH) {
+                    return fullName.substring(0, NAME_MAX_LENGTH - 3) + "...";
+                }
+                return fullName;
+            }
+        }, label.sceneProperty(), label.widthProperty()));
+
         return label;
     }
 
