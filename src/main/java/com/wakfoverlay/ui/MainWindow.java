@@ -3,6 +3,7 @@ package com.wakfoverlay.ui;
 import com.wakfoverlay.domain.player.model.Players;
 import com.wakfoverlay.domain.player.port.primary.FetchPlayer;
 import com.wakfoverlay.domain.player.port.primary.UpdatePlayerDamages;
+import com.wakfoverlay.exposition.LogFileReader.FileReadStatus;
 import com.wakfoverlay.exposition.TheAnalyzer;
 import com.wakfoverlay.exposition.UserPreferences;
 import javafx.geometry.Insets;
@@ -94,6 +95,7 @@ public class MainWindow extends VBox {
         if (selectedFile != null) {
             this.selectedFilePath = selectedFile.getAbsolutePath();
             userPreferences.saveFilePath(this.selectedFilePath);
+            theAnalyzer.resetReadPosition();
             updateDisplay();
         }
     }
@@ -136,24 +138,23 @@ public class MainWindow extends VBox {
     public void updateDisplay() {
         contentContainer.getChildren().clear();
 
-//        TheAnalyzer.FileReadStatus status = theAnalyzer.readLogFile(selectedFilePath);
-        TheAnalyzer.FileReadStatus status = theAnalyzer.readNewLogLines(selectedFilePath);
+        FileReadStatus status = theAnalyzer.readNewLogLines(selectedFilePath);
 
-        if (status != TheAnalyzer.FileReadStatus.SUCCESS) {
+        if (status != FileReadStatus.SUCCESS) {
             showStatusMessage(getMessageForStatus(status));
             return;
         }
 
         Players rankedPlayers = fetchPlayer.rankedPlayers();
+
         if (rankedPlayers.players().isEmpty()) {
-            showStatusMessage("Aucune donnée disponible dans le fichier sélectionné.");
             return;
         }
 
         showPlayerList(rankedPlayers);
     }
 
-    private String getMessageForStatus(TheAnalyzer.FileReadStatus status) {
+    private String getMessageForStatus(FileReadStatus status) {
         return switch (status) {
             case NO_FILE_SELECTED -> "Aucun fichier sélectionné. Veuillez sélectionner un fichier de log.";
             case FILE_NOT_FOUND -> "Le fichier sélectionné n'existe pas.";

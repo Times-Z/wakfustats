@@ -155,9 +155,9 @@ public class OverlayApp extends Application {
         displayTimeline.setCycleCount(Timeline.INDEFINITE);
         displayTimeline.play();
 
-        // Simulate player damage updates every xms
-        Timeline updatePlayersTimeline = new Timeline(new KeyFrame(Duration.millis(2000), e -> updatePlayerDamages.updatePlayers()));
-        updatePlayersTimeline.setCycleCount(Timeline.INDEFINITE);
-        updatePlayersTimeline.play();
+        // Simulation désactivée pour permettre l'analyse des logs réels
+        // Timeline updatePlayersTimeline = new Timeline(new KeyFrame(Duration.millis(2000), e -> updatePlayerDamages.updatePlayers()));
+        // updatePlayersTimeline.setCycleCount(Timeline.INDEFINITE);
+        // updatePlayersTimeline.play();
     }
 }

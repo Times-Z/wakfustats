@@ -22,12 +22,17 @@ public class TitleBar extends HBox {
         HBox.setHgrow(spacer, ALWAYS);
 
         Button folderButton = createIconButton("📁", "#2ecc71");
-        folderButton.setOnAction(event -> onOpenFile.run());
+        folderButton.setTooltip(new javafx.scene.control.Tooltip("Ouvrir un fichier"));
+        folderButton.setOnAction(event -> {
+            onOpenFile.run();
+        });
 
         Button resetButton = createIconButton("🔄", "#3498db");
+        resetButton.setTooltip(new javafx.scene.control.Tooltip("Réinitialiser les statistiques"));
         resetButton.setOnAction(event -> onReset.run());
 
         Button closeButton = createIconButton("✖", "#e74c3c");
+        closeButton.setTooltip(new javafx.scene.control.Tooltip("Fermer"));
         closeButton.setOnAction(event -> onClose.run());
 
         this.getChildren().addAll(titleLabel, spacer, folderButton, resetButton, closeButton);
