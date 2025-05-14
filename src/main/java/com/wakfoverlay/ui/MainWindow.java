@@ -4,6 +4,7 @@ import com.wakfoverlay.domain.player.model.Player;
 import com.wakfoverlay.domain.player.model.Players;
 import com.wakfoverlay.domain.player.port.primary.FetchPlayer;
 import com.wakfoverlay.domain.player.port.primary.UpdatePlayerDamages;
+import com.wakfoverlay.exposition.TheAnalyzer;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
@@ -14,10 +15,15 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import static javafx.scene.layout.Priority.ALWAYS;
 
@@ -28,17 +34,21 @@ public class MainWindow extends VBox {
 
     private final VBox playersContainer;
     private final Pane resizeHandle;
+    private String selectedFilePath;
 
     private final FetchPlayer fetchPlayer;
     private final UpdatePlayerDamages updatePlayerDamages;
+    private final TheAnalyzer theAnalyzer;
 
-    public MainWindow(FetchPlayer players, UpdatePlayerDamages updatePlayerDamages) {
+    public MainWindow(FetchPlayer players, UpdatePlayerDamages updatePlayerDamages, TheAnalyzer theAnalyzer) {
         this.setStyle("-fx-background-color: rgb(18, 18, 18); -fx-border-color: rgb(51, 51, 51); -fx-border-width: 1;");
         this.setSpacing(2);
         this.setPadding(new Insets(5, 5, 5, 5));
 
         this.fetchPlayer = players;
         this.updatePlayerDamages = updatePlayerDamages;
+        this.theAnalyzer = theAnalyzer;
+        this.selectedFilePath = loadFilePath();
 
         HBox titleBar = createTitleBar();
         this.getChildren().add(titleBar);
@@ -104,13 +114,16 @@ public class MainWindow extends VBox {
         Pane spacer = new Pane();
         HBox.setHgrow(spacer, ALWAYS);
 
+        Button folderButton = createIconButton("📁", "#2ecc71");
+        folderButton.setOnAction(event -> openFolder());
+
         Button resetButton = createIconButton("🔄", "#3498db");
         resetButton.setOnAction(event -> resetStats());
 
         Button closeButton = createIconButton("✖", "#e74c3c");
         closeButton.setOnAction(event -> closeWindow());
 
-        titleBar.getChildren().addAll(label, spacer, resetButton, closeButton);
+        titleBar.getChildren().addAll(label, spacer, folderButton, resetButton, closeButton);
 
         return titleBar;
     }
@@ -129,6 +142,48 @@ public class MainWindow extends VBox {
         return button;
     }
 
+    private void openFolder() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sélectionner un fichier");
+
+        String lastPath = loadFilePath();
+        if (lastPath != null) {
+            File lastFile = new File(lastPath);
+            if (lastFile.exists()) {
+                fileChooser.setInitialDirectory(lastFile.getParentFile());
+            } else {
+                fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            }
+        } else {
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        }
+
+        FileChooser.ExtensionFilter logFilter =
+                new FileChooser.ExtensionFilter("Fichiers Log (*.log)", "*.log");
+        FileChooser.ExtensionFilter textFilter =
+                new FileChooser.ExtensionFilter("Fichiers Texte", "*.txt");
+        FileChooser.ExtensionFilter allFilter =
+                new FileChooser.ExtensionFilter("Tous les fichiers", "*.*");
+        fileChooser.getExtensionFilters().addAll(logFilter, textFilter, allFilter);
+
+        File selectedFile = fileChooser.showOpenDialog(this.getScene().getWindow());
+
+        if (selectedFile != null) {
+            this.selectedFilePath = selectedFile.getAbsolutePath();
+            saveFilePath(this.selectedFilePath);
+        }
+    }
+
+    private void saveFilePath(String filePath) {
+        Preferences prefs = Preferences.userNodeForPackage(MainWindow.class);
+        prefs.put("selectedFilePath", filePath);
+    }
+
+    private String loadFilePath() {
+        Preferences prefs = Preferences.userNodeForPackage(MainWindow.class);
+        return prefs.get("selectedFilePath", null);
+    }
+
     private void resetStats() {
         updatePlayerDamages.resetPlayersDamages();
     }
@@ -143,7 +198,27 @@ public class MainWindow extends VBox {
     public void updateDisplay() {
         playersContainer.getChildren().clear();
 
+        TheAnalyzer.FileReadStatus status = theAnalyzer.readLogFile(selectedFilePath);
+
+        if (status != TheAnalyzer.FileReadStatus.SUCCESS) {
+            String message = switch (status) {
+                case NO_FILE_SELECTED -> "Aucun fichier sélectionné. Veuillez sélectionner un fichier de log.";
+                case FILE_NOT_FOUND -> "Le fichier sélectionné n'existe pas.";
+                case EMPTY_FILE -> "Le fichier sélectionné est vide.";
+                case IO_ERROR -> "Erreur lors de la lecture du fichier.";
+                default -> "Erreur inconnue lors de la lecture du fichier.";
+            };
+
+            displayMessage(message);
+            return;
+        }
+
         Players rankedPlayers = fetchPlayer.rankedPlayers();
+        if (rankedPlayers.players().isEmpty()) {
+            displayMessage("Aucune donnée disponible dans le fichier sélectionné.");
+            return;
+        }
+
         int totalDamages = rankedPlayers.players().stream().mapToInt(Player::damages).sum();
 
         for (int i = 0; i < rankedPlayers.players().size(); i++) {
@@ -178,5 +253,16 @@ public class MainWindow extends VBox {
 
             playersContainer.getChildren().add(playerBox);
         }
+    }
+
+    private void displayMessage(String message) {
+        Label messageLabel = new Label(message);
+        messageLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
+
+        HBox messageBox = new HBox(messageLabel);
+        messageBox.setAlignment(javafx.geometry.Pos.CENTER);
+        messageBox.setPadding(new Insets(20, 0, 0, 0));
+
+        playersContainer.getChildren().add(messageBox);
     }
 }

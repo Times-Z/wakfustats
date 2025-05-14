@@ -37,11 +37,9 @@ public class OverlayApp extends Application {
         PlayersData playersData = new InMemoryPlayersData();
         FetchPlayerUseCase fetchPlayer = new FetchPlayerUseCase(playersData);
         UpdatePlayerDamagesUseCase updatePlayerDamages = new UpdatePlayerDamagesUseCase(playersData);
+        TheAnalyzer theAnalyzer = new TheAnalyzer();
 
-        TheAnalyzer analyzer = new TheAnalyzer("src/test/resources/wakfu.log");
-        analyzer.readLogFile();
-
-        MainWindow mainWindow = new MainWindow(fetchPlayer, updatePlayerDamages);
+        MainWindow mainWindow = new MainWindow(fetchPlayer, updatePlayerDamages, theAnalyzer);
 
         Scene scene = new Scene(mainWindow, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         scene.setFill(Color.rgb(18, 18, 18));
