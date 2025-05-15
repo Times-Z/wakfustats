@@ -8,11 +8,13 @@ import com.wakfoverlay.domain.fight.port.primary.UpdatePlayer;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 
 import java.time.Instant;
-import java.util.HashMap;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
-
-import static com.wakfoverlay.domain.fight.model.StatusEffect.*;
+import java.util.regex.Pattern;
 
 // TODO: Refactor to apply more responsibility segregation
 public class LogLineParser {
@@ -23,8 +25,11 @@ public class LogLineParser {
 
     private Character lastSpellCaster = null;
 
-    private final Map<String, Instant> lastProcessedLines = new HashMap<>();
-    private static final long DUPLICATE_THRESHOLD_MS = 1500;
+    private static final Pattern LOG_PATTERN = Pattern.compile("INFO\\s+(\\d+:\\d+:\\d+,\\d+)\\s+\\[[^\\]]+\\]\\s+\\([^)]+\\)\\s+-\\s+(.*)");
+    private final Map<String, LocalTime> lastProcessedContents = new ConcurrentHashMap<>();
+    private static final double DEDUPLICATION_THRESHOLD_SECONDS = 1;
+    private static final long CLEANUP_THRESHOLD_MS = 20000;
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss,SSS");
 
     public LogLineParser(FetchPlayer fetchPlayer, UpdatePlayer updatePlayer, UpdateStatusEffect updateStatusEffect) {
         this.fetchPlayer = fetchPlayer;
@@ -44,35 +49,60 @@ public class LogLineParser {
             return;
         }
 
-        if (isDuplicate(line)) {
-            System.out.println("Ligne dupliquée ignorée: " + line);
+        Matcher logMatcher = LOG_PATTERN.matcher(line);
+        if (!logMatcher.find()) {
+            System.out.println("Format de log non reconnu: " + line);
+            return;
+        }
+        
+        String timestamp = logMatcher.group(1);
+        String content = logMatcher.group(2);
+        
+        LocalTime logTime;
+        try {
+            logTime = LocalTime.parse(timestamp, TIME_FORMATTER);
+        } catch (DateTimeParseException e) {
+            System.out.println("Erreur de parsing du timestamp: " + timestamp);
+            return;
+        }
+        
+        if (isDuplicate(content, logTime)) {
+            System.out.println("Ligne dupliquée ignorée (timestamp proche): " + content);
             return;
         }
 
-        // TODO: refacto this
+        // TODO: refacto this -> not perf
         parseSpellCast(line);
         parseStatusEffect(line);
         parseDamages(line);
     }
 
-    // TODO: not working
-    private boolean isDuplicate(String line) {
-        Instant now = Instant.now();
-        if (lastProcessedLines.containsKey(line)) {
-            Instant lastTime = lastProcessedLines.get(line);
-            if (now.toEpochMilli() - lastTime.toEpochMilli() < DUPLICATE_THRESHOLD_MS) {
+    private boolean isDuplicate(String content, LocalTime currentTime) {
+        LocalTime lastTime = lastProcessedContents.get(content);
+        
+        if (lastTime != null) {
+            double diffSeconds = Math.abs(
+                (currentTime.toNanoOfDay() - lastTime.toNanoOfDay()) / 1_000_000_000.0
+            );
+            
+            if (diffSeconds < DEDUPLICATION_THRESHOLD_SECONDS) {
                 return true;
             }
         }
-
-        lastProcessedLines.put(line, now);
-        cleanupOldEntries(now);
+        
+        lastProcessedContents.put(content, currentTime);
+        cleanupOldEntries();
         return false;
     }
 
-    private void cleanupOldEntries(Instant now) {
-        lastProcessedLines.entrySet().removeIf(entry ->
-                now.toEpochMilli() - entry.getValue().toEpochMilli() > 10000);
+    private void cleanupOldEntries() {
+        LocalTime now = LocalTime.now();
+        lastProcessedContents.entrySet().removeIf(entry -> {
+            double diffSeconds = Math.abs(
+                (now.toNanoOfDay() - entry.getValue().toNanoOfDay()) / 1_000_000_000.0
+            );
+            return diffSeconds > (CLEANUP_THRESHOLD_MS / 1000.0);
+        });
     }
 
     private void parseSpellCast(String line) {
@@ -94,9 +124,7 @@ public class LogLineParser {
             System.out.println("Sort lancé par " + characterName + ": " + spellName);
 
             lastSpellCaster = fetchPlayer.player(new CharacterName(characterName));
-
         }
-
     }
 
     private void parseDamages(String line) {
@@ -104,7 +132,7 @@ public class LogLineParser {
         int damageValue;
 
         if (damagesMatcher.matches()) {
-            String damages = damagesMatcher.group(2).replaceAll("\\s+", "");
+            String damages = damagesMatcher.group(2).replaceAll("[^\\d-]+", "");
             if (damages.trim().isEmpty()) {
                 System.out.println("Valeur de dégâts non identifiée dans la ligne de dégâts: " + line);
             }

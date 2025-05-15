@@ -4,7 +4,7 @@ TODO:
 - Opacity control
 - Handle reset screen in better way
 - Identify Character with ULID instead of name
-- Add deduplication logs
 - Rename "player" by "character"
+- Add Unit tests
 - Compute heals
 - Compute shields

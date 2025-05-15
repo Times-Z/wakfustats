@@ -48,8 +48,6 @@ public class MainWindow extends VBox {
         this.contentScrollPane = createScrollPane();
 
         this.getChildren().addAll(titleBar, contentScrollPane);
-
-        updateDisplay();
     }
 
     public void updateDisplay() {
@@ -113,7 +111,6 @@ public class MainWindow extends VBox {
             this.selectedFilePath = selectedFile.getAbsolutePath();
             userPreferences.saveFilePath(this.selectedFilePath);
             theAnalyzer.resetReadPosition();
-            updateDisplay();
         }
     }
 
@@ -143,7 +140,6 @@ public class MainWindow extends VBox {
     private void resetStats() {
         updatePlayer.resetPlayersDamages();
         updateStatusEffect.resetStatusEffects();
-        updateDisplay();
     }
 
     private void closeWindow() {
