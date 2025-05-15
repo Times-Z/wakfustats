@@ -8,11 +8,11 @@ import com.wakfoverlay.domain.fight.port.secondary.CharactersRepository;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public record FetchPlayer(
+public record FetchCharacter(
         CharactersRepository charactersRepository
-) implements com.wakfoverlay.domain.fight.port.primary.FetchPlayer {
+) implements com.wakfoverlay.domain.fight.port.primary.FetchCharacter {
     @Override
-    public Character player(CharacterName name) {
+    public Character character(CharacterName name) {
         return charactersRepository.character(name)
                 .stream()
                 .findFirst()
@@ -20,7 +20,7 @@ public record FetchPlayer(
     }
 
     @Override
-    public Characters rankedPlayers() {
+    public Characters rankedCharacters() {
         return new Characters(charactersRepository.characters()
                 .characters()
                 .stream()

@@ -1,13 +1,12 @@
 package com.wakfoverlay.exposition;
 
-import com.wakfoverlay.domain.fight.FetchPlayer;
+import com.wakfoverlay.domain.fight.FetchCharacter;
 import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.fight.model.Character.CharacterName;
 import com.wakfoverlay.domain.fight.model.StatusEffect;
-import com.wakfoverlay.domain.fight.port.primary.UpdatePlayer;
+import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 
-import java.time.Instant;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -18,8 +17,8 @@ import java.util.regex.Pattern;
 
 // TODO: Refactor to apply more responsibility segregation
 public class LogLineParser {
-    private final FetchPlayer fetchPlayer;
-    private final UpdatePlayer updatePlayer;
+    private final FetchCharacter fetchCharacter;
+    private final UpdateCharacter updateCharacter;
     private final UpdateStatusEffect updateStatusEffect;
     private final RegexProvider regexProvider;
 
@@ -31,9 +30,9 @@ public class LogLineParser {
     private static final long CLEANUP_THRESHOLD_MS = 20000;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss,SSS");
 
-    public LogLineParser(FetchPlayer fetchPlayer, UpdatePlayer updatePlayer, UpdateStatusEffect updateStatusEffect) {
-        this.fetchPlayer = fetchPlayer;
-        this.updatePlayer = updatePlayer;
+    public LogLineParser(FetchCharacter fetchCharacter, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
+        this.fetchCharacter = fetchCharacter;
+        this.updateCharacter = updateCharacter;
         this.updateStatusEffect = updateStatusEffect;
         this.regexProvider = new RegexProvider();
     }
@@ -54,10 +53,10 @@ public class LogLineParser {
             System.out.println("Format de log non reconnu: " + line);
             return;
         }
-        
+
         String timestamp = logMatcher.group(1);
         String content = logMatcher.group(2);
-        
+
         LocalTime logTime;
         try {
             logTime = LocalTime.parse(timestamp, TIME_FORMATTER);
@@ -65,7 +64,7 @@ public class LogLineParser {
             System.out.println("Erreur de parsing du timestamp: " + timestamp);
             return;
         }
-        
+
         if (isDuplicate(content, logTime)) {
             System.out.println("Ligne dupliquée ignorée (timestamp proche): " + content);
             return;
@@ -79,17 +78,17 @@ public class LogLineParser {
 
     private boolean isDuplicate(String content, LocalTime currentTime) {
         LocalTime lastTime = lastProcessedContents.get(content);
-        
+
         if (lastTime != null) {
             double diffSeconds = Math.abs(
                 (currentTime.toNanoOfDay() - lastTime.toNanoOfDay()) / 1_000_000_000.0
             );
-            
+
             if (diffSeconds < DEDUPLICATION_THRESHOLD_SECONDS) {
                 return true;
             }
         }
-        
+
         lastProcessedContents.put(content, currentTime);
         cleanupOldEntries();
         return false;
@@ -123,7 +122,7 @@ public class LogLineParser {
 
             System.out.println("Sort lancé par " + characterName + ": " + spellName);
 
-            lastSpellCaster = fetchPlayer.player(new CharacterName(characterName));
+            lastSpellCaster = fetchCharacter.character(new CharacterName(characterName));
         }
     }
 
@@ -144,7 +143,7 @@ public class LogLineParser {
                 damageValue = 0;
             }
 
-            updatePlayer.update(
+            updateCharacter.update(
                     new Character(lastSpellCaster.name(), lastSpellCaster.damages()),
                     damageValue
             );
@@ -170,7 +169,7 @@ public class LogLineParser {
             System.out.println("Effet de statut appliqué à " + name + ": " + statusEffect);
             StatusEffect effect = new StatusEffect(statusEffect);
 
-            Character character = fetchPlayer.player(lastSpellCaster.name());
+            Character character = fetchCharacter.character(lastSpellCaster.name());
             updateStatusEffect.update(effect, character.name());
             Map<StatusEffect, CharacterName> all = updateStatusEffect.all();
             System.out.println("Status effects: " + all);

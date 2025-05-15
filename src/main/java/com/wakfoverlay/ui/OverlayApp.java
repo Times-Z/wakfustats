@@ -1,7 +1,7 @@
 package com.wakfoverlay.ui;
 
-import com.wakfoverlay.domain.fight.FetchPlayer;
-import com.wakfoverlay.domain.fight.UpdatePlayerUseCase;
+import com.wakfoverlay.domain.fight.FetchCharacter;
+import com.wakfoverlay.domain.fight.UpdateCharacterUseCase;
 import com.wakfoverlay.domain.fight.UpdateStatusEffectUseCase;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 import com.wakfoverlay.domain.fight.port.secondary.CharactersRepository;
@@ -34,13 +34,13 @@ public class OverlayApp extends Application {
     public void start(Stage primaryStage) {
         // Setup dependencies manually
         CharactersRepository charactersRepository = new InMemoryCharactersRepository();
-        FetchPlayer fetchPlayer = new FetchPlayer(charactersRepository);
+        FetchCharacter fetchCharacter = new FetchCharacter(charactersRepository);
         StatusEffectRepository statusEffectRepository = new InMemoryStatusEffectRepository();
-        UpdatePlayerUseCase updatePlayer = new UpdatePlayerUseCase(charactersRepository);
+        UpdateCharacterUseCase updateCharacter = new UpdateCharacterUseCase(charactersRepository);
         UpdateStatusEffect updateStatusEffect = new UpdateStatusEffectUseCase(statusEffectRepository);
-        TheAnalyzer theAnalyzer = new TheAnalyzer(fetchPlayer, updatePlayer, updateStatusEffect);
+        TheAnalyzer theAnalyzer = new TheAnalyzer(fetchCharacter, updateCharacter, updateStatusEffect);
 
-        MainWindow mainWindow = new MainWindow(fetchPlayer, updatePlayer, updateStatusEffect, theAnalyzer);
+        MainWindow mainWindow = new MainWindow(fetchCharacter, updateCharacter, updateStatusEffect, theAnalyzer);
 
         Scene scene = new Scene(mainWindow, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         scene.setFill(Color.rgb(18, 18, 18));

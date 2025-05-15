@@ -1,12 +1,12 @@
 package com.wakfoverlay.domain.fight;
 
 import com.wakfoverlay.domain.fight.model.Character;
-import com.wakfoverlay.domain.fight.port.primary.UpdatePlayer;
+import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.secondary.CharactersRepository;
 
-public record UpdatePlayerUseCase(
+public record UpdateCharacterUseCase(
         CharactersRepository charactersRepository
-) implements UpdatePlayer {
+) implements UpdateCharacter {
 
     @Override
     public void update(Character character, Integer damages) {
@@ -15,7 +15,7 @@ public record UpdatePlayerUseCase(
     }
 
     @Override
-    public void resetPlayersDamages() {
+    public void resetCharacterDamages() {
         charactersRepository.resetCharacters();
     }
 }

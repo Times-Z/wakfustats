@@ -15,15 +15,15 @@ import java.util.List;
 
 import static javafx.scene.layout.Priority.ALWAYS;
 
-public class PlayerListView extends VBox {
-    private static final List<String> PLAYER_COLORS = Arrays.asList(
+public class CharacterListView extends VBox {
+    private static final List<String> CHARACTER_COLORS = Arrays.asList(
             "#33fffe", "#EE1DED", "#7DFA00", "#FF4A00", "#FBE33B", "#6D1FA9"
     );
 
     private static final int NAME_MAX_LENGTH = 20;
     private static final double NAME_COLUMN_WIDTH = 120;
 
-    public PlayerListView(Characters charactersData) {
+    public CharacterListView(Characters charactersData) {
         this.setSpacing(2);
 
         List<Character> characters = charactersData.characters();
@@ -31,8 +31,8 @@ public class PlayerListView extends VBox {
 
         for (int i = 0; i < characters.size(); i++) {
             Character character = characters.get(i);
-            HBox playerRow = createPlayerRow(character, i, totalDamages);
-            this.getChildren().add(playerRow);
+            HBox characterRow = createCharacterRow(character, i, totalDamages);
+            this.getChildren().add(characterRow);
         }
     }
 
@@ -40,10 +40,10 @@ public class PlayerListView extends VBox {
         return characters.stream().mapToInt(Character::damages).sum();
     }
 
-    private HBox createPlayerRow(Character character, int index, int totalDamages) {
-        HBox playerBox = new HBox();
-        playerBox.setPadding(new Insets(2, 5, 2, 5));
-        playerBox.setSpacing(10);
+    private HBox createCharacterRow(Character character, int index, int totalDamages) {
+        HBox characterBox = new HBox();
+        characterBox.setPadding(new Insets(2, 5, 2, 5));
+        characterBox.setSpacing(10);
 
         Label nameLabel = createNameLabel(character);
         HBox nameContainer = new HBox(nameLabel);
@@ -54,8 +54,8 @@ public class PlayerListView extends VBox {
 
         Label damageLabel = createDamageLabel(character, totalDamages);
 
-        playerBox.getChildren().addAll(nameContainer, damageBar, damageLabel);
-        return playerBox;
+        characterBox.getChildren().addAll(nameContainer, damageBar, damageLabel);
+        return characterBox;
     }
 
     private Label createNameLabel(Character character) {
@@ -98,7 +98,7 @@ public class PlayerListView extends VBox {
         double damagePercentage = totalDamages == 0 ? 0 : (character.damages() / (double) totalDamages) * 100;
         Rectangle progressBar = new Rectangle(0, 0, damagePercentage, 20);
 
-        String color = PLAYER_COLORS.get(index % PLAYER_COLORS.size());
+        String color = CHARACTER_COLORS.get(index % CHARACTER_COLORS.size());
         progressBar.setFill(Color.web(color));
 
         pane.getChildren().addAll(border, progressBar);

@@ -1,8 +1,8 @@
 package com.wakfoverlay.ui;
 
 import com.wakfoverlay.domain.fight.model.Characters;
-import com.wakfoverlay.domain.fight.port.primary.FetchPlayer;
-import com.wakfoverlay.domain.fight.port.primary.UpdatePlayer;
+import com.wakfoverlay.domain.fight.port.primary.FetchCharacter;
+import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 import com.wakfoverlay.exposition.LogFileReader.FileReadStatus;
 import com.wakfoverlay.exposition.TheAnalyzer;
@@ -19,22 +19,22 @@ import static javafx.scene.layout.Priority.ALWAYS;
 
 public class MainWindow extends VBox {
 
-    private final FetchPlayer fetchPlayer;
-    private final UpdatePlayer updatePlayer;
+    private final FetchCharacter fetchCharacter;
+    private final UpdateCharacter updateCharacter;
     private final UpdateStatusEffect updateStatusEffect;
     private final TheAnalyzer theAnalyzer;
     private final UserPreferences userPreferences;
 
     private final ScrollPane contentScrollPane;
     private final VBox contentContainer;
-    private PlayerListView playerListView;
+    private CharacterListView characterListView;
     private StatusMessageView statusMessageView;
 
     private String selectedFilePath;
 
-    public MainWindow(FetchPlayer fetchPlayer, UpdatePlayer updatePlayer, UpdateStatusEffect updateStatusEffect, TheAnalyzer theAnalyzer) {
-        this.fetchPlayer = fetchPlayer;
-        this.updatePlayer = updatePlayer;
+    public MainWindow(FetchCharacter fetchCharacter, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect, TheAnalyzer theAnalyzer) {
+        this.fetchCharacter = fetchCharacter;
+        this.updateCharacter = updateCharacter;
         this.updateStatusEffect = updateStatusEffect;
         this.theAnalyzer = theAnalyzer;
         this.userPreferences = new UserPreferences(MainWindow.class);
@@ -60,13 +60,13 @@ public class MainWindow extends VBox {
             return;
         }
 
-        Characters rankedCharacters = fetchPlayer.rankedPlayers();
+        Characters rankedCharacters = fetchCharacter.rankedCharacters();
 
         if (rankedCharacters.characters().isEmpty()) {
             return;
         }
 
-        showPlayerList(rankedCharacters);
+        showCharacterList(rankedCharacters);
     }
 
     private void setupWindowAppearance() {
@@ -138,7 +138,7 @@ public class MainWindow extends VBox {
     }
 
     private void resetStats() {
-        updatePlayer.resetPlayersDamages();
+        updateCharacter.resetCharacterDamages();
         updateStatusEffect.resetStatusEffects();
     }
 
@@ -164,8 +164,8 @@ public class MainWindow extends VBox {
         contentContainer.getChildren().add(statusMessageView);
     }
 
-    private void showPlayerList(Characters characters) {
-        playerListView = new PlayerListView(characters);
-        contentContainer.getChildren().add(playerListView);
+    private void showCharacterList(Characters characters) {
+        characterListView = new CharacterListView(characters);
+        contentContainer.getChildren().add(characterListView);
     }
 }
