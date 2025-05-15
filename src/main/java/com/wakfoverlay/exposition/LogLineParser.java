@@ -7,11 +7,14 @@ import com.wakfoverlay.domain.fight.model.StatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdatePlayer;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 
 import static com.wakfoverlay.domain.fight.model.StatusEffect.*;
 
+// TODO: Refactor to apply more responsibility segregation
 public class LogLineParser {
     private final FetchPlayer fetchPlayer;
     private final UpdatePlayer updatePlayer;
@@ -19,6 +22,9 @@ public class LogLineParser {
     private final RegexProvider regexProvider;
 
     private Character lastSpellCaster = null;
+
+    private final Map<String, Instant> lastProcessedLines = new HashMap<>();
+    private static final long DUPLICATE_THRESHOLD_MS = 1500;
 
     public LogLineParser(FetchPlayer fetchPlayer, UpdatePlayer updatePlayer, UpdateStatusEffect updateStatusEffect) {
         this.fetchPlayer = fetchPlayer;
@@ -38,10 +44,35 @@ public class LogLineParser {
             return;
         }
 
+        if (isDuplicate(line)) {
+            System.out.println("Ligne dupliquée ignorée: " + line);
+            return;
+        }
+
         // TODO: refacto this
         parseSpellCast(line);
         parseStatusEffect(line);
         parseDamages(line);
+    }
+
+    // TODO: not working
+    private boolean isDuplicate(String line) {
+        Instant now = Instant.now();
+        if (lastProcessedLines.containsKey(line)) {
+            Instant lastTime = lastProcessedLines.get(line);
+            if (now.toEpochMilli() - lastTime.toEpochMilli() < DUPLICATE_THRESHOLD_MS) {
+                return true;
+            }
+        }
+
+        lastProcessedLines.put(line, now);
+        cleanupOldEntries(now);
+        return false;
+    }
+
+    private void cleanupOldEntries(Instant now) {
+        lastProcessedLines.entrySet().removeIf(entry ->
+                now.toEpochMilli() - entry.getValue().toEpochMilli() > 10000);
     }
 
     private void parseSpellCast(String line) {
