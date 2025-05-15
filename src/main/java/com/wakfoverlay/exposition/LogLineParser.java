@@ -1,178 +1,181 @@
 package com.wakfoverlay.exposition;
 
-import com.wakfoverlay.domain.fight.FetchCharacter;
+import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
 import com.wakfoverlay.domain.fight.model.Character;
-import com.wakfoverlay.domain.fight.model.Character.CharacterName;
 import com.wakfoverlay.domain.fight.model.StatusEffect;
+import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 
+import java.text.Normalizer;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// TODO: Refactor to apply more responsibility segregation
+import static com.wakfoverlay.domain.fight.model.StatusEffect.StatusEffectName;
+import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.INTOXIQUE;
+import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.NO_SUB_TYPE;
+import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.TETRATOXINE;
+
 public class LogLineParser {
-    private final FetchCharacter fetchCharacter;
+    private final FetchCharacterUseCase fetchCharacter;
+    private final FetchStatusEffect fetchStatusEffect;
     private final UpdateCharacter updateCharacter;
     private final UpdateStatusEffect updateStatusEffect;
     private final RegexProvider regexProvider;
 
     private Character lastSpellCaster = null;
 
-    private static final Pattern LOG_PATTERN = Pattern.compile("INFO\\s+(\\d+:\\d+:\\d+,\\d+)\\s+\\[[^\\]]+\\]\\s+\\([^)]+\\)\\s+-\\s+(.*)");
-    private final Map<String, LocalTime> lastProcessedContents = new ConcurrentHashMap<>();
-    private static final double DEDUPLICATION_THRESHOLD_SECONDS = 1;
-    private static final long CLEANUP_THRESHOLD_MS = 20000;
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss,SSS");
-
-    public LogLineParser(FetchCharacter fetchCharacter, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
+    public LogLineParser(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
         this.fetchCharacter = fetchCharacter;
+        this.fetchStatusEffect = fetchStatusEffect;
         this.updateCharacter = updateCharacter;
         this.updateStatusEffect = updateStatusEffect;
         this.regexProvider = new RegexProvider();
     }
 
-    public void parseLine(String line) {
-        if (line == null || line.trim().isEmpty()) {
-            System.out.println("Ligne vide ignorée");
-            return;
+    public void analyze(String logLine) {
+        List<Object> result = new ArrayList<>();
+        Matcher spellCastMatcher = regexProvider.spellCastPattern().matcher(logLine);
+        Matcher statusEffectMatcher = regexProvider.statusEffectPattern().matcher(logLine);
+        Matcher damagesMatcher = regexProvider.damagesPattern().matcher(logLine);
+
+        if (spellCastMatcher.matches()) {
+            handleSpellCasting(spellCastMatcher, result);
         }
 
-        if (!line.contains("[Information") || !line.contains("(jeu)]")) {
-            System.out.println("Ligne non pertinente ignorée");
-            return;
+        if (statusEffectMatcher.matches()) {
+            handleStatusEffect(statusEffectMatcher, result);
         }
-
-        Matcher logMatcher = LOG_PATTERN.matcher(line);
-        if (!logMatcher.find()) {
-            System.out.println("Format de log non reconnu: " + line);
-            return;
-        }
-
-        String timestamp = logMatcher.group(1);
-        String content = logMatcher.group(2);
-
-        LocalTime logTime;
-        try {
-            logTime = LocalTime.parse(timestamp, TIME_FORMATTER);
-        } catch (DateTimeParseException e) {
-            System.out.println("Erreur de parsing du timestamp: " + timestamp);
-            return;
-        }
-
-        if (isDuplicate(content, logTime)) {
-            System.out.println("Ligne dupliquée ignorée (timestamp proche): " + content);
-            return;
-        }
-
-        // TODO: refacto this -> not perf
-        parseSpellCast(line);
-        parseStatusEffect(line);
-        parseDamages(line);
-    }
-
-    private boolean isDuplicate(String content, LocalTime currentTime) {
-        LocalTime lastTime = lastProcessedContents.get(content);
-
-        if (lastTime != null) {
-            double diffSeconds = Math.abs(
-                (currentTime.toNanoOfDay() - lastTime.toNanoOfDay()) / 1_000_000_000.0
-            );
-
-            if (diffSeconds < DEDUPLICATION_THRESHOLD_SECONDS) {
-                return true;
-            }
-        }
-
-        lastProcessedContents.put(content, currentTime);
-        cleanupOldEntries();
-        return false;
-    }
-
-    private void cleanupOldEntries() {
-        LocalTime now = LocalTime.now();
-        lastProcessedContents.entrySet().removeIf(entry -> {
-            double diffSeconds = Math.abs(
-                (now.toNanoOfDay() - entry.getValue().toNanoOfDay()) / 1_000_000_000.0
-            );
-            return diffSeconds > (CLEANUP_THRESHOLD_MS / 1000.0);
-        });
-    }
-
-    private void parseSpellCast(String line) {
-        Matcher castSpellMatcher = regexProvider.castSpellPattern().matcher(line);
-
-        if (castSpellMatcher.matches()) {
-            String characterName = castSpellMatcher.group(1);
-            if (characterName == null || characterName.trim().isEmpty()) {
-                System.out.println("Personnage non identifié dans la ligne de sort: " + line);
-                characterName = "Unknown";
-            }
-
-            String spellName = castSpellMatcher.group(2);
-            if (spellName == null || spellName.trim().isEmpty()) {
-                System.out.println("Nom de sort non identifié dans la ligne de sort: " + line);
-                spellName = "Unknown";
-            }
-
-            System.out.println("Sort lancé par " + characterName + ": " + spellName);
-
-            lastSpellCaster = fetchCharacter.character(new CharacterName(characterName));
-        }
-    }
-
-    private void parseDamages(String line) {
-        Matcher damagesMatcher = regexProvider.damagesPattern().matcher(line);
-        int damageValue;
 
         if (damagesMatcher.matches()) {
-            String damages = damagesMatcher.group(2).replaceAll("[^\\d-]+", "");
-            if (damages.trim().isEmpty()) {
-                System.out.println("Valeur de dégâts non identifiée dans la ligne de dégâts: " + line);
-            }
+            handleDamages(damagesMatcher, result);
+        }
 
-            try {
-                damageValue = Math.abs(Integer.parseInt(damages));
-            } catch (NumberFormatException e) {
-                System.out.println("Format de dégâts invalide: " + damages);
-                damageValue = 0;
-            }
+    }
 
-            updateCharacter.update(
-                    new Character(lastSpellCaster.name(), lastSpellCaster.damages()),
-                    damageValue
+    private void handleSpellCasting(Matcher spellCastMatcher, List<Object> result) {
+        String casterName = spellCastMatcher.group(2);
+
+        if (casterName == null || casterName.isEmpty()) {
+            casterName = "Unknown";
+        }
+
+        lastSpellCaster = fetchCharacter.character(new Character.CharacterName(casterName));
+
+        // TODO: remove after tests
+        // LocalTime timestamp = LocalTime.parse(spellCastMatcher.group(1), regexProvider.timeFormatterPattern());
+        // String spellName = spellCastMatcher.group(3);
+        // String additionalInfo = spellCastMatcher.group(4);
+        // result.add(new SpellCast(timestamp, casterName, spellName, additionalInfo));
+    }
+
+    private void handleStatusEffect(Matcher statusEffectMatcher, List<Object> result) {
+        LocalTime timestamp = LocalTime.parse(statusEffectMatcher.group(1), regexProvider.timeFormatterPattern());
+        String targetName = statusEffectMatcher.group(2);
+        String statusName = statusEffectMatcher.group(3);
+        String statusLevel = statusEffectMatcher.group(4);
+
+        Matcher levelMatcher = Pattern.compile("(\\d+)").matcher(statusLevel);
+        Integer level = null;
+        if (levelMatcher.find()) {
+            level = Integer.parseInt(levelMatcher.group(1));
+        }
+
+        // TODO: Put this in a method
+        StatusEffect effect;
+        if (normalize(statusName).equals(normalize("Toxines"))) {
+            effect = new StatusEffect(
+                    timestamp,
+                    targetName,
+                    new StatusEffectName(normalize(statusName)),
+                    level,
+                    TETRATOXINE
             );
+            //result.add(new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, TETRATOXINE));
+
+        } else if (normalize(statusName).equals(normalize("Intoxiqué"))) {
+            effect = new StatusEffect(
+                    timestamp,
+                    targetName,
+                    new StatusEffectName(normalize(statusName)),
+                    level,
+                    INTOXIQUE
+            );
+            //result.add(new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, INTOXIQUE));
+
+        } else {
+            effect = new StatusEffect(
+                    timestamp,
+                    targetName,
+                    new StatusEffectName(normalize(statusName)),
+                    level,
+                    NO_SUB_TYPE
+            );
+            //result.add(new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, NO_SUB_TYPE));
         }
+
+        updateStatusEffect.update(effect, lastSpellCaster.name());
     }
 
-    private void parseStatusEffect(String line) {
-        Matcher statusEffectMatcher = regexProvider.statusEffectPattern().matcher(line);
+    private void handleDamages(Matcher damagesMatcher, List<Object> result) {
+        LocalTime timestamp = LocalTime.parse(damagesMatcher.group(1), regexProvider.timeFormatterPattern());
+        int damages = Integer.parseInt(damagesMatcher.group(3).replaceAll("[^\\d-]+", ""));
 
-        if (statusEffectMatcher.find()) {
-            String name = statusEffectMatcher.group(1);
-            if (name == null || name.trim().isEmpty()) {
-                System.out.println("Personnage non identifié dans la ligne d'effet de statut: " + line);
-                name = "Unknown";
-            }
+        String elements = damagesMatcher.group(4);
+        Matcher elementMatcher = Pattern.compile("\\(([^)]+)\\)").matcher(elements);
+        Set<String> damagesElements = new LinkedHashSet<>();
 
-            String statusEffect = statusEffectMatcher.group(2);
-            if (statusEffect == null || statusEffect.trim().isEmpty()) {
-                System.out.println("Nom d'effet de statut non identifié dans la ligne d'effet de statut: " + line);
-                statusEffect = "Unknown";
-            }
-
-            System.out.println("Effet de statut appliqué à " + name + ": " + statusEffect);
-            StatusEffect effect = new StatusEffect(statusEffect);
-
-            Character character = fetchCharacter.character(lastSpellCaster.name());
-            updateStatusEffect.update(effect, character.name());
-            Map<StatusEffect, CharacterName> all = updateStatusEffect.all();
-            System.out.println("Status effects: " + all);
+        while (elementMatcher.find()) {
+            damagesElements.add(normalize(elementMatcher.group(1).trim()));
         }
+
+        // TODO: change this
+        String lastElement = damagesElements.toArray()[damagesElements.size() - 1].toString();
+        Optional<Character.CharacterName> casterName = fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
+        System.out.println("Personnage identifie pour: " + casterName.orElse(null));
+
+        Character characterToApplyDamages;
+        if (casterName.isPresent()) {
+            // TODO: could be null so...
+            characterToApplyDamages = fetchCharacter.character(casterName.get());
+            updateCharacter.update(characterToApplyDamages, damages);
+        }
+
+        //result.add(new Damages(timestamp, damages, damagesElements));
     }
+
+    private String normalize(String text) {
+        if (text == null) return null;
+        return Normalizer.normalize(text, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .toLowerCase()
+                .trim();
+    }
+
+//    public static void main(String[] args) {
+//        RegexProvider regexProvider = new RegexProvider();
+//        LogLineParserBis parser = new LogLineParserBis(regexProvider);
+//        String logLine1 = "INFO 13:40:17,320 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte lance le sort Ecume (Critiques)";
+//        String logLine11 = "INFO 13:40:17,320 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte lance le sort Ecume";
+//        String logLine2 = "INFO 22:41:19,419 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: Intoxiqué (Niv.19)";
+//        String logLine21 = "INFO 22:41:19,419 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: Maudit (+49 Niv.)";
+//        String logLine3 = "INFO 22:45:55,208 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -221 PV (Lumière) (Feu) (Tétratoxine)";
+//        String logLine31 = "INFO 22:45:55,208 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 221 PV (Lumière) (Tétratoxine)";
+//        String logLine32 = "INFO 22:45:55,208 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 231 221 PV (Tétratoxine)";
+//
+//        System.out.println(parser.analyze(logLine1));
+//        System.out.println(parser.analyze(logLine11));
+//        System.out.println(parser.analyze(logLine2));
+//        System.out.println(parser.analyze(logLine21));
+//        System.out.println(parser.analyze(logLine3));
+//        System.out.println(parser.analyze(logLine31));
+//        System.out.println(parser.analyze(logLine32));
+//    }
 }
+

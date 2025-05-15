@@ -1,28 +1,27 @@
 package com.wakfoverlay.exposition;
 
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
 public class RegexProvider {
-    private final Pattern CAST_SPELL_PATTERN = Pattern
-            .compile(".*\\[Information\\s*\\(jeu\\)\\]\\s*(.*)\\s+lance\\s+le\\s+sort\\s+(.*)");
-    private final Pattern DAMAGES_PATTERN = Pattern
-            .compile(".*\\[Information\\s*\\(jeu\\)\\]\\s*([^:]+):\\s*([^\\s]+(?:\\s[^\\s]+)*)\\s+PV\\s+\\((.*)\\)");
-    private final Pattern HEALS_PATTERN = Pattern
-            .compile(".*\\[Information\\s*\\(jeu\\)\\]\\s*([^:]+):\\s*([+]\\d+)\\s+PV\\s+\\((.*)\\)");
-    private final Pattern STATUS_EFFECT_PATTERN = Pattern
-            .compile(".*\\[Information\\s*\\(jeu\\)\\]\\s*([^:]+):\\s*([^()]+)\\s*\\((?:\\+(\\d+)\\s*)?Niv\\.?\\s*(\\d*)\\)");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss,SSS");
+    private static final Pattern SPELL_CAST_PATTERN = Pattern
+            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3}) \\[.*?\\] \\(.*?\\) - \\[Information \\(jeu\\)\\] (.+?) lance le sort (\\w+)(?: \\((.*?)\\))?");
+    private static final Pattern STATUS_EFFECT_PATTERN = Pattern
+            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3}) \\[.*?] \\(.*?\\) - \\[Information \\(jeu\\)] (.+?): (.+?) \\((Niv\\.\\d+|\\+\\d+ Niv\\.)\\)$");
+    private static final Pattern DAMAGES_PATTERN = Pattern
+            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3}) \\[.*?\\] \\(.*?\\) - \\[Information \\(jeu\\)\\] (.+?): -([\\d\\s]+) ?PV((?: \\([^)]+\\))+)?$");
 
+    public DateTimeFormatter timeFormatterPattern() {
+        return TIME_FORMATTER;
+    }
 
-    public Pattern castSpellPattern() {
-        return CAST_SPELL_PATTERN;
+    public Pattern spellCastPattern() {
+        return SPELL_CAST_PATTERN;
     }
 
     public Pattern damagesPattern() {
         return DAMAGES_PATTERN;
-    }
-
-    public Pattern healsPattern() {
-        return HEALS_PATTERN;
     }
 
     public Pattern statusEffectPattern() {

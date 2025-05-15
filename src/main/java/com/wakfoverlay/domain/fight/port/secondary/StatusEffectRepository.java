@@ -2,11 +2,12 @@ package com.wakfoverlay.domain.fight.port.secondary;
 
 import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.fight.model.StatusEffect;
+import com.wakfoverlay.domain.fight.model.StatusEffect.StatusEffectName;
 
-import java.util.Map;
+import java.util.Optional;
 
 public interface StatusEffectRepository {
     void addOrUpdate(StatusEffect statusEffect, Character.CharacterName characterName);
-    Map<StatusEffect, Character.CharacterName> statusEffects();
+    Optional<Character.CharacterName> characterFor(StatusEffectName name);
     void resetStatusEffects();
 }

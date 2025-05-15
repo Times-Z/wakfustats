@@ -9,7 +9,7 @@ public record UpdateCharacterUseCase(
 ) implements UpdateCharacter {
 
     @Override
-    public void update(Character character, Integer damages) {
+    public void update(Character character, int damages) {
         Character updatedCharacter = new Character(character.name(), character.damages() + damages);
         charactersRepository.addOrUpdate(updatedCharacter);
     }

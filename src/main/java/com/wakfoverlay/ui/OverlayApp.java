@@ -1,6 +1,7 @@
 package com.wakfoverlay.ui;
 
-import com.wakfoverlay.domain.fight.FetchCharacter;
+import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
+import com.wakfoverlay.domain.fight.FetchStatusEffectUseCase;
 import com.wakfoverlay.domain.fight.UpdateCharacterUseCase;
 import com.wakfoverlay.domain.fight.UpdateStatusEffectUseCase;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
@@ -34,11 +35,14 @@ public class OverlayApp extends Application {
     public void start(Stage primaryStage) {
         // Setup dependencies manually
         CharactersRepository charactersRepository = new InMemoryCharactersRepository();
-        FetchCharacter fetchCharacter = new FetchCharacter(charactersRepository);
-        StatusEffectRepository statusEffectRepository = new InMemoryStatusEffectRepository();
+        FetchCharacterUseCase fetchCharacter = new FetchCharacterUseCase(charactersRepository);
         UpdateCharacterUseCase updateCharacter = new UpdateCharacterUseCase(charactersRepository);
+
+        StatusEffectRepository statusEffectRepository = new InMemoryStatusEffectRepository();
+        FetchStatusEffectUseCase fetchStatusEffect = new FetchStatusEffectUseCase(statusEffectRepository);
         UpdateStatusEffect updateStatusEffect = new UpdateStatusEffectUseCase(statusEffectRepository);
-        TheAnalyzer theAnalyzer = new TheAnalyzer(fetchCharacter, updateCharacter, updateStatusEffect);
+
+        TheAnalyzer theAnalyzer = new TheAnalyzer(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
 
         MainWindow mainWindow = new MainWindow(fetchCharacter, updateCharacter, updateStatusEffect, theAnalyzer);
 

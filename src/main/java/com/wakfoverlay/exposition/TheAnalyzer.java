@@ -1,6 +1,7 @@
 package com.wakfoverlay.exposition;
 
-import com.wakfoverlay.domain.fight.FetchCharacter;
+import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
+import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 import com.wakfoverlay.exposition.LogFileReader.FileReadStatus;
@@ -11,9 +12,9 @@ public class TheAnalyzer {
     private final LogLineParser logLineParser;
     private String currentFilePath;
 
-    public TheAnalyzer(FetchCharacter fetchCharacter, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
+    public TheAnalyzer(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
         this.logFileReader = new LogFileReader();
-        this.logLineParser = new LogLineParser(fetchCharacter, updateCharacter, updateStatusEffect);
+        this.logLineParser = new LogLineParser(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
         this.currentFilePath = null;
     }
 
@@ -26,7 +27,7 @@ public class TheAnalyzer {
         ReadResult result = logFileReader.readNewLines(filePath);
 
         if (result.status() == FileReadStatus.SUCCESS && !result.lines().isEmpty()) {
-            result.lines().forEach(logLineParser::parseLine);
+            result.lines().forEach(logLineParser::analyze);
         }
 
         return result.status();

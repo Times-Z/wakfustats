@@ -20,11 +20,6 @@ public class UpdateStatusEffectUseCase implements UpdateStatusEffect {
     }
 
     @Override
-    public Map<StatusEffect, Character.CharacterName> all() {
-        return statusEffectRepository.statusEffects();
-    }
-
-    @Override
     public void resetStatusEffects() {
         statusEffectRepository.resetStatusEffects();
     }

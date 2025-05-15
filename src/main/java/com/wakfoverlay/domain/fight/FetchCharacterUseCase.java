@@ -8,7 +8,7 @@ import com.wakfoverlay.domain.fight.port.secondary.CharactersRepository;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public record FetchCharacter(
+public record FetchCharacterUseCase(
         CharactersRepository charactersRepository
 ) implements com.wakfoverlay.domain.fight.port.primary.FetchCharacter {
     @Override

@@ -7,6 +7,5 @@ import java.util.Map;
 
 public interface UpdateStatusEffect {
     void update(StatusEffect statusEffect, Character.CharacterName characterName);
-    Map<StatusEffect, Character.CharacterName> all();
     void resetStatusEffects();
 }

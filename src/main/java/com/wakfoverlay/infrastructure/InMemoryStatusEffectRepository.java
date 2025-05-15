@@ -6,6 +6,7 @@ import com.wakfoverlay.domain.fight.port.secondary.StatusEffectRepository;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class InMemoryStatusEffectRepository implements StatusEffectRepository {
     private final Map<StatusEffect, Character.CharacterName> statusEffects = new HashMap<>();
@@ -16,15 +17,16 @@ public class InMemoryStatusEffectRepository implements StatusEffectRepository {
     }
 
     @Override
-    public Map<StatusEffect, Character.CharacterName> statusEffects() {
-        return statusEffects;
+    public Optional<Character.CharacterName> characterFor(StatusEffect.StatusEffectName name) {
+        return statusEffects.keySet()
+                .stream()
+                .filter(it -> it.name().equals(name))
+                .findFirst()
+                .map(statusEffects::get);
     }
 
     @Override
     public void resetStatusEffects() {
         statusEffects.clear();
     }
-
-    // TODO: les status effect perdent la moitié de leur niveau a chaque fois qu'un dégat est infligé
-    // pas tous :(
 }
