@@ -1,7 +1,8 @@
 package com.wakfoverlay.exposition;
 
-import com.wakfoverlay.domain.player.FetchPlayerUseCase;
-import com.wakfoverlay.domain.player.port.primary.UpdatePlayerDamages;
+import com.wakfoverlay.domain.fight.FetchPlayer;
+import com.wakfoverlay.domain.fight.port.primary.UpdatePlayer;
+import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 import com.wakfoverlay.exposition.LogFileReader.FileReadStatus;
 import com.wakfoverlay.exposition.LogFileReader.ReadResult;
 
@@ -10,9 +11,9 @@ public class TheAnalyzer {
     private final LogLineParser logLineParser;
     private String currentFilePath;
 
-    public TheAnalyzer(FetchPlayerUseCase fetchPlayer, UpdatePlayerDamages updatePlayer) {
+    public TheAnalyzer(FetchPlayer fetchPlayer, UpdatePlayer updatePlayer, UpdateStatusEffect updateStatusEffect) {
         this.logFileReader = new LogFileReader();
-        this.logLineParser = new LogLineParser(fetchPlayer, updatePlayer);
+        this.logLineParser = new LogLineParser(fetchPlayer, updatePlayer, updateStatusEffect);
         this.currentFilePath = null;
     }
 

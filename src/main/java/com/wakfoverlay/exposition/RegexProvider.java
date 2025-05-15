@@ -10,8 +10,7 @@ public class RegexProvider {
     private final Pattern HEALS_PATTERN = Pattern
             .compile(".*\\[Information\\s*\\(jeu\\)\\]\\s*([^:]+):\\s*([+]\\d+)\\s+PV\\s+\\((.*)\\)");
     private final Pattern STATUS_EFFECT_PATTERN = Pattern
-            .compile(".*\\[Information\\s*\\(jeu\\)\\]\\s*([^:]+):\\s*([^()]+)\\s*\\(Niv\\.(\\d+)\\)");
-
+            .compile(".*\\[Information\\s*\\(jeu\\)\\]\\s*([^:]+):\\s*([^()]+)\\s*\\((?:\\+(\\d+)\\s*)?Niv\\.?\\s*(\\d*)\\)");
 
 
     public Pattern castSpellPattern() {

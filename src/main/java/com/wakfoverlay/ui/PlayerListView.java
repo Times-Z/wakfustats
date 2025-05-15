@@ -1,7 +1,7 @@
 package com.wakfoverlay.ui;
 
-import com.wakfoverlay.domain.player.model.Player;
-import com.wakfoverlay.domain.player.model.Players;
+import com.wakfoverlay.domain.fight.model.Character;
+import com.wakfoverlay.domain.fight.model.Characters;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -23,44 +23,44 @@ public class PlayerListView extends VBox {
     private static final int NAME_MAX_LENGTH = 20;
     private static final double NAME_COLUMN_WIDTH = 120;
 
-    public PlayerListView(Players playersData) {
+    public PlayerListView(Characters charactersData) {
         this.setSpacing(2);
 
-        List<Player> players = playersData.players();
-        int totalDamages = calculateTotalDamages(players);
+        List<Character> characters = charactersData.characters();
+        int totalDamages = calculateTotalDamages(characters);
 
-        for (int i = 0; i < players.size(); i++) {
-            Player player = players.get(i);
-            HBox playerRow = createPlayerRow(player, i, totalDamages);
+        for (int i = 0; i < characters.size(); i++) {
+            Character character = characters.get(i);
+            HBox playerRow = createPlayerRow(character, i, totalDamages);
             this.getChildren().add(playerRow);
         }
     }
 
-    private int calculateTotalDamages(List<Player> players) {
-        return players.stream().mapToInt(Player::damages).sum();
+    private int calculateTotalDamages(List<Character> characters) {
+        return characters.stream().mapToInt(Character::damages).sum();
     }
 
-    private HBox createPlayerRow(Player player, int index, int totalDamages) {
+    private HBox createPlayerRow(Character character, int index, int totalDamages) {
         HBox playerBox = new HBox();
         playerBox.setPadding(new Insets(2, 5, 2, 5));
         playerBox.setSpacing(10);
 
-        Label nameLabel = createNameLabel(player);
+        Label nameLabel = createNameLabel(character);
         HBox nameContainer = new HBox(nameLabel);
         nameContainer.setPrefWidth(NAME_COLUMN_WIDTH);
         nameContainer.setMinWidth(NAME_COLUMN_WIDTH);
 
-        Pane damageBar = createDamageBar(player, index, totalDamages);
+        Pane damageBar = createDamageBar(character, index, totalDamages);
 
-        Label damageLabel = createDamageLabel(player, totalDamages);
+        Label damageLabel = createDamageLabel(character, totalDamages);
 
         playerBox.getChildren().addAll(nameContainer, damageBar, damageLabel);
         return playerBox;
     }
 
-    private Label createNameLabel(Player player) {
-        String displayName = player.name();
-        String fullName = player.name();
+    private Label createNameLabel(Character character) {
+        String displayName = character.name().value();
+        String fullName = character.name().value();
 
         if (displayName.length() > NAME_MAX_LENGTH) {
             displayName = displayName.substring(0, NAME_MAX_LENGTH - 3) + "...";
@@ -86,7 +86,7 @@ public class PlayerListView extends VBox {
         return label;
     }
 
-    private Pane createDamageBar(Player player, int index, int totalDamages) {
+    private Pane createDamageBar(Character character, int index, int totalDamages) {
         Pane pane = new Pane();
         pane.setPrefSize(100, 20);
         HBox.setHgrow(pane, ALWAYS);
@@ -95,7 +95,7 @@ public class PlayerListView extends VBox {
         border.setStroke(Color.GRAY);
         border.setFill(Color.TRANSPARENT);
 
-        double damagePercentage = totalDamages == 0 ? 0 : (player.damages() / (double) totalDamages) * 100;
+        double damagePercentage = totalDamages == 0 ? 0 : (character.damages() / (double) totalDamages) * 100;
         Rectangle progressBar = new Rectangle(0, 0, damagePercentage, 20);
 
         String color = PLAYER_COLORS.get(index % PLAYER_COLORS.size());
@@ -105,9 +105,9 @@ public class PlayerListView extends VBox {
         return pane;
     }
 
-    private Label createDamageLabel(Player player, int totalDamages) {
-        double percentage = totalDamages == 0 ? 0 : ((double) player.damages() / totalDamages) * 100;
-        String text = player.damages() + " (" + String.format("%.2f", percentage) + "%)";
+    private Label createDamageLabel(Character character, int totalDamages) {
+        double percentage = totalDamages == 0 ? 0 : ((double) character.damages() / totalDamages) * 100;
+        String text = character.damages() + " (" + String.format("%.2f", percentage) + "%)";
 
         Label label = new Label(text);
         label.setStyle("-fx-text-fill: white; -fx-font-size: 12px;");

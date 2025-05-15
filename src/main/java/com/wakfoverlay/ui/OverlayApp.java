@@ -1,10 +1,14 @@
 package com.wakfoverlay.ui;
 
-import com.wakfoverlay.domain.player.FetchPlayerUseCase;
-import com.wakfoverlay.domain.player.UpdatePlayerDamagesUseCase;
-import com.wakfoverlay.domain.player.port.secondary.PlayersRepository;
+import com.wakfoverlay.domain.fight.FetchPlayer;
+import com.wakfoverlay.domain.fight.UpdatePlayerUseCase;
+import com.wakfoverlay.domain.fight.UpdateStatusEffectUseCase;
+import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
+import com.wakfoverlay.domain.fight.port.secondary.CharactersRepository;
+import com.wakfoverlay.domain.fight.port.secondary.StatusEffectRepository;
 import com.wakfoverlay.exposition.TheAnalyzer;
-import com.wakfoverlay.infrastructure.InMemoryPlayersRepository;
+import com.wakfoverlay.infrastructure.InMemoryCharactersRepository;
+import com.wakfoverlay.infrastructure.InMemoryStatusEffectRepository;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -29,12 +33,14 @@ public class OverlayApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Setup dependencies manually
-        PlayersRepository playersRepository = new InMemoryPlayersRepository();
-        FetchPlayerUseCase fetchPlayer = new FetchPlayerUseCase(playersRepository);
-        UpdatePlayerDamagesUseCase updatePlayerDamages = new UpdatePlayerDamagesUseCase(playersRepository);
-        TheAnalyzer theAnalyzer = new TheAnalyzer(fetchPlayer, updatePlayerDamages);
+        CharactersRepository charactersRepository = new InMemoryCharactersRepository();
+        FetchPlayer fetchPlayer = new FetchPlayer(charactersRepository);
+        StatusEffectRepository statusEffectRepository = new InMemoryStatusEffectRepository();
+        UpdatePlayerUseCase updatePlayer = new UpdatePlayerUseCase(charactersRepository);
+        UpdateStatusEffect updateStatusEffect = new UpdateStatusEffectUseCase(statusEffectRepository);
+        TheAnalyzer theAnalyzer = new TheAnalyzer(fetchPlayer, updatePlayer, updateStatusEffect);
 
-        MainWindow mainWindow = new MainWindow(fetchPlayer, updatePlayerDamages, theAnalyzer);
+        MainWindow mainWindow = new MainWindow(fetchPlayer, updatePlayer, updateStatusEffect, theAnalyzer);
 
         Scene scene = new Scene(mainWindow, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         scene.setFill(Color.rgb(18, 18, 18));

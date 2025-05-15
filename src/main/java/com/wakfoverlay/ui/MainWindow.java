@@ -1,8 +1,9 @@
 package com.wakfoverlay.ui;
 
-import com.wakfoverlay.domain.player.model.Players;
-import com.wakfoverlay.domain.player.port.primary.FetchPlayer;
-import com.wakfoverlay.domain.player.port.primary.UpdatePlayerDamages;
+import com.wakfoverlay.domain.fight.model.Characters;
+import com.wakfoverlay.domain.fight.port.primary.FetchPlayer;
+import com.wakfoverlay.domain.fight.port.primary.UpdatePlayer;
+import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 import com.wakfoverlay.exposition.LogFileReader.FileReadStatus;
 import com.wakfoverlay.exposition.TheAnalyzer;
 import com.wakfoverlay.exposition.UserPreferences;
@@ -19,7 +20,8 @@ import static javafx.scene.layout.Priority.ALWAYS;
 public class MainWindow extends VBox {
 
     private final FetchPlayer fetchPlayer;
-    private final UpdatePlayerDamages updatePlayerDamages;
+    private final UpdatePlayer updatePlayer;
+    private final UpdateStatusEffect updateStatusEffect;
     private final TheAnalyzer theAnalyzer;
     private final UserPreferences userPreferences;
 
@@ -30,9 +32,10 @@ public class MainWindow extends VBox {
 
     private String selectedFilePath;
 
-    public MainWindow(FetchPlayer fetchPlayer, UpdatePlayerDamages updatePlayerDamages, TheAnalyzer theAnalyzer) {
+    public MainWindow(FetchPlayer fetchPlayer, UpdatePlayer updatePlayer, UpdateStatusEffect updateStatusEffect, TheAnalyzer theAnalyzer) {
         this.fetchPlayer = fetchPlayer;
-        this.updatePlayerDamages = updatePlayerDamages;
+        this.updatePlayer = updatePlayer;
+        this.updateStatusEffect = updateStatusEffect;
         this.theAnalyzer = theAnalyzer;
         this.userPreferences = new UserPreferences(MainWindow.class);
         this.selectedFilePath = userPreferences.getFilePath();
@@ -59,13 +62,13 @@ public class MainWindow extends VBox {
             return;
         }
 
-        Players rankedPlayers = fetchPlayer.rankedPlayers();
+        Characters rankedCharacters = fetchPlayer.rankedPlayers();
 
-        if (rankedPlayers.players().isEmpty()) {
+        if (rankedCharacters.characters().isEmpty()) {
             return;
         }
 
-        showPlayerList(rankedPlayers);
+        showPlayerList(rankedCharacters);
     }
 
     private void setupWindowAppearance() {
@@ -138,7 +141,8 @@ public class MainWindow extends VBox {
     }
 
     private void resetStats() {
-        updatePlayerDamages.resetPlayersDamages();
+        updatePlayer.resetPlayersDamages();
+        updateStatusEffect.resetStatusEffects();
         updateDisplay();
     }
 
@@ -164,8 +168,8 @@ public class MainWindow extends VBox {
         contentContainer.getChildren().add(statusMessageView);
     }
 
-    private void showPlayerList(Players players) {
-        playerListView = new PlayerListView(players);
+    private void showPlayerList(Characters characters) {
+        playerListView = new PlayerListView(characters);
         contentContainer.getChildren().add(playerListView);
     }
 }
