@@ -15,7 +15,7 @@ public class FetchStatusEffectUseCase implements FetchStatusEffect {
     }
 
     @Override
-    public Optional<Character.CharacterName> characterFor(StatusEffect.StatusEffectName name) {
+    public Character.CharacterName characterFor(StatusEffect.StatusEffectName name) {
         return statusEffectRepository.characterFor(name);
     }
 }

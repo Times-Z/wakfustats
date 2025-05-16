@@ -3,10 +3,13 @@ package com.wakfoverlay.infrastructure;
 import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.fight.model.StatusEffect;
 import com.wakfoverlay.domain.fight.port.secondary.StatusEffectRepository;
+import com.wakfoverlay.exposition.LogLineParser;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import static com.wakfoverlay.exposition.LogLineParser.normalize;
 
 public class InMemoryStatusEffectRepository implements StatusEffectRepository {
     private final Map<StatusEffect, Character.CharacterName> statusEffects = new HashMap<>();
@@ -17,12 +20,17 @@ public class InMemoryStatusEffectRepository implements StatusEffectRepository {
     }
 
     @Override
-    public Optional<Character.CharacterName> characterFor(StatusEffect.StatusEffectName name) {
+    public Character.CharacterName characterFor(StatusEffect.StatusEffectName name) {
         return statusEffects.keySet()
                 .stream()
-                .filter(it -> it.name().equals(name))
+                .filter(it -> {
+                    System.out.println("from parameter: " + name.value());
+                    System.out.println("from status effect: " + normalize(it.subType().name()));
+                    return normalize(it.subType().name()).equals(name.value());
+                })
                 .findFirst()
-                .map(statusEffects::get);
+                .map(statusEffects::get)
+                .orElse(new Character.CharacterName("Unknown"));
     }
 
     @Override

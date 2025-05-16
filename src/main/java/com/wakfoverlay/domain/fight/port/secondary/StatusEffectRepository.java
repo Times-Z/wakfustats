@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface StatusEffectRepository {
     void addOrUpdate(StatusEffect statusEffect, Character.CharacterName characterName);
-    Optional<Character.CharacterName> characterFor(StatusEffectName name);
+    Character.CharacterName characterFor(StatusEffectName name);
     void resetStatusEffects();
 }

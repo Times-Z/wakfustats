@@ -6,5 +6,5 @@ import com.wakfoverlay.domain.fight.model.StatusEffect.StatusEffectName;
 import java.util.Optional;
 
 public interface FetchStatusEffect {
-    Optional<CharacterName> characterFor(StatusEffectName name);
+    CharacterName characterFor(StatusEffectName name);
 }
