@@ -2,7 +2,7 @@ package com.wakfoverlay.domain.fight.model;
 
 public record Character(
         CharacterName name,
-        Integer damages
+        int damages
 ) {
     public record CharacterName(String value) {
     }

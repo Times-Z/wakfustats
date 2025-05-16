@@ -2,6 +2,7 @@ package com.wakfoverlay.exposition;
 
 import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
 import com.wakfoverlay.domain.fight.model.Character;
+import com.wakfoverlay.domain.fight.model.Damages;
 import com.wakfoverlay.domain.fight.model.StatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
@@ -64,7 +65,6 @@ public class LogLineParser {
 
     private void handleStatusEffect(Matcher statusEffectMatcher) {
         LocalTime timestamp = LocalTime.parse(statusEffectMatcher.group(1), regexProvider.timeFormatterPattern());
-        String targetName = statusEffectMatcher.group(2);
         String statusName = statusEffectMatcher.group(3);
         String statusLevel = statusEffectMatcher.group(4);
 
@@ -74,13 +74,12 @@ public class LogLineParser {
             level = Integer.parseInt(levelMatcher.group(1));
         }
 
-        // TODO: Put this in a method
         StatusEffect effect;
         switch (normalize(statusName)) {
-            case "toxines" -> effect = new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, TETATOXINE);
-            case "intoxique" -> effect = new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, INTOXIQUE);
-            case "maudit" -> effect = new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, MAUDIT);
-            default -> effect = new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, NO_SUB_TYPE);
+            case "toxines" -> effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, TETATOXINE);
+            case "intoxique" -> effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, INTOXIQUE);
+            case "maudit" -> effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, MAUDIT);
+            default -> effect = new StatusEffect(timestamp,  new StatusEffectName(normalize(statusName)), level, NO_SUB_TYPE);
         }
 
         updateStatusEffect.update(effect, lastSpellCaster.name());
@@ -88,7 +87,7 @@ public class LogLineParser {
 
     private void handleDamages(Matcher damagesMatcher) {
         LocalTime timestamp = LocalTime.parse(damagesMatcher.group(1), regexProvider.timeFormatterPattern());
-        int damages = Integer.parseInt(damagesMatcher.group(3).replaceAll("[^\\d-]+", ""));
+        int damageAmount = Integer.parseInt(damagesMatcher.group(3).replaceAll("[^\\d-]+", ""));
 
         String elements = damagesMatcher.group(4);
         Matcher elementMatcher = Pattern.compile("\\(([^)]+)\\)").matcher(elements);
@@ -96,6 +95,9 @@ public class LogLineParser {
         while (elementMatcher.find()) {
             damagesElements.add(normalize(elementMatcher.group(1).trim()));
         }
+
+        Damages damages = new Damages(timestamp, damageAmount, damagesElements);
+
         String lastElement = damagesElements.toArray()[damagesElements.size() - 1].toString();
         Character.CharacterName casterName = switch (normalize(lastElement)) {
             case "tetatoxine", "intoxique", "maudit" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
@@ -107,7 +109,7 @@ public class LogLineParser {
         updateCharacter.update(lastSpellCaster, damages);
     }
 
-    // TODO: Create an real object
+    // TODO: Create an real object (TheNormalizer ?)
     public static String normalize(String text) {
         if (text == null) return null;
         return Normalizer.normalize(text, Normalizer.Form.NFD)
