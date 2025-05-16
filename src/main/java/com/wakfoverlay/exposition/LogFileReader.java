@@ -18,50 +18,81 @@ public class LogFileReader {
     }
 
     public ReadResult readNewLines(String filePath) {
-        if (filePath == null || filePath.isEmpty()) {
-            return new ReadResult(FileReadStatus.NO_FILE_SELECTED, List.of());
+        if (!isValidFilePath(filePath)) {
+            return createErrorResult(FileReadStatus.NO_FILE_SELECTED);
         }
 
         Path path = Paths.get(filePath);
-        if (!Files.exists(path)) {
+
+        if (!fileExists(path)) {
             filePositions.remove(filePath);
-            return new ReadResult(FileReadStatus.FILE_NOT_FOUND, List.of());
+            return createErrorResult(FileReadStatus.FILE_NOT_FOUND);
         }
 
         try {
-            long fileSize = Files.size(path);
-            long lineCount;
-            Long lastPosition = filePositions.getOrDefault(filePath, 0L);
+            FilePosition filePosition = getAdjustedFilePosition(filePath, path);
 
-            if (fileSize < lastPosition) {
-                lastPosition = 0L;
-            }
-            
-            List<String> newLines;
-            try (Stream<String> lines = Files.lines(path)) {
-                List<String> allLines = lines.toList();
-                lineCount = allLines.size();
+            List<String> newLines = readLinesFromPosition(path, filePosition);
 
-                if (lastPosition > lineCount) {
-                    lastPosition = 0L;
-                }
-                
-                newLines = allLines.stream()
-                    .skip(lastPosition)
-                    .collect(Collectors.toList());
-            }
+            updateFilePosition(filePath, filePosition.lineCount());
 
-            filePositions.put(filePath, lineCount);
-
-            if (newLines.isEmpty()) {
-                return new ReadResult(FileReadStatus.SUCCESS, Collections.emptyList());
-            }
-
-            return new ReadResult(FileReadStatus.SUCCESS, newLines);
+            return createSuccessResult(newLines);
         } catch (IOException e) {
-            System.err.println("Erreur lors de la lecture du fichier : " + e.getMessage());
-            return new ReadResult(FileReadStatus.IO_ERROR, List.of());
+            return createErrorResult(FileReadStatus.IO_ERROR);
         }
+    }
+
+    private boolean isValidFilePath(String filePath) {
+        return filePath != null && !filePath.isEmpty();
+    }
+
+    private boolean fileExists(Path path) {
+        return Files.exists(path);
+    }
+
+    private FilePosition getAdjustedFilePosition(String filePath, Path path) throws IOException {
+        long fileSize = Files.size(path);
+        Long lastPosition = filePositions.getOrDefault(filePath, 0L);
+
+        if (fileSize < lastPosition) {
+            lastPosition = 0L;
+        }
+
+        return new FilePosition(lastPosition, countLines(path));
+    }
+
+    private long countLines(Path path) throws IOException {
+        try (Stream<String> lines = Files.lines(path)) {
+            return lines.count();
+        }
+    }
+
+    private List<String> readLinesFromPosition(Path path, FilePosition filePosition) throws IOException {
+        long lastPosition = filePosition.lastPosition();
+        long lineCount = filePosition.lineCount();
+
+        if (lastPosition > lineCount) {
+            lastPosition = 0L;
+        }
+
+        try (Stream<String> lines = Files.lines(path)) {
+            return lines.skip(lastPosition).collect(Collectors.toList());
+        }
+    }
+
+    private void updateFilePosition(String filePath, long newPosition) {
+        filePositions.put(filePath, newPosition);
+    }
+
+    private ReadResult createSuccessResult(List<String> lines) {
+        if (lines.isEmpty()) {
+            return new ReadResult(FileReadStatus.SUCCESS, Collections.emptyList());
+        }
+        return new ReadResult(FileReadStatus.SUCCESS, lines);
+    }
+
+    private ReadResult createErrorResult(FileReadStatus status) {
+        return new ReadResult(status, List.of());
     }
 
     public void resetPosition(String filePath) {
@@ -70,6 +101,7 @@ public class LogFileReader {
         }
     }
 
+    private record FilePosition(long lastPosition, long lineCount) {}
     public record ReadResult(FileReadStatus status, List<String> lines) {}
 
     public enum FileReadStatus {

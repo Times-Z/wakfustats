@@ -31,7 +31,6 @@ public class InMemoryCharactersRepository implements CharactersRepository {
 
     @Override
     public void addOrUpdate(Character character) {
-        System.out.println("Adding or updating character: " + character);
         characters.put(character.name(), character);
     }
 

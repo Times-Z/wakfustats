@@ -76,12 +76,11 @@ public class LogLineParser {
 
         // TODO: Put this in a method
         StatusEffect effect;
-        if (normalize(statusName).equals(normalize("Toxines"))) {
-            effect = new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, TETATOXINE);
-        } else if (normalize(statusName).equals(normalize("Intoxiqué"))) {
-            effect = new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, INTOXIQUE);
-        } else {
-            effect = new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, NO_SUB_TYPE);
+        switch (normalize(statusName)) {
+            case "toxines" -> effect = new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, TETATOXINE);
+            case "intoxique" -> effect = new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, INTOXIQUE);
+            case "maudit" -> effect = new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, MAUDIT);
+            default -> effect = new StatusEffect(timestamp, targetName, new StatusEffectName(normalize(statusName)), level, NO_SUB_TYPE);
         }
 
         updateStatusEffect.update(effect, lastSpellCaster.name());
@@ -97,19 +96,18 @@ public class LogLineParser {
         while (elementMatcher.find()) {
             damagesElements.add(normalize(elementMatcher.group(1).trim()));
         }
-
         String lastElement = damagesElements.toArray()[damagesElements.size() - 1].toString();
         Character.CharacterName casterName = switch (normalize(lastElement)) {
-            case "tetatoxine", "intoxique" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
+            case "tetatoxine", "intoxique", "maudit" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
             default -> lastSpellCaster.name();
         };
 
         lastSpellCaster = fetchCharacter.character(casterName);
 
-        System.out.println("Last spell caster: " + lastSpellCaster + " with damages: " + damages);
         updateCharacter.update(lastSpellCaster, damages);
     }
 
+    // TODO: Create an real object
     public static String normalize(String text) {
         if (text == null) return null;
         return Normalizer.normalize(text, Normalizer.Form.NFD)

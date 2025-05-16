@@ -41,7 +41,8 @@ public class StatusEffect {
 
     public enum SubType {
         NO_SUB_TYPE,
+        INTOXIQUE,
+        MAUDIT,
         TETATOXINE,
-        INTOXIQUE
     }
 }
