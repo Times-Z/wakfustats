@@ -1,4 +1,7 @@
 To run: ./gradlew run
+to build: ./gradlew build
+to image: ./gradlew jlink
+to package: ./gradlew jpackage (if needed--info or --debug)
 
 TODO:
 - Opacity control
