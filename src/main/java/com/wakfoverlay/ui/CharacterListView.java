@@ -20,8 +20,8 @@ public class CharacterListView extends VBox {
             "#33fffe", "#EE1DED", "#7DFA00", "#FF4A00", "#FBE33B", "#6D1FA9"
     );
 
-    private static final int NAME_MAX_LENGTH = 20;
-    private static final double NAME_COLUMN_WIDTH = 120;
+    private static final int NAME_MAX_LENGTH = 40;
+    private static final double NAME_COLUMN_WIDTH = 100;
 
     public CharacterListView(Characters charactersData) {
         this.setSpacing(2);

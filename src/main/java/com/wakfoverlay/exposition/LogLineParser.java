@@ -82,6 +82,10 @@ public class LogLineParser {
             default -> effect = new StatusEffect(timestamp,  new StatusEffectName(normalize(statusName)), level, NO_SUB_TYPE);
         }
 
+        if (lastSpellCaster == null) {
+            lastSpellCaster = new Character(new Character.CharacterName("Unknown"), 0);
+        }
+
         updateStatusEffect.update(effect, lastSpellCaster.name());
     }
 

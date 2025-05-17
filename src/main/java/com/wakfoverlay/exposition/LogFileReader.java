@@ -80,6 +80,23 @@ public class LogFileReader {
         }
     }
 
+    public void setPositionToEnd(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return;
+        }
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            filePositions.put(filePath, 0L);
+            return;
+        }
+        try (Stream<String> lines = Files.lines(path)) {
+            long lineCount = lines.count();
+            filePositions.put(filePath, lineCount);
+        } catch (IOException e) {
+            filePositions.put(filePath, 0L);
+        }
+    }
+
     private void updateFilePosition(String filePath, long newPosition) {
         filePositions.put(filePath, newPosition);
     }

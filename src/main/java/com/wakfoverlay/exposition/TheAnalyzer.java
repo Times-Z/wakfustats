@@ -12,6 +12,8 @@ public class TheAnalyzer {
     private final LogLineParser logLineParser;
     private String currentFilePath;
 
+    private boolean firstLaunch = true;
+
     public TheAnalyzer(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
         this.logFileReader = new LogFileReader();
         this.logLineParser = new LogLineParser(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
@@ -21,7 +23,12 @@ public class TheAnalyzer {
     public FileReadStatus readNewLogLines(String filePath) {
         if (currentFilePath == null || !currentFilePath.equals(filePath)) {
             currentFilePath = filePath;
-            logFileReader.resetPosition(filePath);
+            if (firstLaunch) {
+                logFileReader.setPositionToEnd(filePath); // ← ICI
+                firstLaunch = false;
+            } else {
+                logFileReader.resetPosition(filePath);
+            }
         }
 
         ReadResult result = logFileReader.readNewLines(filePath);
