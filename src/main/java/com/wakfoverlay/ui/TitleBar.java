@@ -13,7 +13,7 @@ import static javafx.scene.layout.Priority.ALWAYS;
 
 public class TitleBar extends HBox {
 
-    public TitleBar(Runnable onOpenFile, Runnable onReset, Runnable onClose, Runnable onShowMainView, Runnable onShowSecondView, Runnable onShowThirdView) {
+    public TitleBar(Runnable onOpenFile, Runnable onReset, Runnable onClose, Runnable onShowDptView, Runnable onShowHealView, Runnable onShowShieldView) {
         this.setPadding(new Insets(5));
         this.setAlignment(Pos.CENTER_LEFT);
 
@@ -23,7 +23,7 @@ public class TitleBar extends HBox {
         Pane spacer = new Pane();
         HBox.setHgrow(spacer, ALWAYS);
 
-        HBox navigationMenu = createCustomMenu(onShowMainView, onShowSecondView, onShowThirdView);
+        HBox navigationMenu = createCustomMenu(onShowDptView, onShowHealView, onShowShieldView);
         HBox.setMargin(navigationMenu, new Insets(0, 0, 0, 15));
 
         Button folderButton = createIconButton("📁", "#2ecc71");
@@ -43,9 +43,7 @@ public class TitleBar extends HBox {
         this.getChildren().addAll(titleLabel, navigationMenu, spacer, folderButton, resetButton, closeButton);
     }
 
-    private HBox createCustomMenu(Runnable onShowMainView,
-                                  Runnable onShowSecondView,
-                                  Runnable onShowThirdView) {
+    private HBox createCustomMenu(Runnable OnShowDptView, Runnable onShowHealView, Runnable onShowShieldView) {
         HBox menuContainer = new HBox();
         menuContainer.setAlignment(Pos.CENTER_LEFT);
         menuContainer.setStyle("-fx-cursor: hand;");
@@ -74,15 +72,15 @@ public class TitleBar extends HBox {
 
         MenuItem mainViewItem = new MenuItem("DPT");
         mainViewItem.setStyle(menuItemStyle);
-        mainViewItem.setOnAction(e -> onShowMainView.run());
+        mainViewItem.setOnAction(e -> OnShowDptView.run());
 
         MenuItem secondViewItem = new MenuItem("HEAL");
         secondViewItem.setStyle(menuItemStyle);
-        secondViewItem.setOnAction(e -> onShowSecondView.run());
+        secondViewItem.setOnAction(e -> onShowHealView.run());
 
         MenuItem thirdViewItem = new MenuItem("SHIELD");
         thirdViewItem.setStyle(menuItemStyle);
-        thirdViewItem.setOnAction(e -> onShowThirdView.run());
+        thirdViewItem.setOnAction(e -> onShowShieldView.run());
 
         menuButton.getItems().addAll(mainViewItem, secondViewItem, thirdViewItem);
 
