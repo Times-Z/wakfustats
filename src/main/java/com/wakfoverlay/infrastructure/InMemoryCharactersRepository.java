@@ -38,4 +38,8 @@ public class InMemoryCharactersRepository implements CharactersRepository {
     public void resetCharacters() {
         characters.clear();
     }
+
+    public Map<CharacterName, Character> getCharacters() {
+        return characters;
+    }
 }

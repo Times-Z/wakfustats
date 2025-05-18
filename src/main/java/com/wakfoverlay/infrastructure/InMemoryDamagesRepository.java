@@ -8,30 +8,29 @@ import java.time.LocalTime;
 import java.util.*;
 
 public class InMemoryDamagesRepository implements DamagesRepository {
-    private final Map<DamageKey, List<LocalTime>> damagesMap = new HashMap<>();
+    private final Map<DamageKey, LocalTime> damagesMap = new HashMap<>();
 
+    @Override
     public void addDamages(Damages damages) {
         DamageKey key = new DamageKey(damages.amount(), damages.elements());
-        List<LocalTime> timestamps = damagesMap.computeIfAbsent(key, k -> new ArrayList<>());
-        if (timestamps.stream().noneMatch(timestamp -> areTimestampsClose(timestamp, damages.timestamp()))) {
-            timestamps.add(damages.timestamp());
-            timestamps.sort(Comparator.naturalOrder());
-        }
+        damagesMap.put(key, damages.timestamp());
     }
 
     @Override
-    public boolean exists(Damages damages) {
+    public Optional<Damages> find(Damages damages) {
         DamageKey key = new DamageKey(damages.amount(), damages.elements());
-        return damagesMap.computeIfAbsent(key, k -> new ArrayList<>()).stream()
-                .anyMatch(timestamp -> areTimestampsClose(timestamp, damages.timestamp()));
+        LocalTime timestamp = damagesMap.get(key);
+        if (timestamp != null) {
+            return Optional.of(new Damages(timestamp, damages.amount(), damages.elements()));
+        }
+        return Optional.empty();
     }
 
-    private boolean areTimestampsClose(LocalTime timestamp1, LocalTime timestamp2) {
-        Duration duration = Duration.between(timestamp1, timestamp2).abs();
-        return duration.toMillis() <= 800;
+    public Map<DamageKey, LocalTime> getDamagesMap() {
+        return Collections.unmodifiableMap(damagesMap);
     }
 
-    private record DamageKey(int amount, Set<String> elements) {
+    public record DamageKey(int amount, Set<String> elements) {
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
