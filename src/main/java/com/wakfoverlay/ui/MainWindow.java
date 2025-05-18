@@ -8,6 +8,7 @@ import com.wakfoverlay.domain.logs.model.FileReadStatus;
 import com.wakfoverlay.exposition.LogParser;
 import com.wakfoverlay.exposition.UserPreferences;
 import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -32,6 +33,8 @@ public class MainWindow extends VBox {
 
     private String selectedFilePath;
 
+    private View currentView = View.MAIN_VIEW;
+
     public MainWindow(FetchCharacter fetchCharacter, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect, LogParser logParser) {
         this.fetchCharacter = fetchCharacter;
         this.updateCharacter = updateCharacter;
@@ -48,9 +51,15 @@ public class MainWindow extends VBox {
         this.contentScrollPane = createScrollPane();
 
         this.getChildren().addAll(titleBar, contentScrollPane);
+
+        showCurrentView();
     }
 
     public void updateDisplay() {
+        if (currentView != View.MAIN_VIEW) {
+            return;
+        }
+
         contentContainer.getChildren().clear();
 
         FileReadStatus status = logParser.readNewLogLines(selectedFilePath);
@@ -67,6 +76,39 @@ public class MainWindow extends VBox {
         }
 
         showCharacterList(rankedCharacters);
+    }
+
+    private void showMainView() {
+        currentView = View.MAIN_VIEW;
+        showCurrentView();
+    }
+
+    private void showSecondView() {
+        currentView = View.SECOND_VIEW;
+        showCurrentView();
+    }
+
+    private void showThirdView() {
+        currentView = View.THIRD_VIEW;
+        showCurrentView();
+    }
+
+    private void showCurrentView() {
+        contentContainer.getChildren().clear();
+
+        switch (currentView) {
+            case MAIN_VIEW:
+                updateDisplay();
+                break;
+            case SECOND_VIEW:
+                SecondView secondView = new SecondView();
+                contentContainer.getChildren().add(secondView);
+                break;
+            case THIRD_VIEW:
+                ThirdView thirdView = new ThirdView();
+                contentContainer.getChildren().add(thirdView);
+                break;
+        }
     }
 
     private void setupWindowAppearance() {
@@ -94,7 +136,10 @@ public class MainWindow extends VBox {
         return new TitleBar(
                 this::openFileChooser,
                 this::resetStats,
-                this::closeWindow
+                this::closeWindow,
+                this::showMainView,
+                this::showSecondView,
+                this::showThirdView
         );
     }
 
@@ -167,5 +212,39 @@ public class MainWindow extends VBox {
     private void showCharacterList(Characters characters) {
         characterListView = new CharacterListView(characters);
         contentContainer.getChildren().add(characterListView);
+    }
+
+    private enum View {
+        MAIN_VIEW, SECOND_VIEW, THIRD_VIEW
+    }
+}
+
+class SecondView extends VBox {
+    public SecondView() {
+        this.setStyle("-fx-background-color: rgb(18, 18, 18);");
+        this.setSpacing(10);
+
+        Label titleLabel = new Label("Seconde Vue");
+        titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+
+        // Ajoutez ici les composants spécifiques à la seconde vue
+
+        this.getChildren().add(titleLabel);
+        // Ajoutez les autres composants à this.getChildren()
+    }
+}
+
+class ThirdView extends VBox {
+    public ThirdView() {
+        this.setStyle("-fx-background-color: rgb(18, 18, 18);");
+        this.setSpacing(10);
+
+        Label titleLabel = new Label("Troisième Vue");
+        titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+
+        // Ajoutez ici les composants spécifiques à la troisième vue
+
+        this.getChildren().add(titleLabel);
+        // Ajoutez les autres composants à this.getChildren()
     }
 }
