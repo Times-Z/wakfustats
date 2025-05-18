@@ -8,7 +8,7 @@ import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 import com.wakfoverlay.domain.fight.port.secondary.CharactersRepository;
 import com.wakfoverlay.domain.fight.port.secondary.DamagesRepository;
 import com.wakfoverlay.domain.fight.port.secondary.StatusEffectRepository;
-import com.wakfoverlay.exposition.TheAnalyzer;
+import com.wakfoverlay.exposition.LogParser;
 import com.wakfoverlay.infrastructure.InMemoryCharactersRepository;
 import com.wakfoverlay.infrastructure.InMemoryDamagesRepository;
 import com.wakfoverlay.infrastructure.InMemoryStatusEffectRepository;
@@ -45,9 +45,9 @@ public class OverlayApp extends Application {
         FetchStatusEffectUseCase fetchStatusEffect = new FetchStatusEffectUseCase(statusEffectRepository);
         UpdateStatusEffect updateStatusEffect = new UpdateStatusEffectUseCase(statusEffectRepository);
 
-        TheAnalyzer theAnalyzer = new TheAnalyzer(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
+        LogParser logParser = new LogParser(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
 
-        MainWindow mainWindow = new MainWindow(fetchCharacter, updateCharacter, updateStatusEffect, theAnalyzer);
+        MainWindow mainWindow = new MainWindow(fetchCharacter, updateCharacter, updateStatusEffect, logParser);
 
         Scene scene = new Scene(mainWindow, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         scene.setFill(Color.rgb(18, 18, 18));

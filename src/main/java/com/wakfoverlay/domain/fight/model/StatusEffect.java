@@ -41,5 +41,6 @@ public class StatusEffect {
         INTOXIQUE,
         MAUDIT,
         TETATOXINE,
+        DISTORSION
     }
 }

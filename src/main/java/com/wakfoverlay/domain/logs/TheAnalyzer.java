@@ -1,4 +1,4 @@
-package com.wakfoverlay.exposition;
+package com.wakfoverlay.domain.logs;
 
 import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
 import com.wakfoverlay.domain.fight.model.Character;
@@ -8,7 +8,6 @@ import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 
-import java.text.Normalizer;
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -17,8 +16,9 @@ import java.util.regex.Pattern;
 
 import static com.wakfoverlay.domain.fight.model.StatusEffect.StatusEffectName;
 import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.*;
+import static com.wakfoverlay.domain.logs.TheNormalizer.normalize;
 
-public class LogLineParser {
+public class TheAnalyzer {
     private final FetchCharacterUseCase fetchCharacter;
     private final FetchStatusEffect fetchStatusEffect;
     private final UpdateCharacter updateCharacter;
@@ -27,7 +27,7 @@ public class LogLineParser {
 
     private Character lastSpellCaster = null;
 
-    public LogLineParser(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
+    public TheAnalyzer(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
         this.fetchCharacter = fetchCharacter;
         this.fetchStatusEffect = fetchStatusEffect;
         this.updateCharacter = updateCharacter;
@@ -76,10 +76,16 @@ public class LogLineParser {
 
         StatusEffect effect;
         switch (normalize(statusName)) {
-            case "toxines" -> effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, TETATOXINE);
-            case "intoxique" -> effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, INTOXIQUE);
-            case "maudit" -> effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, MAUDIT);
-            default -> effect = new StatusEffect(timestamp,  new StatusEffectName(normalize(statusName)), level, NO_SUB_TYPE);
+            case "toxines" ->
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, TETATOXINE);
+            case "intoxique" ->
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, INTOXIQUE);
+            case "maudit" ->
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, MAUDIT);
+            case "distorsion" ->
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, DISTORSION);
+            default ->
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, NO_SUB_TYPE);
         }
 
         if (lastSpellCaster == null) {
@@ -106,22 +112,20 @@ public class LogLineParser {
         Character.CharacterName casterName = switch (normalize(lastElement)) {
             case "tetatoxine",
                  "intoxique",
-                 "maudit" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
-            default -> lastSpellCaster.name();
+                 "maudit",
+                 "distorsion" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
+            default -> {
+                if (lastSpellCaster == null) {
+                    lastSpellCaster = new Character(new Character.CharacterName("Unknown"), 0);
+                }
+
+                yield lastSpellCaster.name();
+            }
         };
 
         lastSpellCaster = fetchCharacter.character(casterName);
 
         updateCharacter.update(lastSpellCaster, damages);
-    }
-
-    // TODO: Create an real object (TheNormalizer ?)
-    public static String normalize(String text) {
-        if (text == null) return null;
-        return Normalizer.normalize(text, Normalizer.Form.NFD)
-                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
-                .toLowerCase()
-                .trim();
     }
 }
 

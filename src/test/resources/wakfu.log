@@ -1,0 +1,159 @@
+ INFO 13:13:30,569 [AWT-EventQueue-0] (cfl:116) - NetInFight Added
+ INFO 13:13:30,569 [AWT-EventQueue-0] (cfl:116) - NetInFight Added
+ WARN 13:13:30,574 [AWT-EventQueue-0] (bur:341) - [FIGHT_REFACTOR]Tentative de spawn du fighter -1706442022412406 sans connaitre sa team
+ INFO 13:13:30,574 [AWT-EventQueue-0] (cgX:37) - Starting join procedure for -1706442022412406
+ INFO 13:13:30,631 [AWT-EventQueue-0] (cfl:116) - NetInFight Added
+ INFO 13:13:30,641 [AWT-EventQueue-0] (bae:47) - CREATION DU COMBAT
+ INFO 13:13:30,646 [AWT-EventQueue-0] (eLk:1384) - [_FL_] fightId=1552141249 Sac à patates breed : 2335 [-1706442022412461] isControlledByAI=true obstacleId : -1 join the fight at {Point3 : (0, -14, 0)}
+ERROR 13:13:30,649 [AWT-EventQueue-0] (cXb:300) - On tente de passer à un dialogue d'id=0 alors qu'il n'y a pas de dialog en cours !
+ INFO 13:13:30,650 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Ce combat est verrouillé automatiquement.
+ INFO 13:13:30,653 [AWT-EventQueue-0] (eLk:1384) - [_FL_] fightId=1552141249 Jeanne Jackeline Qwartz breed : 10 [10303110] isControlledByAI=false obstacleId : -1 join the fight at {Point3 : (-2, -12, 0)}
+ WARN 13:13:30,653 [AWT-EventQueue-0] (bur:341) - [FIGHT_REFACTOR]Tentative de spawn du fighter -1706442022412406 sans connaitre sa team
+ INFO 13:13:30,653 [AWT-EventQueue-0] (cgX:37) - Starting join procedure for -1706442022412406
+ INFO 13:13:30,664 [AWT-EventQueue-0] (eLk:1384) - [_FL_] fightId=1552141249 Jean Jack Kinte breed : 16 [10721990] isControlledByAI=false obstacleId : -1 join the fight at {Point3 : (-2, -13, 0)}
+ WARN 13:13:31,240 [AWT-EventQueue-0] (aZI:191) - Unable to find a valid RunningEffectManager to apply effect d'id -5
+ WARN 13:13:31,240 [AWT-EventQueue-0] (buz:50) - Pas de cible sur laquelle appliquer les HMI pour l'effet 310
+ WARN 13:13:31,240 [AWT-EventQueue-0] (aZI:191) - Unable to find a valid RunningEffectManager to apply effect d'id 252845
+ WARN 13:13:31,240 [AWT-EventQueue-0] (aZI:191) - Unable to find a valid RunningEffectManager to apply effect d'id 253027
+ WARN 13:13:31,241 [AWT-EventQueue-0] (aZI:191) - Unable to find a valid RunningEffectManager to apply effect d'id 253028
+ WARN 13:13:31,241 [AWT-EventQueue-0] (aZI:191) - Unable to find a valid RunningEffectManager to apply effect d'id 283474
+ WARN 13:13:31,241 [AWT-EventQueue-0] (aZI:191) - Unable to find a valid RunningEffectManager to apply effect d'id 283474
+ WARN 13:13:31,241 [AWT-EventQueue-0] (aZI:191) - Unable to find a valid RunningEffectManager to apply effect d'id 283474
+ WARN 13:13:31,241 [AWT-EventQueue-0] (aZI:191) - Unable to find a valid RunningEffectManager to apply effect d'id 343564
+ INFO 13:13:31,331 [AWT-EventQueue-0] (eLk:1384) - [_FL_] fightId=1552141249 Jean Jack Kinte breed : 16 [10721990] isControlledByAI=false obstacleId : -1 join the fight at {Point3 : (-2, -13, 0)}
+ WARN 13:13:31,843 [AWT-EventQueue-0] (bur:341) - [FIGHT_REFACTOR]Tentative de spawn du fighter -1706442022412388 sans connaitre sa team
+ INFO 13:13:31,843 [AWT-EventQueue-0] (cgX:37) - Starting join procedure for -1706442022412388
+ WARN 13:13:31,850 [AWT-EventQueue-0] (bur:341) - [FIGHT_REFACTOR]Tentative de spawn du fighter -1706442022412388 sans connaitre sa team
+ INFO 13:13:31,850 [AWT-EventQueue-0] (cgX:37) - Starting join procedure for -1706442022412388
+ WARN 13:13:33,948 [AWT-EventQueue-0] (bur:341) - [FIGHT_REFACTOR]Tentative de spawn du fighter -1706442022412382 sans connaitre sa team
+ INFO 13:13:33,949 [AWT-EventQueue-0] (cgX:37) - Starting join procedure for -1706442022412382
+ WARN 13:13:34,031 [AWT-EventQueue-0] (bur:341) - [FIGHT_REFACTOR]Tentative de spawn du fighter -1706442022412382 sans connaitre sa team
+ INFO 13:13:34,031 [AWT-EventQueue-0] (cgX:37) - Starting join procedure for -1706442022412382
+ INFO 13:13:34,871 [AWT-EventQueue-0] (cfZ:57) - Unserializing effects for fighter 10721990, byte size : 14548
+ INFO 13:13:34,878 [AWT-EventQueue-0] (cfZ:57) - Unserializing effects for fighter 10303110, byte size : 15179
+ INFO 13:13:34,919 [AWT-EventQueue-0] (cfZ:57) - Unserializing effects for fighter 10721990, byte size : 14548
+ INFO 13:13:34,963 [AWT-EventQueue-0] (cfZ:57) - Unserializing effects for fighter 10303110, byte size : 15179
+ INFO 13:13:35,051 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte: -2 PW max (Patience)
+ INFO 13:13:35,055 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte: -2 PW max (Patience)
+ INFO 13:13:40,798 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Larme du Sadida
+ INFO 13:13:40,815 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Larme du Sadida
+ INFO 13:13:42,225 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -457 PV (Eau)
+ INFO 13:13:42,233 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -457 PV (Eau)
+ERROR 13:13:42,855 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat -1706442022412330 ; fighters = 10721990, 2335, 10303110
+ INFO 13:13:42,856 [AWT-EventQueue-0] (ccR:1121) - tp -1706442022412330 to 0, -15
+ERROR 13:13:42,856 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat 5676635 ; fighters = 10721990, 2335, 10303110
+ INFO 13:13:42,856 [AWT-EventQueue-0] (ccR:1121) - tp 5676635 to 1, -14
+ERROR 13:13:42,856 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat -1706442022412330 ; fighters = 10721990, 2335, 10303110
+ INFO 13:13:42,856 [AWT-EventQueue-0] (ccR:1121) - tp -1706442022412330 to 0, -14
+ERROR 13:13:42,881 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat -1706442022412330 ; fighters = 10721990, 2335, 10303110
+ INFO 13:13:42,881 [AWT-EventQueue-0] (ccR:1121) - tp -1706442022412330 to 0, -15
+ERROR 13:13:42,881 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat 5676635 ; fighters = 10721990, 2335, 10303110
+ INFO 13:13:42,881 [AWT-EventQueue-0] (ccR:1121) - tp 5676635 to 1, -14
+ERROR 13:13:42,882 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat -1706442022412330 ; fighters = 10721990, 2335, 10303110
+ INFO 13:13:42,882 [AWT-EventQueue-0] (ccR:1121) - tp -1706442022412330 to 0, -14
+ INFO 13:13:45,947 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Gadoule
+ INFO 13:13:45,965 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Gadoule
+ INFO 13:13:46,483 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 PM
+ INFO 13:13:46,483 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 PM
+ INFO 13:13:46,484 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -394 PV (Eau)
+ INFO 13:13:46,484 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -394 PV (Eau)
+ INFO 13:13:50,100 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] 53 secondes reportées pour le tour suivant.
+ INFO 13:13:50,100 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] 53 secondes reportées pour le tour suivant.
+ INFO 13:13:54,748 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte lance le sort Flibuste
+ INFO 13:13:54,785 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte lance le sort Flibuste
+ INFO 13:13:55,649 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 200 PV (Eau)
+ INFO 13:13:55,651 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte lance le sort Flibuste (Critiques)
+ INFO 13:13:55,664 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 200 PV (Eau)
+ INFO 13:13:55,665 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte lance le sort Flibuste (Critiques)
+ INFO 13:13:56,532 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 714 PV (Eau)
+ INFO 13:13:56,564 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 714 PV (Eau)
+ INFO 13:13:58,580 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte lance le sort Ecume
+ INFO 13:13:58,600 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte lance le sort Ecume
+ INFO 13:13:59,697 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 200 PV (Eau)
+ INFO 13:13:59,701 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte: 3 PA
+ INFO 13:13:59,701 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte lance le sort Ecume (Critiques)
+ INFO 13:13:59,798 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 200 PV (Eau)
+ INFO 13:13:59,800 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte: 3 PA
+ INFO 13:13:59,801 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte lance le sort Ecume (Critiques)
+ INFO 13:14:00,814 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 714 PV (Eau)
+ INFO 13:14:01,014 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 714 PV (Eau)
+ INFO 13:14:02,980 [AWT-EventQueue-0] (ccR:1290) - Despawn de -1706442022412382 de world alors qu'il ne l'était pas => ignoré
+ INFO 13:14:03,030 [AWT-EventQueue-0] (ccR:1290) - Despawn de -1706442022412382 de world alors qu'il ne l'était pas => ignoré
+ INFO 13:14:03,730 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte lance le sort Flibuste (Critiques)
+ INFO 13:14:03,747 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte lance le sort Flibuste (Critiques)
+ INFO 13:14:04,548 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 713 PV (Eau)
+ INFO 13:14:04,549 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte: 1 Point(s) de Stasis (Régénération naturelle)
+ INFO 13:14:04,550 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] 54 secondes reportées pour le tour suivant.
+ INFO 13:14:04,613 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 713 PV (Eau)
+ INFO 13:14:04,614 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Kinte: 1 Point(s) de Stasis (Régénération naturelle)
+ INFO 13:14:04,617 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] 54 secondes reportées pour le tour suivant.
+ INFO 13:14:06,066 [AWT-EventQueue-0] (aZE:35) - Resynchronisation de la position d'un fighter dans notre combat.  FightID = 1552141242, FighterID = 10965742 à la position {Point3 : (4, -14, 0)}
+ INFO 13:14:06,067 [AWT-EventQueue-0] (aYu:58) - Removing character Kuisa from manager
+ INFO 13:14:06,068 [AWT-EventQueue-0] (aYu:58) - Removing character Kyui from manager
+ INFO 13:14:06,069 [AWT-EventQueue-0] (aYu:58) - Removing character Arbre de Sadida from manager
+ WARN 13:14:06,071 [AWT-EventQueue-0] (bkh:279) - Tentative de suppression d'un CharacterInfo 0 inexistant.
+ INFO 13:14:06,266 [AWT-EventQueue-0] (aZE:35) - Resynchronisation de la position d'un fighter dans notre combat.  FightID = 1552141242, FighterID = 10965742 à la position {Point3 : (4, -14, 0)}
+ INFO 13:14:06,267 [AWT-EventQueue-0] (aYu:58) - Removing character Kuisa from manager
+ INFO 13:14:06,268 [AWT-EventQueue-0] (aYu:58) - Removing character Kyui from manager
+ INFO 13:14:06,269 [AWT-EventQueue-0] (aYu:58) - Removing character Arbre de Sadida from manager
+ WARN 13:14:06,271 [AWT-EventQueue-0] (bkh:279) - Tentative de suppression d'un CharacterInfo 0 inexistant.
+ INFO 13:14:06,696 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Gadoule (Critiques)
+ INFO 13:14:06,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Gadoule (Critiques)
+ INFO 13:14:07,231 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 PM
+ INFO 13:14:07,232 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -550 PV (Eau)
+ INFO 13:14:07,267 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 PM
+ INFO 13:14:07,268 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -550 PV (Eau)
+ INFO 13:14:07,980 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Gadoule
+ INFO 13:14:07,997 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Gadoule
+ INFO 13:14:08,313 [AWT-EventQueue-0] (Ub:428) - Invalid start cell for pathfind search : doesn't exist. HASHCODE : 2251791223259135
+ INFO 13:14:08,481 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -0 PM
+ INFO 13:14:08,482 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -393 PV (Eau)
+ INFO 13:14:08,532 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -0 PM
+ INFO 13:14:08,533 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -393 PV (Eau)
+ERROR 13:14:09,497 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat -1706442022412076 ; fighters = 10721990, 2335, 10303110
+ INFO 13:14:09,497 [AWT-EventQueue-0] (ccR:1121) - tp -1706442022412076 to 0, -15
+ERROR 13:14:09,497 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat -1706442022412076 ; fighters = 10721990, 2335, 10303110
+ INFO 13:14:09,497 [AWT-EventQueue-0] (ccR:1121) - tp -1706442022412076 to 0, -14
+ERROR 13:14:09,497 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat 10965742 ; fighters = 10721990, 2335, 10303110
+ INFO 13:14:09,497 [AWT-EventQueue-0] (ccR:1121) - tp 10965742 to 2, -14
+ WARN 13:14:09,500 [AWT-EventQueue-0] (bur:341) - [FIGHT_REFACTOR]Tentative de spawn du fighter 10965702 sans connaitre sa team
+ INFO 13:14:09,500 [AWT-EventQueue-0] (cgX:37) - Starting join procedure for 10965702
+ WARN 13:14:09,502 [AWT-EventQueue-0] (bur:341) - [FIGHT_REFACTOR]Tentative de spawn du fighter 10963953 sans connaitre sa team
+ INFO 13:14:09,502 [AWT-EventQueue-0] (cgX:37) - Starting join procedure for 10963953
+ERROR 13:14:09,514 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat -1706442022412076 ; fighters = 10721990, 2335, 10303110
+ INFO 13:14:09,514 [AWT-EventQueue-0] (ccR:1121) - tp -1706442022412076 to 0, -15
+ERROR 13:14:09,514 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat -1706442022412076 ; fighters = 10721990, 2335, 10303110
+ INFO 13:14:09,514 [AWT-EventQueue-0] (ccR:1121) - tp -1706442022412076 to 0, -14
+ERROR 13:14:09,514 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat 10965742 ; fighters = 10721990, 2335, 10303110
+ INFO 13:14:09,514 [AWT-EventQueue-0] (ccR:1121) - tp 10965742 to 2, -14
+ WARN 13:14:09,517 [AWT-EventQueue-0] (bur:341) - [FIGHT_REFACTOR]Tentative de spawn du fighter 10965702 sans connaitre sa team
+ INFO 13:14:09,517 [AWT-EventQueue-0] (cgX:37) - Starting join procedure for 10965702
+ WARN 13:14:09,520 [AWT-EventQueue-0] (bur:341) - [FIGHT_REFACTOR]Tentative de spawn du fighter 10963953 sans connaitre sa team
+ INFO 13:14:09,520 [AWT-EventQueue-0] (cgX:37) - Starting join procedure for 10963953
+ WARN 13:14:11,047 [AWT-EventQueue-0] (bur:341) - [FIGHT_REFACTOR]Tentative de spawn du fighter -1706442022412052 sans connaitre sa team
+ INFO 13:14:11,047 [AWT-EventQueue-0] (cgX:37) - Starting join procedure for -1706442022412052
+ WARN 13:14:11,115 [AWT-EventQueue-0] (bur:341) - [FIGHT_REFACTOR]Tentative de spawn du fighter -1706442022412052 sans connaitre sa team
+ INFO 13:14:11,115 [AWT-EventQueue-0] (cgX:37) - Starting join procedure for -1706442022412052
+ INFO 13:14:13,731 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque
+ INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque
+ERROR 13:14:14,197 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat -1706442022412036 ; fighters = 10721990, 2335, 10303110
+ INFO 13:14:14,197 [AWT-EventQueue-0] (ccR:1121) - tp -1706442022412036 to 0, -15
+ERROR 13:14:14,197 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat -1706442022412036 ; fighters = 10721990, 2335, 10303110
+ INFO 13:14:14,198 [AWT-EventQueue-0] (ccR:1121) - tp -1706442022412036 to 0, -14
+ERROR 13:14:14,198 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat 10795097 ; fighters = 10721990, 2335, 10303110
+ INFO 13:14:14,198 [AWT-EventQueue-0] (ccR:1121) - tp 10795097 to -2, -10
+ERROR 13:14:14,229 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat -1706442022412036 ; fighters = 10721990, 2335, 10303110
+ INFO 13:14:14,229 [AWT-EventQueue-0] (ccR:1121) - tp -1706442022412036 to 0, -15
+ERROR 13:14:14,229 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat -1706442022412036 ; fighters = 10721990, 2335, 10303110
+ INFO 13:14:14,229 [AWT-EventQueue-0] (ccR:1121) - tp -1706442022412036 to 0, -14
+ERROR 13:14:14,231 [AWT-EventQueue-0] (cfU:37) - Impossible de téléporter un personnage qui n'est pas dans le combat 10795097 ; fighters = 10721990, 2335, 10303110
+ INFO 13:14:14,231 [AWT-EventQueue-0] (ccR:1121) - tp 10795097 to -2, -10
+ INFO 13:14:14,686 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -181 PV (Air)
+ INFO 13:14:14,687 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -181 PV (Air)
+ INFO 13:14:14,947 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque (Critiques)
+ INFO 13:14:15,080 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque (Critiques)
+ INFO 13:14:15,948 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -258 PV (Air)
+ INFO 13:14:16,066 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -258 PV (Air)
+ INFO 10:07:24,005 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Kinte lance le sort Distorsion
+ INFO 10:07:24,886 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Kinte: Distorsion (Niv.8)
+ INFO 13:54:48,615 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Sizt: Précision (+160 Niv.)

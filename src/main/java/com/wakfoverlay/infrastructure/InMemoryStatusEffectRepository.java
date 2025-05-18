@@ -7,7 +7,7 @@ import com.wakfoverlay.domain.fight.port.secondary.StatusEffectRepository;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.wakfoverlay.exposition.LogLineParser.normalize;
+import static com.wakfoverlay.domain.logs.TheNormalizer.normalize;
 
 public class InMemoryStatusEffectRepository implements StatusEffectRepository {
     private final Map<StatusEffect, Character.CharacterName> statusEffects = new HashMap<>();

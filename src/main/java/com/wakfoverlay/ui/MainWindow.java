@@ -4,8 +4,8 @@ import com.wakfoverlay.domain.fight.model.Characters;
 import com.wakfoverlay.domain.fight.port.primary.FetchCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
-import com.wakfoverlay.exposition.LogFileReader.FileReadStatus;
-import com.wakfoverlay.exposition.TheAnalyzer;
+import com.wakfoverlay.domain.logs.model.FileReadStatus;
+import com.wakfoverlay.exposition.LogParser;
 import com.wakfoverlay.exposition.UserPreferences;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
@@ -22,7 +22,7 @@ public class MainWindow extends VBox {
     private final FetchCharacter fetchCharacter;
     private final UpdateCharacter updateCharacter;
     private final UpdateStatusEffect updateStatusEffect;
-    private final TheAnalyzer theAnalyzer;
+    private final LogParser logParser;
     private final UserPreferences userPreferences;
 
     private final ScrollPane contentScrollPane;
@@ -32,11 +32,11 @@ public class MainWindow extends VBox {
 
     private String selectedFilePath;
 
-    public MainWindow(FetchCharacter fetchCharacter, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect, TheAnalyzer theAnalyzer) {
+    public MainWindow(FetchCharacter fetchCharacter, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect, LogParser logParser) {
         this.fetchCharacter = fetchCharacter;
         this.updateCharacter = updateCharacter;
         this.updateStatusEffect = updateStatusEffect;
-        this.theAnalyzer = theAnalyzer;
+        this.logParser = logParser;
         this.userPreferences = new UserPreferences(MainWindow.class);
         this.selectedFilePath = userPreferences.getFilePath();
 
@@ -53,7 +53,7 @@ public class MainWindow extends VBox {
     public void updateDisplay() {
         contentContainer.getChildren().clear();
 
-        FileReadStatus status = theAnalyzer.readNewLogLines(selectedFilePath);
+        FileReadStatus status = logParser.readNewLogLines(selectedFilePath);
 
         if (status != FileReadStatus.SUCCESS) {
             showStatusMessage(getMessageForStatus(status));
@@ -110,7 +110,7 @@ public class MainWindow extends VBox {
         if (selectedFile != null) {
             this.selectedFilePath = selectedFile.getAbsolutePath();
             userPreferences.saveFilePath(this.selectedFilePath);
-            theAnalyzer.resetReadPosition();
+            logParser.resetReadPosition();
         }
     }
 

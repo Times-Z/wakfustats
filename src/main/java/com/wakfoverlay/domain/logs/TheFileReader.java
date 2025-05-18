@@ -1,4 +1,8 @@
-package com.wakfoverlay.exposition;
+package com.wakfoverlay.domain.logs;
+
+import com.wakfoverlay.domain.logs.model.FilePosition;
+import com.wakfoverlay.domain.logs.model.FileReadStatus;
+import com.wakfoverlay.domain.logs.model.ReadResult;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,10 +15,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class LogFileReader {
+public class TheFileReader {
     private final Map<String, Long> filePositions = new HashMap<>();
 
-    public LogFileReader() {
+    public TheFileReader() {
     }
 
     public ReadResult readNewLines(String filePath) {
@@ -39,6 +43,29 @@ public class LogFileReader {
             return createSuccessResult(newLines);
         } catch (IOException e) {
             return createErrorResult(FileReadStatus.IO_ERROR);
+        }
+    }
+
+    public void setPositionToEnd(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return;
+        }
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            filePositions.put(filePath, 0L);
+            return;
+        }
+        try (Stream<String> lines = Files.lines(path)) {
+            long lineCount = lines.count();
+            filePositions.put(filePath, lineCount);
+        } catch (IOException e) {
+            filePositions.put(filePath, 0L);
+        }
+    }
+
+    public void resetPosition(String filePath) {
+        if (filePath != null) {
+            filePositions.remove(filePath);
         }
     }
 
@@ -80,23 +107,6 @@ public class LogFileReader {
         }
     }
 
-    public void setPositionToEnd(String filePath) {
-        if (filePath == null || filePath.isEmpty()) {
-            return;
-        }
-        Path path = Paths.get(filePath);
-        if (!Files.exists(path)) {
-            filePositions.put(filePath, 0L);
-            return;
-        }
-        try (Stream<String> lines = Files.lines(path)) {
-            long lineCount = lines.count();
-            filePositions.put(filePath, lineCount);
-        } catch (IOException e) {
-            filePositions.put(filePath, 0L);
-        }
-    }
-
     private void updateFilePosition(String filePath, long newPosition) {
         filePositions.put(filePath, newPosition);
     }
@@ -110,22 +120,5 @@ public class LogFileReader {
 
     private ReadResult createErrorResult(FileReadStatus status) {
         return new ReadResult(status, List.of());
-    }
-
-    public void resetPosition(String filePath) {
-        if (filePath != null) {
-            filePositions.remove(filePath);
-        }
-    }
-
-    private record FilePosition(long lastPosition, long lineCount) {}
-    public record ReadResult(FileReadStatus status, List<String> lines) {}
-
-    public enum FileReadStatus {
-        SUCCESS,
-        NO_FILE_SELECTED,
-        FILE_NOT_FOUND,
-        EMPTY_FILE,
-        IO_ERROR
     }
 }
