@@ -38,9 +38,10 @@ public class StatusEffect {
 
     public enum SubType {
         NO_SUB_TYPE,
+        DISTORSION,
         INTOXIQUE,
         MAUDIT,
+        PRIERE_SADIDA,
         TETATOXINE,
-        DISTORSION
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 
 import static javafx.scene.layout.Priority.ALWAYS;
 
-public class CharacterListView extends VBox {
+public class CharactersDamagesView extends VBox {
     private static final List<String> CHARACTER_COLORS = Arrays.asList(
             "#33fffe", "#EE1DED", "#7DFA00", "#FF4A00", "#FBE33B", "#6D1FA9"
     );
@@ -23,7 +23,7 @@ public class CharacterListView extends VBox {
     private static final int NAME_MAX_LENGTH = 40;
     private static final double NAME_COLUMN_WIDTH = 100;
 
-    public CharacterListView(Characters charactersData) {
+    public CharactersDamagesView(Characters charactersData) {
         this.setSpacing(2);
 
         List<Character> characters = charactersData.characters();

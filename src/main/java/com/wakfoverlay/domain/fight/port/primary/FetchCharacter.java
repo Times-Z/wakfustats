@@ -6,5 +6,7 @@ import com.wakfoverlay.domain.fight.model.Characters;
 
 public interface FetchCharacter {
     Character character(CharacterName name);
-    Characters rankedCharacters();
+    Characters rankedCharactersByDamages();
+    Characters rankedCharactersByHeals();
+    Characters rankedCharactersByShields();
 }

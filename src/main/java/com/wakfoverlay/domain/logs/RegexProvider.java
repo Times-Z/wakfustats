@@ -14,6 +14,9 @@ public class RegexProvider {
     private static final Pattern DAMAGES_PATTERN = Pattern
             .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(.*?\\)\\s+-\\s+\\[Information \\(jeu\\)]\\s+(.+?):\\s+-([\\d\\s]+)\\s*PV(\\s*(?:\\([^)]*\\)\\s*)*)?",
                     Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern HEALS_PATTERN = Pattern
+            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(.*?\\)\\s+-\\s+\\[Information \\(jeu\\)]\\s+(.+?):\\s+\\+([\\d\\s]+)\\s*PV(\\s*(?:\\([^)]*\\)\\s*)*)?",
+                    Pattern.UNICODE_CHARACTER_CLASS);
 
     public DateTimeFormatter timeFormatterPattern() {
         return TIME_FORMATTER;
@@ -23,11 +26,15 @@ public class RegexProvider {
         return SPELL_CAST_PATTERN;
     }
 
+    public Pattern statusEffectPattern() {
+        return STATUS_EFFECT_PATTERN;
+    }
+
     public Pattern damagesPattern() {
         return DAMAGES_PATTERN;
     }
 
-    public Pattern statusEffectPattern() {
-        return STATUS_EFFECT_PATTERN;
+    public Pattern healsPattern() {
+        return HEALS_PATTERN;
     }
 }

@@ -1,0 +1,33 @@
+package com.wakfoverlay.infrastructure;
+
+import com.wakfoverlay.domain.fight.model.Heals;
+import com.wakfoverlay.domain.fight.port.secondary.HealsRepository;
+
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+public class InMemoryHealsRepository implements HealsRepository {
+    private final Map<HealsKey, LocalTime> healsMap = new HashMap<>();
+
+    @Override
+    public void addHeals(Heals heals) {
+        HealsKey key = new HealsKey(heals.amount(), heals.elements());
+        healsMap.put(key, heals.timestamp());
+    }
+
+    @Override
+    public Optional<Heals> find(Heals heals) {
+        HealsKey key = new HealsKey(heals.amount(), heals.elements());
+        LocalTime timestamp = healsMap.get(key);
+        if (timestamp != null) {
+            return Optional.of(new Heals(timestamp, heals.amount(), heals.elements()));
+        }
+        return Optional.empty();
+    }
+
+    public Map<HealsKey, LocalTime> getHealsMap() {
+        return Map.copyOf(healsMap);
+    }
+}

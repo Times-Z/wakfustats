@@ -26,7 +26,7 @@ class FetchCharacterUseCaseTest {
     void should_return_character_when_found_in_repository() {
         // Given
         CharacterName name = new CharacterName("TestCharacter");
-        Character expectedCharacter = new Character(name, 100);
+        Character expectedCharacter = new Character(name, 100, 0, 0);
         charactersRepository.addOrUpdate(expectedCharacter);
 
         // When
@@ -65,16 +65,16 @@ class FetchCharacterUseCaseTest {
     @Test
     void should_return_characters_sorted_by_damages_in_descending_order() {
         // Given
-        Character char1 = new Character(new CharacterName("Character1"), 100);
-        Character char2 = new Character(new CharacterName("Character2"), 300);
-        Character char3 = new Character(new CharacterName("Character3"), 200);
+        Character char1 = new Character(new CharacterName("Character1"), 100, 0, 0);
+        Character char2 = new Character(new CharacterName("Character2"), 300, 0, 0);
+        Character char3 = new Character(new CharacterName("Character3"), 200, 0, 0);
 
         charactersRepository.addOrUpdate(char1);
         charactersRepository.addOrUpdate(char2);
         charactersRepository.addOrUpdate(char3);
 
         // When
-        Characters result = fetchCharacterUseCase.rankedCharacters();
+        Characters result = fetchCharacterUseCase.rankedCharactersByDamages();
 
         // Then
         List<Character> sortedCharacters = result.characters();
@@ -88,7 +88,7 @@ class FetchCharacterUseCaseTest {
     void should_return_empty_characters_when_repository_is_empty() {
         // Given
         // When
-        Characters result = fetchCharacterUseCase.rankedCharacters();
+        Characters result = fetchCharacterUseCase.rankedCharactersByDamages();
 
         // Then
         assertNotNull(result.characters());
@@ -98,16 +98,16 @@ class FetchCharacterUseCaseTest {
     @Test
     void should_handle_characters_with_equal_damages() {
         // Given
-        Character char1 = new Character(new CharacterName("CharacterA"), 200);
-        Character char2 = new Character(new CharacterName("CharacterB"), 200);
-        Character char3 = new Character(new CharacterName("CharacterC"), 100);
+        Character char1 = new Character(new CharacterName("CharacterA"), 200, 0, 0);
+        Character char2 = new Character(new CharacterName("CharacterB"), 200, 0, 0);
+        Character char3 = new Character(new CharacterName("CharacterC"), 100, 0, 0);
 
         charactersRepository.addOrUpdate(char1);
         charactersRepository.addOrUpdate(char2);
         charactersRepository.addOrUpdate(char3);
 
         // When
-        Characters result = fetchCharacterUseCase.rankedCharacters();
+        Characters result = fetchCharacterUseCase.rankedCharactersByDamages();
 
         // Then
         List<Character> sortedCharacters = result.characters();

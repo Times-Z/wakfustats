@@ -8,7 +8,6 @@ import com.wakfoverlay.domain.logs.model.FileReadStatus;
 import com.wakfoverlay.exposition.LogParser;
 import com.wakfoverlay.exposition.UserPreferences;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -28,12 +27,14 @@ public class MainWindow extends VBox {
 
     private final ScrollPane contentScrollPane;
     private final VBox contentContainer;
-    private CharacterListView characterListView;
+    private CharactersDamagesView charactersDamagesView;
+    private CharactersHealsView charactersHealsView;
+    private CharactersShieldsView charactersShieldsView;
     private StatusMessageView statusMessageView;
 
     private String selectedFilePath;
 
-    private View currentView = View.MAIN_VIEW;
+    private View currentView = View.DPT_VIEW;
 
     public MainWindow(FetchCharacter fetchCharacter, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect, LogParser logParser) {
         this.fetchCharacter = fetchCharacter;
@@ -56,10 +57,10 @@ public class MainWindow extends VBox {
     }
 
     public void updateDisplay() {
-        if (currentView != View.MAIN_VIEW) {
-            return;
-        }
+        showCurrentView();
+    }
 
+    public void updateDamagesDisplay() {
         contentContainer.getChildren().clear();
 
         FileReadStatus status = logParser.readNewLogLines(selectedFilePath);
@@ -69,27 +70,65 @@ public class MainWindow extends VBox {
             return;
         }
 
-        Characters rankedCharacters = fetchCharacter.rankedCharacters();
+        Characters rankedCharacters = fetchCharacter.rankedCharactersByDamages();
 
         if (rankedCharacters.characters().isEmpty()) {
             return;
         }
 
-        showCharacterList(rankedCharacters);
+        showCharactersDamages(rankedCharacters);
     }
 
-    private void showMainView() {
-        currentView = View.MAIN_VIEW;
+    public void updateHealsDisplay() {
+        contentContainer.getChildren().clear();
+
+        FileReadStatus status = logParser.readNewLogLines(selectedFilePath);
+
+        if (status != FileReadStatus.SUCCESS) {
+            showStatusMessage(getMessageForStatus(status));
+            return;
+        }
+
+        Characters rankedCharacters = fetchCharacter.rankedCharactersByHeals();
+
+        if (rankedCharacters.characters().isEmpty()) {
+            return;
+        }
+
+        showCharactersHeals(rankedCharacters);
+    }
+
+    public void updateShieldsDisplay() {
+        contentContainer.getChildren().clear();
+
+        FileReadStatus status = logParser.readNewLogLines(selectedFilePath);
+
+        if (status != FileReadStatus.SUCCESS) {
+            showStatusMessage(getMessageForStatus(status));
+            return;
+        }
+
+        Characters rankedCharacters = fetchCharacter.rankedCharactersByDamages();
+
+        if (rankedCharacters.characters().isEmpty()) {
+            return;
+        }
+
+        showCharactersShields(rankedCharacters);
+    }
+
+    private void showDamagesView() {
+        currentView = View.DPT_VIEW;
         showCurrentView();
     }
 
-    private void showSecondView() {
-        currentView = View.SECOND_VIEW;
+    private void showHealsView() {
+        currentView = View.HEAL_VIEW;
         showCurrentView();
     }
 
-    private void showThirdView() {
-        currentView = View.THIRD_VIEW;
+    private void showShieldsView() {
+        currentView = View.SHIELD_VIEW;
         showCurrentView();
     }
 
@@ -97,16 +136,16 @@ public class MainWindow extends VBox {
         contentContainer.getChildren().clear();
 
         switch (currentView) {
-            case MAIN_VIEW:
-                updateDisplay();
+            case DPT_VIEW:
+                updateDamagesDisplay();
                 break;
-            case SECOND_VIEW:
-                SecondView secondView = new SecondView();
-                contentContainer.getChildren().add(secondView);
+            case HEAL_VIEW:
+                updateHealsDisplay();
                 break;
-            case THIRD_VIEW:
-                ThirdView thirdView = new ThirdView();
-                contentContainer.getChildren().add(thirdView);
+            case SHIELD_VIEW:
+                updateShieldsDisplay();
+                break;
+            default:
                 break;
         }
     }
@@ -137,9 +176,9 @@ public class MainWindow extends VBox {
                 this::openFileChooser,
                 this::resetStats,
                 this::closeWindow,
-                this::showMainView,
-                this::showSecondView,
-                this::showThirdView
+                this::showDamagesView,
+                this::showHealsView,
+                this::showShieldsView
         );
     }
 
@@ -209,42 +248,25 @@ public class MainWindow extends VBox {
         contentContainer.getChildren().add(statusMessageView);
     }
 
-    private void showCharacterList(Characters characters) {
-        characterListView = new CharacterListView(characters);
-        contentContainer.getChildren().add(characterListView);
+    private void showCharactersDamages(Characters characters) {
+        charactersDamagesView = new CharactersDamagesView(characters);
+        contentContainer.getChildren().add(charactersDamagesView);
+    }
+
+    private void showCharactersHeals(Characters characters) {
+        charactersHealsView = new CharactersHealsView(characters);
+        contentContainer.getChildren().add(charactersHealsView);
+    }
+
+    private void showCharactersShields(Characters characters) {
+        charactersShieldsView = new CharactersShieldsView(characters);
+        contentContainer.getChildren().add(charactersShieldsView);
     }
 
     private enum View {
-        MAIN_VIEW, SECOND_VIEW, THIRD_VIEW
+        DPT_VIEW,
+        HEAL_VIEW,
+        SHIELD_VIEW
     }
 }
 
-class SecondView extends VBox {
-    public SecondView() {
-        this.setStyle("-fx-background-color: rgb(18, 18, 18);");
-        this.setSpacing(10);
-
-        Label titleLabel = new Label("Seconde Vue");
-        titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
-
-        // Ajoutez ici les composants spécifiques à la seconde vue
-
-        this.getChildren().add(titleLabel);
-        // Ajoutez les autres composants à this.getChildren()
-    }
-}
-
-class ThirdView extends VBox {
-    public ThirdView() {
-        this.setStyle("-fx-background-color: rgb(18, 18, 18);");
-        this.setSpacing(10);
-
-        Label titleLabel = new Label("Troisième Vue");
-        titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
-
-        // Ajoutez ici les composants spécifiques à la troisième vue
-
-        this.getChildren().add(titleLabel);
-        // Ajoutez les autres composants à this.getChildren()
-    }
-}

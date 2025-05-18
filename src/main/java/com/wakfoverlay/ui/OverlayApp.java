@@ -5,13 +5,9 @@ import com.wakfoverlay.domain.fight.FetchStatusEffectUseCase;
 import com.wakfoverlay.domain.fight.UpdateCharacterUseCase;
 import com.wakfoverlay.domain.fight.UpdateStatusEffectUseCase;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
-import com.wakfoverlay.domain.fight.port.secondary.CharactersRepository;
-import com.wakfoverlay.domain.fight.port.secondary.DamagesRepository;
-import com.wakfoverlay.domain.fight.port.secondary.StatusEffectRepository;
+import com.wakfoverlay.domain.fight.port.secondary.*;
 import com.wakfoverlay.exposition.LogParser;
-import com.wakfoverlay.infrastructure.InMemoryCharactersRepository;
-import com.wakfoverlay.infrastructure.InMemoryDamagesRepository;
-import com.wakfoverlay.infrastructure.InMemoryStatusEffectRepository;
+import com.wakfoverlay.infrastructure.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -38,8 +34,10 @@ public class OverlayApp extends Application {
         // Setup dependencies manually
         CharactersRepository charactersRepository = new InMemoryCharactersRepository();
         DamagesRepository damagesRepository = new InMemoryDamagesRepository();
+        HealsRepository healsRepository = new InMemoryHealsRepository();
+        ShieldsRepository shieldsRepository = new InMemoryShieldsRepository();
         FetchCharacterUseCase fetchCharacter = new FetchCharacterUseCase(charactersRepository);
-        UpdateCharacterUseCase updateCharacter = new UpdateCharacterUseCase(charactersRepository, damagesRepository);
+        UpdateCharacterUseCase updateCharacter = new UpdateCharacterUseCase(charactersRepository, damagesRepository, healsRepository, shieldsRepository);
 
         StatusEffectRepository statusEffectRepository = new InMemoryStatusEffectRepository();
         FetchStatusEffectUseCase fetchStatusEffect = new FetchStatusEffectUseCase(statusEffectRepository);

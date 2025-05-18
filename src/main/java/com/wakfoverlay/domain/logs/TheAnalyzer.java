@@ -2,7 +2,9 @@ package com.wakfoverlay.domain.logs;
 
 import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
 import com.wakfoverlay.domain.fight.model.Character;
+import com.wakfoverlay.domain.fight.model.Character.CharacterName;
 import com.wakfoverlay.domain.fight.model.Damages;
+import com.wakfoverlay.domain.fight.model.Heals;
 import com.wakfoverlay.domain.fight.model.StatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
@@ -39,6 +41,7 @@ public class TheAnalyzer {
         Matcher spellCastMatcher = regexProvider.spellCastPattern().matcher(logLine);
         Matcher statusEffectMatcher = regexProvider.statusEffectPattern().matcher(logLine);
         Matcher damagesMatcher = regexProvider.damagesPattern().matcher(logLine);
+        Matcher healsMatcher = regexProvider.healsPattern().matcher(logLine);
 
         if (spellCastMatcher.find()) {
             handleSpellCasting(spellCastMatcher);
@@ -51,6 +54,10 @@ public class TheAnalyzer {
         if (damagesMatcher.find()) {
             handleDamages(damagesMatcher);
         }
+
+        if (healsMatcher.find()) {
+            handleHeals(healsMatcher);
+        }
     }
 
     private void handleSpellCasting(Matcher spellCastMatcher) {
@@ -60,7 +67,7 @@ public class TheAnalyzer {
             casterName = "Unknown";
         }
 
-        lastSpellCaster = fetchCharacter.character(new Character.CharacterName(casterName));
+        lastSpellCaster = fetchCharacter.character(new CharacterName(casterName));
     }
 
     private void handleStatusEffect(Matcher statusEffectMatcher) {
@@ -84,14 +91,18 @@ public class TheAnalyzer {
                     effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, MAUDIT);
             case "distorsion" ->
                     effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, DISTORSION);
+            case "garde feuille" ->
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, PRIERE_SADIDA);
             default ->
                     effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, NO_SUB_TYPE);
         }
 
         if (lastSpellCaster == null) {
-            lastSpellCaster = new Character(new Character.CharacterName("Unknown"), 0);
+            System.out.println("Last spell caster is null");
+            lastSpellCaster = new Character(new Character.CharacterName("Unknown"), 0, 0, 0);
         }
 
+        System.out.println("Last spell caster: " + lastSpellCaster.name());
         updateStatusEffect.update(effect, lastSpellCaster.name());
     }
 
@@ -109,14 +120,15 @@ public class TheAnalyzer {
         Damages damages = new Damages(timestamp, damageAmount, damagesElements);
 
         String lastElement = damagesElements.toArray()[damagesElements.size() - 1].toString();
-        Character.CharacterName casterName = switch (normalize(lastElement)) {
+        CharacterName casterName = switch (normalize(lastElement)) {
             case "tetatoxine",
                  "intoxique",
                  "maudit",
-                 "distorsion" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
+                 "distorsion",
+                 "garde feuille" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
             default -> {
                 if (lastSpellCaster == null) {
-                    lastSpellCaster = new Character(new Character.CharacterName("Unknown"), 0);
+                    lastSpellCaster = new Character(new CharacterName("Unknown"), 0, 0, 0);
                 }
 
                 yield lastSpellCaster.name();
@@ -125,7 +137,39 @@ public class TheAnalyzer {
 
         lastSpellCaster = fetchCharacter.character(casterName);
 
-        updateCharacter.update(lastSpellCaster, damages);
+        updateCharacter.updateDamages(lastSpellCaster, damages);
+    }
+
+    private void handleHeals(Matcher healsMatcher) {
+        LocalTime timestamp = LocalTime.parse(healsMatcher.group(1), regexProvider.timeFormatterPattern());
+        int healsAmount = Integer.parseInt(healsMatcher.group(3).replaceAll("[^\\d-]+", ""));
+
+        String elements = healsMatcher.group(4);
+        Matcher elementMatcher = Pattern.compile("\\(([^)]+)\\)").matcher(elements);
+        Set<String> healsElements = new LinkedHashSet<>();
+        while (elementMatcher.find()) {
+            healsElements.add(normalize(elementMatcher.group(1).trim()));
+        }
+
+        Heals heals = new Heals(timestamp, healsAmount, healsElements);
+
+        String lastElement = healsElements.toArray()[healsElements.size() - 1].toString();
+        CharacterName casterName = switch (normalize(lastElement)) {
+            case "priere sadida" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
+            case "engraine" -> null;
+            default -> {
+                if (lastSpellCaster == null) {
+                    lastSpellCaster = new Character(new CharacterName("Unknown"), 0, 0, 0);
+                }
+
+                yield lastSpellCaster.name();
+            }
+        };
+
+        if (casterName != null) {
+            lastSpellCaster = fetchCharacter.character(casterName);
+            updateCharacter.updateHeals(lastSpellCaster, heals);
+        }
     }
 }
 

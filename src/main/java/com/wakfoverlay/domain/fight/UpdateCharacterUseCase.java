@@ -2,29 +2,52 @@ package com.wakfoverlay.domain.fight;
 
 import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.fight.model.Damages;
+import com.wakfoverlay.domain.fight.model.Heals;
+import com.wakfoverlay.domain.fight.model.Shields;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.secondary.CharactersRepository;
 import com.wakfoverlay.domain.fight.port.secondary.DamagesRepository;
+import com.wakfoverlay.domain.fight.port.secondary.HealsRepository;
+import com.wakfoverlay.domain.fight.port.secondary.ShieldsRepository;
 
 import java.time.Duration;
 import java.util.Optional;
 
 public record UpdateCharacterUseCase(
         CharactersRepository charactersRepository,
-        DamagesRepository damagesRepository
+        DamagesRepository damagesRepository,
+        HealsRepository healsRepository,
+        ShieldsRepository shieldsRepository
 ) implements UpdateCharacter {
     private static final int MAX_TIMESTAMP_DIFFERENCE_MILLIS = 800;
 
     @Override
-    public void update(Character character, Damages damages) {
+    public void updateDamages(Character character, Damages damages) {
         Optional<Damages> existingDamages = damagesRepository.find(damages)
                 .stream()
                 .findFirst();
 
-        if (existingDamages.isEmpty() || !areTimestampsTooClose(existingDamages.get(), damages)) {
+        if (existingDamages.isEmpty() || !areDamagesTooClose(existingDamages.get(), damages)) {
             damagesRepository.addDamages(damages);
-            addOrUpdate(character, damages);
+            addOrUpdateDamages(character, damages);
         }
+    }
+
+    @Override
+    public void updateHeals(Character character, Heals heals) {
+        Optional<Heals> existingHeals = healsRepository.find(heals)
+                .stream()
+                .findFirst();
+
+        if (existingHeals.isEmpty() || !areHealsTooClose(existingHeals.get(), heals)) {
+            healsRepository.addHeals(heals);
+            addOrUpdateHeals(character, heals);
+        }
+    }
+
+    @Override
+    public void updateShields(Character character, Shields shields) {
+
     }
 
     @Override
@@ -32,15 +55,49 @@ public record UpdateCharacterUseCase(
         charactersRepository.resetCharacters();
     }
 
-    private boolean areTimestampsTooClose(Damages existingDamages, Damages incommingDamages) {
-        Duration duration = Duration.between(existingDamages.timestamp(), incommingDamages.timestamp()).abs();
+    private boolean areDamagesTooClose(Damages existingDamages, Damages incomingDamages) {
+        Duration duration = Duration.between(existingDamages.timestamp(), incomingDamages.timestamp()).abs();
         return duration.toMillis() <= MAX_TIMESTAMP_DIFFERENCE_MILLIS;
     }
 
-    private void addOrUpdate(Character character, Damages damages) {
+    private boolean areHealsTooClose(Heals existingHeals, Heals incomingHeals) {
+        Duration duration = Duration.between(existingHeals.timestamp(), incomingHeals.timestamp()).abs();
+        return duration.toMillis() <= MAX_TIMESTAMP_DIFFERENCE_MILLIS;
+    }
+
+    private boolean areShieldsTooClose(Shields existingShields, Shields incomingShields) {
+        Duration duration = Duration.between(existingShields.timestamp(), incomingShields.timestamp()).abs();
+        return duration.toMillis() <= MAX_TIMESTAMP_DIFFERENCE_MILLIS;
+    }
+
+    private void addOrUpdateDamages(Character character, Damages damages) {
         Character updatedCharacter = new Character(
                 character.name(),
-                character.damages() + damages.amount()
+                character.damages() + damages.amount(),
+                character.heals(),
+                character.shields()
+        );
+
+        charactersRepository.addOrUpdate(updatedCharacter);
+    }
+
+    private void addOrUpdateHeals(Character character, Heals heals) {
+        Character updatedCharacter = new Character(
+                character.name(),
+                character.damages(),
+                character.heals() + heals.amount(),
+                character.shields()
+        );
+
+        charactersRepository.addOrUpdate(updatedCharacter);
+    }
+
+    private void addOrUpdateShields(Character character, Damages shields) {
+        Character updatedCharacter = new Character(
+                character.name(),
+                character.damages(),
+                character.heals(),
+                character.shields() + shields.amount()
         );
 
         charactersRepository.addOrUpdate(updatedCharacter);
