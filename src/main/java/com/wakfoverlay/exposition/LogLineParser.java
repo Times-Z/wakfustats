@@ -104,7 +104,9 @@ public class LogLineParser {
 
         String lastElement = damagesElements.toArray()[damagesElements.size() - 1].toString();
         Character.CharacterName casterName = switch (normalize(lastElement)) {
-            case "tetatoxine", "intoxique", "maudit" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
+            case "tetatoxine",
+                 "intoxique",
+                 "maudit" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
             default -> lastSpellCaster.name();
         };
 
