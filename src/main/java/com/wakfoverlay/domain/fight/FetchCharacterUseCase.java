@@ -35,6 +35,7 @@ public record FetchCharacterUseCase(
         return new Characters(charactersRepository.characters()
                 .characters()
                 .stream()
+                .filter(character -> !character.isControlledByAI())
                 .sorted((p1, p2) -> Integer.compare(p2.heals(), p1.heals()))
                 .collect(Collectors.toCollection(ArrayList::new)));
     }
@@ -44,6 +45,7 @@ public record FetchCharacterUseCase(
         return new Characters(charactersRepository.characters()
                 .characters()
                 .stream()
+                .filter(character -> !character.isControlledByAI())
                 .sorted((p1, p2) -> Integer.compare(p2.shields(), p1.shields()))
                 .collect(Collectors.toCollection(ArrayList::new)));
     }
