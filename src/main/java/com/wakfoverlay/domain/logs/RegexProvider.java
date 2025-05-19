@@ -23,9 +23,16 @@ public class RegexProvider {
     private static final Pattern SHIELDS_PATTERN = Pattern
             .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(.*?\\)\\s+-\\s+\\[Information \\(jeu\\)]\\s+(.+?):\\s+\\+([\\d\\s]+)\\s*Armure",
                     Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern SUMMON_PATTERN = Pattern
+            .compile("",
+                    Pattern.UNICODE_CHARACTER_CLASS);
 
     public DateTimeFormatter timeFormatterPattern() {
         return TIME_FORMATTER;
+    }
+
+    public Pattern fighterPattern() {
+        return FIGHTER_PATTERN;
     }
 
     public Pattern spellCastPattern() {
@@ -48,7 +55,7 @@ public class RegexProvider {
         return SHIELDS_PATTERN;
     }
 
-    public Pattern fighterPattern() {
-        return FIGHTER_PATTERN;
+    public Pattern summonPattern() {
+        return SUMMON_PATTERN;
     }
 }

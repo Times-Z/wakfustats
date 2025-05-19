@@ -42,6 +42,7 @@ public class TheAnalyzer {
         Matcher damagesMatcher = regexProvider.damagesPattern().matcher(logLine);
         Matcher healsMatcher = regexProvider.healsPattern().matcher(logLine);
         Matcher shieldsMatcher = regexProvider.shieldsPattern().matcher(logLine);
+        Matcher summonMatcher = regexProvider.summonPattern().matcher(logLine);
 
         if (fighterMatcher.find()) {
             handleFighter(fighterMatcher);
@@ -65,6 +66,19 @@ public class TheAnalyzer {
 
         if (shieldsMatcher.find()) {
             handleShields(shieldsMatcher);
+        }
+
+        if (summonMatcher.find()) {
+            // Matcher sur "NOM DU PERSONNAGE: Invoque"
+            // Fetch le personnage qui invoque avec le nom du log
+            // Ne retourner que les non-IA
+            // créer un "lastSummoner" ?
+            // attendre le log de l'invocation
+                // "(eIu:106) - Instanciation d'une nouvelle invocation avec un id de -1706442020631000"
+                // "(eIA:92) - New summon with id -1706442020630993"
+            // enregistrer l'invocation (pour déduplication) avec le "lastSummoner"
+            // modifier les damages pour check les invocations et récupérer les dégats
+            // assigner les dégats au summoner
         }
     }
 
