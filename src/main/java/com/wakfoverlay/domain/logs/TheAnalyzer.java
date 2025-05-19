@@ -75,7 +75,6 @@ public class TheAnalyzer {
         CharacterName name = new CharacterName(fighterName);
 
         Character character = new Character(name, 0, 0, 0, isControlledByAI);
-        System.out.println("Fighter: " + character);
         updateCharacter.create(character);
     }
 

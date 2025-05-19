@@ -25,6 +25,7 @@ public record FetchCharacterUseCase(
         return new Characters(charactersRepository.characters()
                 .characters()
                 .stream()
+                .filter(character -> !character.isControlledByAI())
                 .sorted((p1, p2) -> Integer.compare(p2.damages(), p1.damages()))
                 .collect(Collectors.toCollection(ArrayList::new)));
     }
