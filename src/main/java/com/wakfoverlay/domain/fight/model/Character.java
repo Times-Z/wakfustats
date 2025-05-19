@@ -4,7 +4,8 @@ public record Character(
         CharacterName name,
         int damages,
         int heals,
-        int shields
+        int shields,
+        boolean isControlledByAI
 ) {
     public record CharacterName(String value) {
     }

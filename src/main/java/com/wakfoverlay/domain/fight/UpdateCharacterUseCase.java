@@ -91,7 +91,8 @@ public record UpdateCharacterUseCase(
                 character.name(),
                 character.damages() + damages.amount(),
                 character.heals(),
-                character.shields()
+                character.shields(),
+                character.isControlledByAI()
         );
 
         charactersRepository.addOrUpdate(updatedCharacter);
@@ -102,7 +103,8 @@ public record UpdateCharacterUseCase(
                 character.name(),
                 character.damages(),
                 character.heals() + heals.amount(),
-                character.shields()
+                character.shields(),
+                character.isControlledByAI()
         );
 
         charactersRepository.addOrUpdate(updatedCharacter);
@@ -113,7 +115,8 @@ public record UpdateCharacterUseCase(
                 character.name(),
                 character.damages(),
                 character.heals(),
-                character.shields() + shields.amount()
+                character.shields() + shields.amount(),
+                character.isControlledByAI()
         );
 
         charactersRepository.addOrUpdate(updatedCharacter);

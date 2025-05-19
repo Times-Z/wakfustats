@@ -81,6 +81,7 @@ class TheAnalyzerTest {
             analyzer.analyze(logLine);
 
             // Then
+            verify(updateCharacter).create(characterCaptor.capture());
         }
     }
 

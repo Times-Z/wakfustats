@@ -44,11 +44,7 @@ public class TheAnalyzer {
         Matcher shieldsMatcher = regexProvider.shieldsPattern().matcher(logLine);
 
         if (fighterMatcher.find()) {
-            System.out.println("timestamp: " + fighterMatcher.group(1));
-            System.out.println("fightId: " + fighterMatcher.group(2));
-            System.out.println("Fighter found: " + fighterMatcher.group(3));
-            System.out.println("Breed: " + fighterMatcher.group(4));
-            System.out.println("isControlledByAI: " + fighterMatcher.group(5));
+            handleFighter(fighterMatcher);
         }
 
         if (spellCastMatcher.find()) {
@@ -70,6 +66,17 @@ public class TheAnalyzer {
         if (shieldsMatcher.find()) {
             handleShields(shieldsMatcher);
         }
+    }
+
+    private void handleFighter(Matcher fighterMatcher) {
+        String fighterName = fighterMatcher.group(3);
+        boolean isControlledByAI = Boolean.parseBoolean(fighterMatcher.group(5));
+
+        CharacterName name = new CharacterName(fighterName);
+
+        Character character = new Character(name, 0, 0, 0, isControlledByAI);
+        System.out.println("Fighter: " + character);
+        updateCharacter.create(character);
     }
 
     private void handleSpellCasting(Matcher spellCastMatcher) {
@@ -110,11 +117,9 @@ public class TheAnalyzer {
         }
 
         if (lastSpellCaster == null) {
-            System.out.println("Last spell caster is null");
-            lastSpellCaster = new Character(new Character.CharacterName("Unknown"), 0, 0, 0);
+            lastSpellCaster = new Character(new Character.CharacterName("Unknown"), 0, 0, 0, false);
         }
 
-        System.out.println("Last spell caster: " + lastSpellCaster.name());
         updateStatusEffect.update(effect, lastSpellCaster.name());
     }
 
@@ -140,7 +145,7 @@ public class TheAnalyzer {
                  "garde feuille" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
             default -> {
                 if (lastSpellCaster == null) {
-                    lastSpellCaster = new Character(new CharacterName("Unknown"), 0, 0, 0);
+                    lastSpellCaster = new Character(new CharacterName("Unknown"), 0, 0, 0, false);
                 }
 
                 yield lastSpellCaster.name();
@@ -171,7 +176,7 @@ public class TheAnalyzer {
             case "engraine" -> null;
             default -> {
                 if (lastSpellCaster == null) {
-                    lastSpellCaster = new Character(new CharacterName("Unknown"), 0, 0, 0);
+                    lastSpellCaster = new Character(new CharacterName("Unknown"), 0, 0, 0, false);
                 }
 
                 yield lastSpellCaster.name();

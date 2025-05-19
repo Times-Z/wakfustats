@@ -17,7 +17,7 @@ public record FetchCharacterUseCase(
         return charactersRepository.character(name)
                 .stream()
                 .findFirst()
-                .orElse(new Character(name, 0, 0, 0));
+                .orElse(new Character(name, 0, 0, 0, false));
     }
 
     @Override
