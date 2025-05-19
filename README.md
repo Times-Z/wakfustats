@@ -6,6 +6,7 @@ to package: ./gradlew jpackage (if needed--info or --debug)
 TODO:
 - Identify Character with ULID instead of name
 - Compute shields
+- Remove mobs from computation
 - Aggregate invocations to the spell caster
 - Refacto sealed interface on Damages, Heals, Shields then use it with pattern matching
 - Refacto Map KEYS for Damages, Heals, Shields

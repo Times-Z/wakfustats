@@ -11,6 +11,7 @@ import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -69,218 +70,270 @@ class TheAnalyzerTest {
         analyzer = new TheAnalyzer(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
     }
 
-    @Test
-    void should_analyze_normal_spell_cast_log() {
-        // Given
-        String logLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque";
-        Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
-        when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+    @Nested
+    class SpellCastingTests {
+        @Test
+        void should_analyze_normal_spell_cast_log() {
+            // Given
+            String logLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque";
+            Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
 
-        // When
-        analyzer.analyze(logLine);
+            // When
+            analyzer.analyze(logLine);
 
-        // Then
-        verify(fetchCharacter).character(characterNameCaptor.capture());
-        assertEquals("Jeanne Jackeline Qwartz", characterNameCaptor.getValue().value());
+            // Then
+            verify(fetchCharacter).character(characterNameCaptor.capture());
+            assertEquals("Jeanne Jackeline Qwartz", characterNameCaptor.getValue().value());
+        }
+
+        @Test
+        void should_analyze_critical_spell_cast_log() {
+            // Given
+            String logLine = "INFO 13:14:14,947 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque (Critiques)";
+            Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+
+            // When
+            analyzer.analyze(logLine);
+
+            // Then
+            verify(fetchCharacter).character(characterNameCaptor.capture());
+            assertEquals("Jeanne Jackeline Qwartz", characterNameCaptor.getValue().value());
+        }
     }
 
-    @Test
-    void should_analyze_critical_spell_cast_log() {
-        // Given
-        String logLine = "INFO 13:14:14,947 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque (Critiques)";
-        Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
-        when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+    @Nested
+    class StatusEffectTests {
+        @Test
+        void should_analyze_distortion_status_effect_log() {
+            // Given
+            String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Kinte lance le sort Bourrasque";
+            String statusLogLine = "INFO 10:07:24,886 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Kinte: Distorsion (Niv.8)";
+            Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Kinte"), 0, 0, 0);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
 
-        // When
-        analyzer.analyze(logLine);
+            // When
+            analyzer.analyze(spellLogLine);
+            analyzer.analyze(statusLogLine);
 
-        // Then
-        verify(fetchCharacter).character(characterNameCaptor.capture());
-        assertEquals("Jeanne Jackeline Qwartz", characterNameCaptor.getValue().value());
+            // Then
+            verify(updateStatusEffect).update(statusEffectCaptor.capture(), eq(mockCharacter.name()));
+
+            StatusEffect capturedEffect = statusEffectCaptor.getValue();
+            assertEquals("distorsion", capturedEffect.name().value());
+            assertEquals(DISTORSION, capturedEffect.subType());
+        }
+
+        @Test
+        void should_analyze_precision_status_effect_log() {
+            // Given
+            String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Sizt lance le sort Bourrasque";
+            String statusLogLine = "INFO 13:54:48,615 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Sizt: Précision (+160 Niv.)";
+            Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Sizt"), 0, 0, 0);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+
+            // When
+            analyzer.analyze(spellLogLine);
+            analyzer.analyze(statusLogLine);
+
+            // Then
+            verify(updateStatusEffect).update(statusEffectCaptor.capture(), eq(mockCharacter.name()));
+
+            StatusEffect capturedEffect = statusEffectCaptor.getValue();
+            assertEquals("precision", capturedEffect.name().value());
+            assertEquals(NO_SUB_TYPE, capturedEffect.subType());
+        }
+
+        @Test
+        void should_analyze_toxines_status_effect_log() {
+            // Given
+            String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque";
+            String statusLogLine = "INFO 13:14:14,000 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: Toxines (Niv.2)";
+            Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+
+            // When
+            analyzer.analyze(spellLogLine);
+            analyzer.analyze(statusLogLine);
+
+            // Then
+            verify(updateStatusEffect).update(statusEffectCaptor.capture(), eq(mockCharacter.name()));
+
+            StatusEffect capturedEffect = statusEffectCaptor.getValue();
+            assertEquals("toxines", capturedEffect.name().value());
+            assertEquals(TETATOXINE, capturedEffect.subType());
+        }
+
+        @Test
+        void should_analyze_garde_feuille_status_effect_log() {
+            // Given
+            String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Arbre de sadida";
+            String statusLogLine = " INFO 22:41:55,582 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz: Garde feuille (Niv.6)";
+            String healsLogLine = " INFO 22:41:24,967 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz: +774 PV (Lumière) (Eau) (Prière Sadida)";
+            Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+
+            // When
+            analyzer.analyze(spellLogLine);
+            analyzer.analyze(statusLogLine);
+            analyzer.analyze(healsLogLine);
+
+            // Then
+            verify(updateStatusEffect).update(statusEffectCaptor.capture(), eq(mockCharacter.name()));
+
+            StatusEffect capturedEffect = statusEffectCaptor.getValue();
+            assertEquals("garde feuille", capturedEffect.name().value());
+            assertEquals(PRIERE_SADIDA, capturedEffect.subType());
+        }
+
+        @Test
+        void should_analyze_engraine_status_effect_log() {
+            // Given
+            String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Arbre de sadida";
+            String statusLogLine = " INFO 22:41:55,582 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz: Engraine (Niv.6)";
+            Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+
+            // When
+            analyzer.analyze(spellLogLine);
+            analyzer.analyze(statusLogLine);
+
+            // Then
+            verify(updateStatusEffect).update(statusEffectCaptor.capture(), eq(mockCharacter.name()));
+
+            StatusEffect capturedEffect = statusEffectCaptor.getValue();
+            assertEquals("engraine", capturedEffect.name().value());
+            assertEquals(NO_SUB_TYPE, capturedEffect.subType());
+        }
     }
 
-    @Test
-    void should_analyze_distortion_status_effect_log() {
-        // Given
-        String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Kinte lance le sort Bourrasque";
-        String statusLogLine = "INFO 10:07:24,886 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Kinte: Distorsion (Niv.8)";
-        Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Kinte"), 0, 0, 0);
-        when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+    @Nested
+    class DamagesTests {
+        @Test
+        void should_analyze_single_element_damages_log() {
+            // Given
+            String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque";
+            String damagesLogLine = "INFO 13:14:04,548 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 713 PV (Eau)";
 
-        // When
-        analyzer.analyze(spellLogLine);
-        analyzer.analyze(statusLogLine);
+            Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
 
-        // Then
-        verify(updateStatusEffect).update(statusEffectCaptor.capture(), eq(mockCharacter.name()));
+            // When
+            analyzer.analyze(spellLogLine);
+            analyzer.analyze(damagesLogLine);
 
-        StatusEffect capturedEffect = statusEffectCaptor.getValue();
-        assertEquals("distorsion", capturedEffect.name().value());
-        assertEquals(DISTORSION, capturedEffect.subType());
+            // Then
+            verify(updateCharacter).updateDamages(eq(mockCharacter), damagesCaptor.capture());
+
+            Damages capturedDamages = damagesCaptor.getValue();
+            assertEquals(1713, capturedDamages.amount());
+
+            Set<String> expectedElements = new LinkedHashSet<>();
+            expectedElements.add("eau");
+            assertEquals(expectedElements, capturedDamages.elements());
+            assertEquals(LocalTime.parse("13:14:04").plus(548, MILLIS), capturedDamages.timestamp());
+        }
+
+        @Test
+        void should_analyze_multi_element_damages_log() {
+            // Given
+            String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque";
+            String statusLogLine = "INFO 13:14:14,000 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: Toxines (Niv.2)";
+            String damagesLogLine = "INFO 13:14:07,232 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -550 PV (Eau) (Feu) (Toxines)";
+
+            CharacterName toxinesCaster = new CharacterName("Jeanne Jackeline Qwartz");
+            Character mockToxinesCaster = new Character(toxinesCaster, 0, 0, 0);
+
+            when(fetchCharacter.character(eq(toxinesCaster))).thenReturn(mockToxinesCaster);
+
+            // When
+            analyzer.analyze(spellLogLine);
+            analyzer.analyze(statusLogLine);
+            analyzer.analyze(damagesLogLine);
+
+            // Then
+            verify(updateStatusEffect).update(statusEffectCaptor.capture(), eq(mockToxinesCaster.name()));
+            verify(updateCharacter).updateDamages(eq(mockToxinesCaster), damagesCaptor.capture());
+
+            Damages capturedDamages = damagesCaptor.getValue();
+            assertEquals(550, capturedDamages.amount());
+
+            Set<String> expectedElements = new LinkedHashSet<>();
+            expectedElements.add("eau");
+            expectedElements.add("feu");
+            expectedElements.add("toxines");
+            assertEquals(expectedElements, capturedDamages.elements());
+        }
+
+        @Test
+        void should_handle_damages_without_spell_caster() {
+            // Given
+            String damagesLogLine = "INFO 13:14:04,548 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 713 PV (Eau)";
+
+            Character unknownCharacter = new Character(new CharacterName("Unknown"), 0, 0, 0);
+            when(fetchCharacter.character(eq(new CharacterName("Unknown")))).thenReturn(unknownCharacter);
+
+            // When
+            analyzer.analyze(damagesLogLine);
+
+            // Then
+            verify(updateCharacter).updateDamages(eq(unknownCharacter), any(Damages.class));
+        }
     }
 
-    @Test
-    void should_analyze_precision_status_effect_log() {
-        // Given
-        String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Sizt lance le sort Bourrasque";
-        String statusLogLine = "INFO 13:54:48,615 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Sizt: Précision (+160 Niv.)";
-        Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Sizt"), 0, 0, 0);
-        when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+    @Nested
+    class HealsTests {
+        @Test
+        void should_analyze_single_element_healing_log() {
+            // Given
+            String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Engrais";
+            String healsLogLine = "INFO 21:02:54,410 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] La Gonflable: +1 200 PV (Eau)";
 
-        // When
-        analyzer.analyze(spellLogLine);
-        analyzer.analyze(statusLogLine);
+            Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
 
-        // Then
-        verify(updateStatusEffect).update(statusEffectCaptor.capture(), eq(mockCharacter.name()));
+            // When
+            analyzer.analyze(spellLogLine);
+            analyzer.analyze(healsLogLine);
 
-        StatusEffect capturedEffect = statusEffectCaptor.getValue();
-        assertEquals("precision", capturedEffect.name().value());
-        assertEquals(NO_SUB_TYPE, capturedEffect.subType());
+            // Then
+            verify(updateCharacter).updateHeals(eq(mockCharacter), healsCaptor.capture());
+
+            Heals capturedHeals = healsCaptor.getValue();
+            assertEquals(1200, capturedHeals.amount());
+
+            Set<String> expectedElements = new LinkedHashSet<>();
+            expectedElements.add("eau");
+            assertEquals(expectedElements, capturedHeals.elements());
+            assertEquals(LocalTime.parse("21:02:54").plus(410, MILLIS), capturedHeals.timestamp());
+        }
+
+        @Test
+        void should_ignore_engraine_healing_log() {
+            // Given
+            String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Engrais";
+            String healsLogLine = "INFO 21:02:54,410 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] La Gonflable: +1 200 PV (Engrainé)";
+
+            Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+
+            // When
+            analyzer.analyze(spellLogLine);
+            analyzer.analyze(healsLogLine);
+
+            // Then
+            verify(updateCharacter, never()).updateHeals(any(Character.class), any(Heals.class));
+        }
     }
 
-    @Test
-    void should_analyze_toxines_status_effect_log() {
-        // Given
-        String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque";
-        String statusLogLine = "INFO 13:14:14,000 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: Toxines (Niv.2)";
-        Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
-        when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
-
-        // When
-        analyzer.analyze(spellLogLine);
-        analyzer.analyze(statusLogLine);
-
-        // Then
-        verify(updateStatusEffect).update(statusEffectCaptor.capture(), eq(mockCharacter.name()));
-
-        StatusEffect capturedEffect = statusEffectCaptor.getValue();
-        assertEquals("toxines", capturedEffect.name().value());
-        assertEquals(TETATOXINE, capturedEffect.subType());
+    @Nested
+    class ShieldTests {
+        // TODO: Add test for shields
+        //  INFO 21:02:56,407 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz: 1 324 Armure
     }
 
-    @Test
-    void should_analyze_garde_feuille_status_effect_log() {
-        // Given
-        String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Arbre de sadida";
-        String statusLogLine = " INFO 22:41:55,582 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz: Garde feuille (Niv.6)";
-        String healsLogLine = " INFO 22:41:24,967 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz: +774 PV (Lumière) (Eau) (Prière Sadida)";
-        Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
-        when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
 
-        // When
-        analyzer.analyze(spellLogLine);
-        analyzer.analyze(statusLogLine);
-        analyzer.analyze(healsLogLine);
-
-        // Then
-        verify(updateStatusEffect).update(statusEffectCaptor.capture(), eq(mockCharacter.name()));
-
-        StatusEffect capturedEffect = statusEffectCaptor.getValue();
-        assertEquals("garde feuille", capturedEffect.name().value());
-        assertEquals(PRIERE_SADIDA, capturedEffect.subType());
-    }
-
-    // TODO: Add test for "engraine" case
-
-    // TODO: Add test for shields
-    //  INFO 21:02:56,407 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz: 1 324 Armure
-
-    @Test
-    void should_analyze_single_element_damages_log() {
-        // Given
-        String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque";
-        String damagesLogLine = "INFO 13:14:04,548 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 713 PV (Eau)";
-
-        Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
-        when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
-
-        // When
-        analyzer.analyze(spellLogLine);
-        analyzer.analyze(damagesLogLine);
-
-        // Then
-        verify(updateCharacter).updateDamages(eq(mockCharacter), damagesCaptor.capture());
-
-        Damages capturedDamages = damagesCaptor.getValue();
-        assertEquals(1713, capturedDamages.amount());
-
-        Set<String> expectedElements = new LinkedHashSet<>();
-        expectedElements.add("eau");
-        assertEquals(expectedElements, capturedDamages.elements());
-        assertEquals(LocalTime.parse("13:14:04").plus(548, MILLIS), capturedDamages.timestamp());
-    }
-
-    @Test
-    void should_analyze_multi_element_damages_log() {
-        // Given
-        String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque";
-        String statusLogLine = "INFO 13:14:14,000 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: Toxines (Niv.2)";
-        String damagesLogLine = "INFO 13:14:07,232 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -550 PV (Eau) (Feu) (Toxines)";
-
-        CharacterName toxinesCaster = new CharacterName("Jeanne Jackeline Qwartz");
-        Character mockToxinesCaster = new Character(toxinesCaster, 0, 0, 0);
-
-        when(fetchCharacter.character(eq(toxinesCaster))).thenReturn(mockToxinesCaster);
-
-        // When
-        analyzer.analyze(spellLogLine);
-        analyzer.analyze(statusLogLine);
-        analyzer.analyze(damagesLogLine);
-
-        // Then
-        verify(updateStatusEffect).update(statusEffectCaptor.capture(), eq(mockToxinesCaster.name()));
-        verify(updateCharacter).updateDamages(eq(mockToxinesCaster), damagesCaptor.capture());
-
-        Damages capturedDamages = damagesCaptor.getValue();
-        assertEquals(550, capturedDamages.amount());
-
-        Set<String> expectedElements = new LinkedHashSet<>();
-        expectedElements.add("eau");
-        expectedElements.add("feu");
-        expectedElements.add("toxines");
-        assertEquals(expectedElements, capturedDamages.elements());
-    }
-
-    @Test
-    void should_handle_damages_without_spell_caster() {
-        // Given
-        String damagesLogLine = "INFO 13:14:04,548 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 713 PV (Eau)";
-
-        Character unknownCharacter = new Character(new CharacterName("Unknown"), 0, 0, 0);
-        when(fetchCharacter.character(eq(new CharacterName("Unknown")))).thenReturn(unknownCharacter);
-
-        // When
-        analyzer.analyze(damagesLogLine);
-
-        // Then
-        verify(updateCharacter).updateDamages(eq(unknownCharacter), any(Damages.class));
-    }
-
-    @Test
-    void should_analyze_single_element_healing_log() {
-        // Given
-        String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Engrais";
-        String healsLogLine = "INFO 21:02:54,410 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] La Gonflable: +1 200 PV (Eau)";
-
-        Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0);
-        when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
-
-        // When
-        analyzer.analyze(spellLogLine);
-        analyzer.analyze(healsLogLine);
-
-        // Then
-        verify(updateCharacter).updateHeals(eq(mockCharacter), healsCaptor.capture());
-
-        Heals capturedHeals = healsCaptor.getValue();
-        assertEquals(1200, capturedHeals.amount());
-
-        Set<String> expectedElements = new LinkedHashSet<>();
-        expectedElements.add("eau");
-        assertEquals(expectedElements, capturedHeals.elements());
-        assertEquals(LocalTime.parse("21:02:54").plus(410, MILLIS), capturedHeals.timestamp());
-    }
 
     @Test
     void should_ignore_irrelevant_log_lines() {
