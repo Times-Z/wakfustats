@@ -294,3 +294,27 @@ ERROR 08:34:21,739 [AWT-EventQueue-0] (cXb:300) - On tente de passer à un dialo
  INFO 08:34:32,743 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Qwartz lance le sort Volcan
  INFO 08:34:36,442 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] 55 secondes reportées pour le tour suivant.
  INFO 08:34:36,563 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -475 PV (Feu)
+ INFO 22:49:41,286 [AWT-EventQueue-0] (aZb:92) - [FIGHT] End fight with id 1552159201
+ INFO 22:44:36,177 [AWT-EventQueue-0] (bae:47) - CREATION DU COMBAT
+ INFO 08:27:53,717 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Deuz: 0 PW (Gobgob)
+ INFO 08:27:53,718 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Deuz: Garde feuille (Niv.4)
+ INFO 08:27:53,718 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Deuz: 55% Armure reçue (Garde feuille)
+ INFO 08:27:53,719 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Deuz: 55% Soins reçus (Garde feuille)
+ INFO 08:27:53,914 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Deuz: +0 PV (Lumière) (Eau) (Prière Sadida)
+ INFO 08:27:53,914 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] 122 secondes reportées pour le tour suivant.
+ INFO 08:27:54,013 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Deuz: 0 PW (Invocateur animal)
+ INFO 08:27:55,414 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Deuz: Poudre (+11 Niv.)
+ INFO 08:27:55,416 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Deuz: Garde feuille (Niv.4)
+ INFO 08:27:55,416 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Deuz: 55% Armure reçue (Garde feuille)
+ INFO 08:27:55,417 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Deuz: 55% Soins reçus (Garde feuille)
+ INFO 08:27:56,729 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Deuz lance le sort Pulsar (Critiques)
+ INFO 08:27:57,746 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Deuz: Invoque un(e) Bombe Paralysante
+ INFO 08:27:57,746 [AWT-EventQueue-0] (eIu:106) - Instanciation d'une nouvelle invocation avec un id de -1706442020630679
+ INFO 08:27:57,746 [AWT-EventQueue-0] (eLk:1384) - [_FL_] fightId=1552150923 Bombe Paralysante breed : 3797 [-1706442020630679] isControlledByAI=true obstacleId : 7 join the fight at {Point3 : (1, -14, 0)}
+ INFO 08:27:57,748 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Bombe Paralysante: Bombe paralysante (Niv.3)
+ INFO 08:27:57,750 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Bombe Paralysante: Bombe paralysante (Niv.6)
+ INFO 08:27:57,752 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Deuz: 1 PM (Trainée de poudre)
+ INFO 08:27:59,463 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Deuz lance le sort Détonation
+ INFO 08:27:59,966 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -701 PV (Terre) (Bombe paralysante)
+ INFO 08:28:00,863 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Deuz: 1 PW
+ INFO 08:28:00,864 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Deuz: 1 PA (Bomber Fan)

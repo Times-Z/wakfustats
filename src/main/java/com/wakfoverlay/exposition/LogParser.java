@@ -42,6 +42,17 @@ public class LogParser {
         return result.status();
     }
 
+    public FileReadStatus readForFighters(String filePath) {
+        theFileReader.resetPosition(filePath);
+        ReadResult result = theFileReader.readNewLines(filePath);
+
+        if (result.status() == FileReadStatus.SUCCESS && !result.lines().isEmpty()) {
+            result.lines().forEach(theAnalyzer::analyzeFighter);
+        }
+
+        return result.status();
+    }
+
     public void resetReadPosition() {
         if (currentFilePath != null) {
             theFileReader.resetPosition(currentFilePath);

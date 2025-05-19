@@ -38,7 +38,7 @@ class UpdateCharacterUseCaseTest {
     void should_add_Damages_when_timestamp_difference_is_enough() {
         // Given
         LocalTime now = LocalTime.of(12, 0, 0);
-        Character character = new Character(new Character.CharacterName("TestCharacter"), 100, 0, 0);
+        Character character = new Character(new Character.CharacterName("TestCharacter"), 100, 0, 0, false);
         charactersRepository.addOrUpdate(character);
 
         Damages newDamages = new Damages(now, 50, Set.of("Fire", "Ice"));
@@ -55,7 +55,7 @@ class UpdateCharacterUseCaseTest {
     void should_not_add_Damages_when_timestamp_difference_is_not_enough() {
         // Given
         LocalTime now = LocalTime.of(12, 0, 0);
-        Character character = new Character(new Character.CharacterName("TestCharacter"), 100, 0, 0);
+        Character character = new Character(new Character.CharacterName("TestCharacter"), 100, 0, 0, false);
         charactersRepository.addOrUpdate(character);
 
         Damages existingDamages = new Damages(now.minus(500, MILLIS), 50, Set.of("Fire", "Ice"));
@@ -75,7 +75,7 @@ class UpdateCharacterUseCaseTest {
     void should_add_Heals_when_timestamp_difference_is_enough() {
         // Given
         LocalTime now = LocalTime.of(12, 0, 0);
-        Character character = new Character(new CharacterName("TestCharacter"), 100, 0, 0);
+        Character character = new Character(new CharacterName("TestCharacter"), 100, 0, 0, false);
         charactersRepository.addOrUpdate(character);
 
         Heals newHeals = new Heals(now, 50, Set.of("Fire", "Ice"));
@@ -92,7 +92,7 @@ class UpdateCharacterUseCaseTest {
     void should_not_add_Heals_when_timestamp_difference_is_not_enough() {
         // Given
         LocalTime now = LocalTime.of(12, 0, 0);
-        Character character = new Character(new Character.CharacterName("TestCharacter"), 100, 0, 0);
+        Character character = new Character(new Character.CharacterName("TestCharacter"), 100, 0, 0, false);
         charactersRepository.addOrUpdate(character);
 
         Heals existingHeals = new Heals(now.minus(500, MILLIS), 50, Set.of("Fire", "Ice"));

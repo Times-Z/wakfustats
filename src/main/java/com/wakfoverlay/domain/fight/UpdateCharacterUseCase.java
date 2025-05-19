@@ -67,7 +67,7 @@ public record UpdateCharacterUseCase(
     }
 
     @Override
-    public void resetCharacterDamages() {
+    public void resetCharacters() {
         charactersRepository.resetCharacters();
     }
 

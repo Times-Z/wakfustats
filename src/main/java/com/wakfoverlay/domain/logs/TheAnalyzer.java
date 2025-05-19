@@ -68,6 +68,14 @@ public class TheAnalyzer {
         }
     }
 
+    public void analyzeFighter(String logLine) {
+        Matcher fighterMatcher = regexProvider.fighterPattern().matcher(logLine);
+
+        if (fighterMatcher.find()) {
+            handleFighter(fighterMatcher);
+        }
+    }
+
     private void handleFighter(Matcher fighterMatcher) {
         String fighterName = fighterMatcher.group(3);
         boolean isControlledByAI = Boolean.parseBoolean(fighterMatcher.group(5));
@@ -152,6 +160,7 @@ public class TheAnalyzer {
         };
 
         lastSpellCaster = fetchCharacter.character(casterName);
+        System.out.println("lastSpellCaster: " + lastSpellCaster);
 
         updateCharacter.updateDamages(lastSpellCaster, damages);
     }

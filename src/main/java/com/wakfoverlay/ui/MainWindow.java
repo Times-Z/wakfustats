@@ -217,8 +217,14 @@ public class MainWindow extends VBox {
     }
 
     private void resetStats() {
-        updateCharacter.resetCharacterDamages();
+        updateCharacter.resetCharacters();
         updateStatusEffect.resetStatusEffects();
+
+        FileReadStatus status = logParser.readForFighters(selectedFilePath);
+
+        if (status != FileReadStatus.SUCCESS) {
+            showStatusMessage(getMessageForStatus(status));
+        }
     }
 
     private void closeWindow() {
