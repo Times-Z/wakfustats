@@ -5,6 +5,9 @@ import java.util.regex.Pattern;
 
 public class RegexProvider {
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss,SSS");
+    private static final Pattern FIGHTER_PATTERN = Pattern
+            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?\\]\\s+\\(.*?\\)\\s+-\\s+\\[_FL_\\]\\s+fightId=(\\d+)\\s+(.*?)\\s+breed\\s*:\\s*(\\d+).*?isControlledByAI=(\\w+)",
+                    Pattern.UNICODE_CHARACTER_CLASS);
     private static final Pattern SPELL_CAST_PATTERN = Pattern
             .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3}) \\[.*?\\] \\(.*?\\) - \\[Information \\(jeu\\)\\] (.+?) lance le sort (\\w+)(?: \\((.*?)\\))?",
                     Pattern.UNICODE_CHARACTER_CLASS);
@@ -43,5 +46,9 @@ public class RegexProvider {
 
     public Pattern shieldsPattern() {
         return SHIELDS_PATTERN;
+    }
+
+    public Pattern fighterPattern() {
+        return FIGHTER_PATTERN;
     }
 }

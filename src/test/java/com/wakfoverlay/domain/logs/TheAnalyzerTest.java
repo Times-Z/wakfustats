@@ -71,6 +71,20 @@ class TheAnalyzerTest {
     }
 
     @Nested
+    class FighterTests {
+        @Test
+        void should_analyze_fighter_log() {
+            // Given
+            String logLine = " INFO 08:25:31,419 [AWT-EventQueue-0] (eLk:1384) - [_FL_] fightId=1552150922 Jeanne Jackeline Qwartz breed : 10 [10303110] isControlledByAI=false obstacleId : -1 join the fight at {Point3 : (-2, -11, 0)}";
+
+            // When
+            analyzer.analyze(logLine);
+
+            // Then
+        }
+    }
+
+    @Nested
     class SpellCastingTests {
         @Test
         void should_analyze_normal_spell_cast_log() {

@@ -36,11 +36,20 @@ public class TheAnalyzer {
     }
 
     public void analyze(String logLine) {
+        Matcher fighterMatcher = regexProvider.fighterPattern().matcher(logLine);
         Matcher spellCastMatcher = regexProvider.spellCastPattern().matcher(logLine);
         Matcher statusEffectMatcher = regexProvider.statusEffectPattern().matcher(logLine);
         Matcher damagesMatcher = regexProvider.damagesPattern().matcher(logLine);
         Matcher healsMatcher = regexProvider.healsPattern().matcher(logLine);
         Matcher shieldsMatcher = regexProvider.shieldsPattern().matcher(logLine);
+
+        if (fighterMatcher.find()) {
+            System.out.println("timestamp: " + fighterMatcher.group(1));
+            System.out.println("fightId: " + fighterMatcher.group(2));
+            System.out.println("Fighter found: " + fighterMatcher.group(3));
+            System.out.println("Breed: " + fighterMatcher.group(4));
+            System.out.println("isControlledByAI: " + fighterMatcher.group(5));
+        }
 
         if (spellCastMatcher.find()) {
             handleSpellCasting(spellCastMatcher);

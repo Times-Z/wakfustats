@@ -22,6 +22,15 @@ public record UpdateCharacterUseCase(
     private static final int MAX_TIMESTAMP_DIFFERENCE_MILLIS = 800;
 
     @Override
+    public void create(Character character) {
+        Optional<Character> existingCharacter = charactersRepository.character(character.name());
+
+        if (existingCharacter.isEmpty()) {
+            charactersRepository.addOrUpdate(character);
+        }
+    }
+
+    @Override
     public void updateDamages(Character character, Damages damages) {
         Optional<Damages> existingDamages = damagesRepository.find(damages)
                 .stream()
