@@ -1,11 +1,9 @@
 package com.wakfoverlay.domain.logs;
 
 import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
+import com.wakfoverlay.domain.fight.model.*;
 import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.fight.model.Character.CharacterName;
-import com.wakfoverlay.domain.fight.model.Damages;
-import com.wakfoverlay.domain.fight.model.Heals;
-import com.wakfoverlay.domain.fight.model.StatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
@@ -42,6 +40,7 @@ public class TheAnalyzer {
         Matcher statusEffectMatcher = regexProvider.statusEffectPattern().matcher(logLine);
         Matcher damagesMatcher = regexProvider.damagesPattern().matcher(logLine);
         Matcher healsMatcher = regexProvider.healsPattern().matcher(logLine);
+        Matcher shieldsMatcher = regexProvider.shieldsPattern().matcher(logLine);
 
         if (spellCastMatcher.find()) {
             handleSpellCasting(spellCastMatcher);
@@ -57,6 +56,10 @@ public class TheAnalyzer {
 
         if (healsMatcher.find()) {
             handleHeals(healsMatcher);
+        }
+
+        if (shieldsMatcher.find()) {
+            handleShields(shieldsMatcher);
         }
     }
 
@@ -170,6 +173,15 @@ public class TheAnalyzer {
             lastSpellCaster = fetchCharacter.character(casterName);
             updateCharacter.updateHeals(lastSpellCaster, heals);
         }
+    }
+
+    private void handleShields(Matcher shieldsMatcher) {
+        LocalTime timestamp = LocalTime.parse(shieldsMatcher.group(1), regexProvider.timeFormatterPattern());
+        int shieldsAmount = Integer.parseInt(shieldsMatcher.group(3).replaceAll("[^\\d-]+", ""));
+
+        Shields shields = new Shields(timestamp, shieldsAmount);
+
+        updateCharacter.updateShields(lastSpellCaster, shields);
     }
 }
 

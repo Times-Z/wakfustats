@@ -47,7 +47,14 @@ public record UpdateCharacterUseCase(
 
     @Override
     public void updateShields(Character character, Shields shields) {
+        Optional<Shields> existingShields = shieldsRepository.find(shields)
+                .stream()
+                .findFirst();
 
+        if (existingShields.isEmpty() || !areShieldsTooClose(existingShields.get(), shields)) {
+            shieldsRepository.addShields(shields);
+            addOrUpdateShields(character, shields);
+        }
     }
 
     @Override
@@ -92,7 +99,7 @@ public record UpdateCharacterUseCase(
         charactersRepository.addOrUpdate(updatedCharacter);
     }
 
-    private void addOrUpdateShields(Character character, Damages shields) {
+    private void addOrUpdateShields(Character character, Shields shields) {
         Character updatedCharacter = new Character(
                 character.name(),
                 character.damages(),

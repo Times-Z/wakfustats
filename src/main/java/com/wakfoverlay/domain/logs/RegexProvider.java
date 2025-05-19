@@ -17,6 +17,9 @@ public class RegexProvider {
     private static final Pattern HEALS_PATTERN = Pattern
             .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(.*?\\)\\s+-\\s+\\[Information \\(jeu\\)]\\s+(.+?):\\s+\\+([\\d\\s]+)\\s*PV(\\s*(?:\\([^)]*\\)\\s*)*)?",
                     Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern SHIELDS_PATTERN = Pattern
+            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(.*?\\)\\s+-\\s+\\[Information \\(jeu\\)]\\s+(.+?):\\s+\\+([\\d\\s]+)\\s*Armure",
+                    Pattern.UNICODE_CHARACTER_CLASS);
 
     public DateTimeFormatter timeFormatterPattern() {
         return TIME_FORMATTER;
@@ -36,5 +39,9 @@ public class RegexProvider {
 
     public Pattern healsPattern() {
         return HEALS_PATTERN;
+    }
+
+    public Pattern shieldsPattern() {
+        return SHIELDS_PATTERN;
     }
 }

@@ -8,6 +8,7 @@ TODO:
 - Compute shields
 - Aggregate invocations to the spell caster
 - Refacto sealed interface on Damages, Heals, Shields then use it with pattern matching
+- Refacto Map KEYS for Damages, Heals, Shields
 - Couleur des graphs par perso et pas par position
 
 Known issues:

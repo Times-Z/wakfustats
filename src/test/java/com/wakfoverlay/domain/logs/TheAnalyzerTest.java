@@ -183,6 +183,9 @@ class TheAnalyzerTest {
 
     // TODO: Add test for "engraine" case
 
+    // TODO: Add test for shields
+    //  INFO 21:02:56,407 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz: 1 324 Armure
+
     @Test
     void should_analyze_single_element_damages_log() {
         // Given
