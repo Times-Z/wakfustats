@@ -21,19 +21,23 @@ public class CharactersShieldsView extends VBox {
     );
 
     private static final int NAME_MAX_LENGTH = 40;
-    private static final double NAME_COLUMN_WIDTH = 100;
+    private static final double NAME_COLUMN_WIDTH = 120;
 
     public CharactersShieldsView(Characters charactersData) {
         this.setSpacing(2);
 
         List<com.wakfoverlay.domain.fight.model.Character> characters = charactersData.characters();
-        int totalShields = 0;
+        int totalShields = calculateTotalShields(characters);
 
         for (int i = 0; i < characters.size(); i++) {
             com.wakfoverlay.domain.fight.model.Character character = characters.get(i);
             HBox characterRow = createCharacterRow(character, i, totalShields);
             this.getChildren().add(characterRow);
         }
+    }
+
+    private int calculateTotalShields(List<Character> characters) {
+        return characters.stream().mapToInt(Character::shields).sum();
     }
 
     private HBox createCharacterRow(Character character, int index, int totalShields) {

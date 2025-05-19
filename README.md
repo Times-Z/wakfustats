@@ -4,15 +4,14 @@ to image: ./gradlew jlink
 to package: ./gradlew jpackage (if needed--info or --debug)
 
 TODO:
-- Opacity control
 - Identify Character with ULID instead of name
 - Compute shields
-- Option to aggregate invocations to the spell caster
-- Check computing Feca glyph
-- Bug Sadi poison & Xelor
+- Aggregate invocations to the spell caster
+- Refacto sealed interface on Damages, Heals, Shields then use it with pattern matching
+- Couleur des graphs par perso et pas par position
 
 Known issues:
 - Reset stats during fight could create an Unknown character (caused by the fetchCharacter function)
 - Compute des heals HoT
-- Couleur des graphs n'augmentent pas dans l'écran des heals
-- Couleur des graphs n'augmentent pas dans l'écran des shields
+- Check computing Feca glyph --> Aucune indication autre que le cast
+- Bug Sadi poison & Xelor

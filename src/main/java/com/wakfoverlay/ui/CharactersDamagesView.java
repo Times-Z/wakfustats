@@ -21,7 +21,7 @@ public class CharactersDamagesView extends VBox {
     );
 
     private static final int NAME_MAX_LENGTH = 40;
-    private static final double NAME_COLUMN_WIDTH = 100;
+    private static final double NAME_COLUMN_WIDTH = 120;
 
     public CharactersDamagesView(Characters charactersData) {
         this.setSpacing(2);

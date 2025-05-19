@@ -25,12 +25,7 @@ public class MainWindow extends VBox {
     private final LogParser logParser;
     private final UserPreferences userPreferences;
 
-    private final ScrollPane contentScrollPane;
     private final VBox contentContainer;
-    private CharactersDamagesView charactersDamagesView;
-    private CharactersHealsView charactersHealsView;
-    private CharactersShieldsView charactersShieldsView;
-    private StatusMessageView statusMessageView;
 
     private String selectedFilePath;
 
@@ -49,7 +44,7 @@ public class MainWindow extends VBox {
         TitleBar titleBar = createTitleBar();
         this.contentContainer = new VBox();
         this.contentContainer.setSpacing(2);
-        this.contentScrollPane = createScrollPane();
+        ScrollPane contentScrollPane = createScrollPane();
 
         this.getChildren().addAll(titleBar, contentScrollPane);
 
@@ -244,22 +239,22 @@ public class MainWindow extends VBox {
     }
 
     private void showStatusMessage(String message) {
-        statusMessageView = new StatusMessageView(message);
+        StatusMessageView statusMessageView = new StatusMessageView(message);
         contentContainer.getChildren().add(statusMessageView);
     }
 
     private void showCharactersDamages(Characters characters) {
-        charactersDamagesView = new CharactersDamagesView(characters);
+        CharactersDamagesView charactersDamagesView = new CharactersDamagesView(characters);
         contentContainer.getChildren().add(charactersDamagesView);
     }
 
     private void showCharactersHeals(Characters characters) {
-        charactersHealsView = new CharactersHealsView(characters);
+        CharactersHealsView charactersHealsView = new CharactersHealsView(characters);
         contentContainer.getChildren().add(charactersHealsView);
     }
 
     private void showCharactersShields(Characters characters) {
-        charactersShieldsView = new CharactersShieldsView(characters);
+        CharactersShieldsView charactersShieldsView = new CharactersShieldsView(characters);
         contentContainer.getChildren().add(charactersShieldsView);
     }
 

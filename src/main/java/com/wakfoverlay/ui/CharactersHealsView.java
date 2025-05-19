@@ -21,19 +21,23 @@ public class CharactersHealsView extends VBox {
     );
 
     private static final int NAME_MAX_LENGTH = 40;
-    private static final double NAME_COLUMN_WIDTH = 100;
+    private static final double NAME_COLUMN_WIDTH = 120;
 
     public CharactersHealsView(Characters charactersData) {
         this.setSpacing(2);
 
         List<Character> characters = charactersData.characters();
-        int totalHeals = 0;
+        int totalHeals = calculateTotalHeals(characters);
 
         for (int i = 0; i < characters.size(); i++) {
             Character character = characters.get(i);
             HBox characterRow = createCharacterRow(character, i, totalHeals);
             this.getChildren().add(characterRow);
         }
+    }
+
+    private int calculateTotalHeals(List<Character> characters) {
+        return characters.stream().mapToInt(Character::heals).sum();
     }
 
     private HBox createCharacterRow(Character character, int index, int totalHeals) {
