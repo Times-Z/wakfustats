@@ -2,6 +2,7 @@ package com.wakfoverlay.infrastructure;
 
 import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.fight.model.StatusEffect;
+import com.wakfoverlay.domain.fight.model.Character.CharacterName;
 import com.wakfoverlay.domain.fight.port.secondary.StatusEffectRepository;
 
 import java.util.HashMap;
@@ -30,5 +31,9 @@ public class InMemoryStatusEffectRepository implements StatusEffectRepository {
     @Override
     public void resetStatusEffects() {
         statusEffects.clear();
+    }
+
+    public Map<StatusEffect, CharacterName> getStatusEffects() {
+        return statusEffects;   
     }
 }

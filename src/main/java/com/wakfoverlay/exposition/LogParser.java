@@ -26,10 +26,10 @@ public class LogParser {
         if (currentFilePath == null || !currentFilePath.equals(filePath)) {
             currentFilePath = filePath;
             if (firstLaunch) {
-                theFileReader.setPositionToEnd(filePath);
+                theFileReader.resetPosition(filePath);
                 firstLaunch = false;
             } else {
-                theFileReader.resetPosition(filePath);
+                theFileReader.setPositionToEnd(filePath);
             }
         }
 

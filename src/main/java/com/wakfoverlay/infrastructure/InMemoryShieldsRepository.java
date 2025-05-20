@@ -9,17 +9,17 @@ import java.util.Map;
 import java.util.Optional;
 
 public class InMemoryShieldsRepository implements ShieldsRepository {
-    private final Map<ShieldsKey, LocalTime> shieldsMap = new HashMap<>();
+    private final Map<AmountKey, LocalTime> shieldsMap = new HashMap<>();
 
     @Override
     public void addShields(Shields shields) {
-        ShieldsKey key = new ShieldsKey(shields.amount());
+        AmountKey key = new AmountKey(shields.amount());
         shieldsMap.put(key, shields.timestamp());
     }
 
     @Override
     public Optional<Shields> find(Shields shields) {
-        ShieldsKey key = new ShieldsKey(shields.amount());
+        AmountKey key = new AmountKey(shields.amount());
         LocalTime timestamp = shieldsMap.get(key);
         if (timestamp != null) {
             return Optional.of(new Shields(timestamp, shields.amount()));
@@ -27,7 +27,7 @@ public class InMemoryShieldsRepository implements ShieldsRepository {
         return Optional.empty();
     }
 
-    public Map<ShieldsKey, LocalTime> getShieldsMap() {
+    public Map<AmountKey, LocalTime> getShieldsMap() {
         return Map.copyOf(shieldsMap);
     }
 }

@@ -65,7 +65,7 @@ public class TheFileReader {
 
     public void resetPosition(String filePath) {
         if (filePath != null) {
-            filePositions.remove(filePath);
+            filePositions.put(filePath, 0L);
         }
     }
 
