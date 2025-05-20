@@ -49,4 +49,12 @@ public record FetchCharacterUseCase(
                 .sorted((p1, p2) -> Integer.compare(p2.shields(), p1.shields()))
                 .collect(Collectors.toCollection(ArrayList::new)));
     }
+
+    @Override
+    public boolean isAllied(CharacterName characterName) {
+        return charactersRepository.characters()
+                .characters()
+                .stream()
+                .anyMatch(character -> character.name().equals(characterName) && !character.isControlledByAI());
+    }
 }

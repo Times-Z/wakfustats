@@ -9,4 +9,5 @@ public interface FetchCharacter {
     Characters rankedCharactersByDamages();
     Characters rankedCharactersByHeals();
     Characters rankedCharactersByShields();
+    boolean isAllied(CharacterName characterName);
 }

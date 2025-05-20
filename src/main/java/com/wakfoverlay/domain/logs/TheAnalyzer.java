@@ -146,6 +146,12 @@ public class TheAnalyzer {
 
     private void handleDamages(Matcher damagesMatcher) {
         LocalTime timestamp = LocalTime.parse(damagesMatcher.group(1), regexProvider.timeFormatterPattern());
+
+        String targetName = damagesMatcher.group(2);
+        if (friendlyFire(targetName)) {
+            return;
+        }
+
         int damageAmount = Integer.parseInt(damagesMatcher.group(3).replaceAll("[^\\d-]+", ""));
 
         String elements = damagesMatcher.group(4);
@@ -176,6 +182,10 @@ public class TheAnalyzer {
         lastSpellCaster = fetchCharacter.character(casterName);
 
         updateCharacter.updateDamages(lastSpellCaster, damages);
+    }
+
+    private boolean friendlyFire(String targetName) {
+        return fetchCharacter.isAllied(new CharacterName(targetName));
     }
 
     private void handleHeals(Matcher healsMatcher) {
@@ -219,4 +229,3 @@ public class TheAnalyzer {
         updateCharacter.updateShields(lastSpellCaster, shields);
     }
 }
-
