@@ -103,7 +103,7 @@ public class MainWindow extends VBox {
             return;
         }
 
-        Characters rankedCharacters = fetchCharacter.rankedCharactersByDamages();
+        Characters rankedCharacters = fetchCharacter.rankedCharactersByShields();
 
         if (rankedCharacters.characters().isEmpty()) {
             return;

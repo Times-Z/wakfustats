@@ -5,7 +5,6 @@ to package: ./gradlew jpackage (if needed--info or --debug)
 
 TODO:
 - Aggregate invocations to the spell caster
-- Compute shields
 - Avoid friendly fire
 - Add a test for isControlledByAi mobs
 - Refacto sealed interface on Damages, Heals, Shields then use it with pattern matching

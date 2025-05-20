@@ -26,7 +26,7 @@ public class CharactersShieldsView extends VBox {
     public CharactersShieldsView(Characters charactersData) {
         this.setSpacing(2);
 
-        List<com.wakfoverlay.domain.fight.model.Character> characters = charactersData.characters();
+        List<Character> characters = charactersData.characters();
         int totalShields = calculateTotalShields(characters);
 
         for (int i = 0; i < characters.size(); i++) {
@@ -50,7 +50,7 @@ public class CharactersShieldsView extends VBox {
         nameContainer.setPrefWidth(NAME_COLUMN_WIDTH);
         nameContainer.setMinWidth(NAME_COLUMN_WIDTH);
 
-        Pane shieldBar = createHealBar(character, index, totalShields);
+        Pane shieldBar = createShieldsBar(character, index, totalShields);
 
         Label shieldLabel = createShieldLabel(character, totalShields);
 
@@ -86,7 +86,7 @@ public class CharactersShieldsView extends VBox {
         return label;
     }
 
-    private Pane createHealBar(com.wakfoverlay.domain.fight.model.Character character, int index, int totalShields) {
+    private Pane createShieldsBar(com.wakfoverlay.domain.fight.model.Character character, int index, int totalShields) {
         Pane pane = new Pane();
         pane.setPrefSize(100, 20);
         HBox.setHgrow(pane, ALWAYS);

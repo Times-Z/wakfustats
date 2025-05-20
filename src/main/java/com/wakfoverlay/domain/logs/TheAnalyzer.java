@@ -174,7 +174,6 @@ public class TheAnalyzer {
         };
 
         lastSpellCaster = fetchCharacter.character(casterName);
-        System.out.println("lastSpellCaster: " + lastSpellCaster);
 
         updateCharacter.updateDamages(lastSpellCaster, damages);
     }

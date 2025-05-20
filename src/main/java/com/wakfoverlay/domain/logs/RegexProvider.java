@@ -21,7 +21,7 @@ public class RegexProvider {
             .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(.*?\\)\\s+-\\s+\\[Information \\(jeu\\)]\\s+(.+?):\\s+\\+([\\d\\s]+)\\s*PV(\\s*(?:\\([^)]*\\)\\s*)*)?",
                     Pattern.UNICODE_CHARACTER_CLASS);
     private static final Pattern SHIELDS_PATTERN = Pattern
-            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(.*?\\)\\s+-\\s+\\[Information \\(jeu\\)]\\s+(.+?):\\s+\\+([\\d\\s]+)\\s*Armure",
+            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(.*?\\)\\s+-\\s+\\[Information \\(jeu\\)]\\s+(.+?):\\s+([\\d\\s]+)\\s*Armure",
                     Pattern.UNICODE_CHARACTER_CLASS);
     private static final Pattern SUMMON_PATTERN = Pattern
             .compile("",

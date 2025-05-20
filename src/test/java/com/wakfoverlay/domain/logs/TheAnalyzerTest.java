@@ -1,11 +1,9 @@
 package com.wakfoverlay.domain.logs;
 
 import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
+import com.wakfoverlay.domain.fight.model.*;
 import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.fight.model.Character.CharacterName;
-import com.wakfoverlay.domain.fight.model.Damages;
-import com.wakfoverlay.domain.fight.model.Heals;
-import com.wakfoverlay.domain.fight.model.StatusEffect;
 import com.wakfoverlay.domain.fight.model.StatusEffect.StatusEffectName;
 import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
@@ -56,6 +54,9 @@ class TheAnalyzerTest {
 
     @Captor
     private ArgumentCaptor<Heals> healsCaptor;
+
+    @Captor
+    private ArgumentCaptor<Shields> shieldsCaptor;
 
     @Captor
     private ArgumentCaptor<StatusEffect> statusEffectCaptor;
@@ -344,8 +345,25 @@ class TheAnalyzerTest {
 
     @Nested
     class ShieldTests {
-        // TODO: Add test for shields
-        //  INFO 21:02:56,407 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz: 1 324 Armure
+        @Test
+        void should_analyze_single_element_shielding_log() {
+            // Given
+            String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Engrais";
+            String shieldsLogLine = "INFO 21:02:56,407 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Kinte: 1 324 Armure";
+
+            Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0, false);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+
+            // When
+            analyzer.analyze(spellLogLine);
+            analyzer.analyze(shieldsLogLine);
+
+            // Then
+            verify(updateCharacter).updateShields(eq(mockCharacter), shieldsCaptor.capture());
+
+            Shields capturedShields = shieldsCaptor.getValue();
+            assertEquals(1324, capturedShields.amount());
+        }
     }
 
 
