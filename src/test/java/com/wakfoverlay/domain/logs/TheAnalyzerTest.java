@@ -346,7 +346,7 @@ class TheAnalyzerTest {
     @Nested
     class ShieldTests {
         @Test
-        void should_analyze_single_element_shielding_log() {
+        void should_analyze_shielding_log() {
             // Given
             String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Engrais";
             String shieldsLogLine = "INFO 21:02:56,407 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Kinte: 1 324 Armure";
@@ -366,7 +366,51 @@ class TheAnalyzerTest {
         }
     }
 
+    @Nested
+    class SummonTests {
+        @Test
+        void should_analyze_summoner_log() {
+            // Given
+            String spellLogLine = " INFO 20:33:40,436 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Deuz lance le sort Gobgob";
+            String summonerLogLine = " INFO 20:33:42,268 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Deuz: Invoque un(e) Gobgob";
 
+            Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0, false);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+
+            // When
+            analyzer.analyze(spellLogLine);
+            analyzer.analyze(summonerLogLine);
+
+            // Then
+            // TODO: find assertion
+        }
+
+        @Test
+        void should_analyze_summoning_logs() {
+            // Given
+            String summoningLog1 = " INFO 20:52:16,267 [AWT-EventQueue-0] (eIu:106) - Instanciation d'une nouvelle invocation avec un id de -1811995151979217";
+            String summoningLog2 = " INFO 20:52:18,100 [AWT-EventQueue-0] (eIA:92) - New summon with id -1811995151979156";
+
+            // When
+            analyzer.analyze(summoningLog1);
+            analyzer.analyze(summoningLog2);
+
+            // Then
+            // TODO: find assertion
+        }
+
+        @Test
+        void should_analyze_summon_log() {
+            // Given
+            String summonLogLine = " INFO 20:33:47,602 [AWT-EventQueue-0] (eLk:1384) - [_FL_] fightId=1648132072 Piou Rouge breed : 87 [-1811995151994155] isControlledByAI=true obstacleId : 17 join the fight at {Point3 : (0, -16, 8)}";
+
+            // When
+            analyzer.analyze(summonLogLine);
+
+            // Then
+            // TODO: find assertion
+        }
+    }
 
     @Test
     void should_ignore_irrelevant_log_lines() {

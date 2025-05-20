@@ -4,12 +4,15 @@ import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
 import com.wakfoverlay.domain.fight.model.*;
 import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.fight.model.Character.CharacterName;
+import com.wakfoverlay.domain.fight.port.primary.FetchCharacter;
 import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,13 +22,15 @@ import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.*;
 import static com.wakfoverlay.domain.logs.TheNormalizer.normalize;
 
 public class TheAnalyzer {
-    private final FetchCharacterUseCase fetchCharacter;
+    private final FetchCharacter fetchCharacter;
     private final FetchStatusEffect fetchStatusEffect;
     private final UpdateCharacter updateCharacter;
     private final UpdateStatusEffect updateStatusEffect;
     private final RegexProvider regexProvider;
 
     private Character lastSpellCaster = null;
+    private Character lastSummoner = null;
+    private List<String> summonIds = List.of();
 
     public TheAnalyzer(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
         this.fetchCharacter = fetchCharacter;
@@ -42,6 +47,9 @@ public class TheAnalyzer {
         Matcher damagesMatcher = regexProvider.damagesPattern().matcher(logLine);
         Matcher healsMatcher = regexProvider.healsPattern().matcher(logLine);
         Matcher shieldsMatcher = regexProvider.shieldsPattern().matcher(logLine);
+        Matcher summonerMatcher = regexProvider.summonerPattern().matcher(logLine);
+        Matcher summoningMatcher1 = regexProvider.summoningPattern1().matcher(logLine);
+        Matcher summoningMatcher2 = regexProvider.summoningPattern2().matcher(logLine);
         Matcher summonMatcher = regexProvider.summonPattern().matcher(logLine);
 
         if (fighterMatcher.find()) {
@@ -68,18 +76,42 @@ public class TheAnalyzer {
             handleShields(shieldsMatcher);
         }
 
-        if (summonMatcher.find()) {
-            // Matcher sur "NOM DU PERSONNAGE: Invoque"
-            // Fetch le personnage qui invoque avec le nom du log
-            // Ne retourner que les non-IA
-            // créer un "lastSummoner" ?
-            // attendre le log de l'invocation
-                // "(eIu:106) - Instanciation d'une nouvelle invocation avec un id de -1706442020631000"
-                // "(eIA:92) - New summon with id -1706442020630993"
-            // enregistrer l'invocation (pour déduplication) avec le "lastSummoner"
-            // modifier les damages pour check les invocations et récupérer les dégats
-            // assigner les dégats au summoner
+        if (summonerMatcher.find()) {
+            handleSummoner(summonerMatcher);
         }
+
+        if (summoningMatcher1.find()) {
+            System.out.println("Summon ID from matcher1: " + summoningMatcher1.group(2));
+        }
+
+        if (summoningMatcher2.find()) {
+            System.out.println("Summon ID from matcher2: " + summoningMatcher2.group(2));
+        }
+
+        if (summonMatcher.find()) {
+            String summonName = summonMatcher.group(2);
+            String summonId = summonMatcher.group(3);
+
+            Optional<String> optionalSummon = summonIds.stream()
+                    .filter(it -> it.equals(summonId))
+                    .findFirst();
+
+            summonIds.remove(summonId);
+
+            if (optionalSummon.isPresent()) {
+                Character summon = new Character(
+                        new CharacterName(summonName),
+                        0,
+                        0,
+                        0,
+                        true,
+                        Optional.of(lastSummoner));
+
+                updateCharacter.create(summon);
+            }
+        }
+        // modifier les damages pour check les invocations et récupérer les dégats
+        // assigner les dégats au summoner
     }
 
     public void analyzeFighter(String logLine) {
@@ -138,7 +170,7 @@ public class TheAnalyzer {
         }
 
         if (lastSpellCaster == null) {
-            lastSpellCaster = new Character(new Character.CharacterName("Unknown"), 0, 0, 0, false);
+            lastSpellCaster = new Character(new Character.CharacterName("Unknown"), 0, 0, 0, false); // TODO: isControlloed true ?
         }
 
         updateStatusEffect.update(effect, lastSpellCaster.name());
@@ -184,10 +216,6 @@ public class TheAnalyzer {
         updateCharacter.updateDamages(lastSpellCaster, damages);
     }
 
-    private boolean friendlyFire(String targetName) {
-        return fetchCharacter.isAllied(new CharacterName(targetName));
-    }
-
     private void handleHeals(Matcher healsMatcher) {
         LocalTime timestamp = LocalTime.parse(healsMatcher.group(1), regexProvider.timeFormatterPattern());
         int healsAmount = Integer.parseInt(healsMatcher.group(3).replaceAll("[^\\d-]+", ""));
@@ -227,5 +255,18 @@ public class TheAnalyzer {
         Shields shields = new Shields(timestamp, shieldsAmount);
 
         updateCharacter.updateShields(lastSpellCaster, shields);
+    }
+
+    private void handleSummoner(Matcher summonMatcher) {
+        CharacterName summonerName = new CharacterName(summonMatcher.group(2));
+        Character character = fetchCharacter.character(summonerName);
+
+        if (!character.isControlledByAI()) {
+            lastSummoner = character;
+        }
+    }
+
+    private boolean friendlyFire(String targetName) {
+        return fetchCharacter.isAllied(new CharacterName(targetName));
     }
 }

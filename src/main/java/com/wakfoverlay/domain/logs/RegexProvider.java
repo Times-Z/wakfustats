@@ -23,8 +23,17 @@ public class RegexProvider {
     private static final Pattern SHIELDS_PATTERN = Pattern
             .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(.*?\\)\\s+-\\s+\\[Information \\(jeu\\)]\\s+(.+?):\\s+([\\d\\s]+)\\s*Armure",
                     Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern SUMMONER_PATTERN = Pattern
+            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(.*?\\)\\s+-\\s+\\[Information \\(jeu\\)]\\s+(.+?):\\s*Invoque",
+                    Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern SUMMONING_PATTERN_1 = Pattern
+            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(eIu:106\\)\\s+-\\s+Instanciation d'une nouvelle invocation avec un id de -?(\\d+)",
+                    Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern SUMMONING_PATTERN_2 = Pattern
+            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(eIA:92\\)\\s+-\\s+New summon with id -?(\\d+)",
+                    Pattern.UNICODE_CHARACTER_CLASS);
     private static final Pattern SUMMON_PATTERN = Pattern
-            .compile("",
+            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(eLk:1384\\)\\s+-.*?fightId=\\d+\\s+(.+?)\\s+breed\\s*:\\s*\\d+\\s+\\[-?(\\d+)]",
                     Pattern.UNICODE_CHARACTER_CLASS);
 
     public DateTimeFormatter timeFormatterPattern() {
@@ -53,6 +62,18 @@ public class RegexProvider {
 
     public Pattern shieldsPattern() {
         return SHIELDS_PATTERN;
+    }
+
+    public Pattern summonerPattern() {
+        return SUMMONER_PATTERN;
+    }
+
+    public Pattern summoningPattern1() {
+        return SUMMONING_PATTERN_1;
+    }
+
+    public Pattern summoningPattern2() {
+        return SUMMONING_PATTERN_2;
     }
 
     public Pattern summonPattern() {
