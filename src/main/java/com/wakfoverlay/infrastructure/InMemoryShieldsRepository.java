@@ -27,7 +27,7 @@ public class InMemoryShieldsRepository implements ShieldsRepository {
         return Optional.empty();
     }
 
-    public Map<AmountKey, LocalTime> getShieldsMap() {
-        return Map.copyOf(shieldsMap);
+    public void resetShields() {
+        shieldsMap.clear();
     }
 }

@@ -7,7 +7,6 @@ TODO:
 - Enrich E2E test
 - Refactoring: implement IDs for characters, etc... To handle it on repository
   - for now, we will melt summons and characters --> beurk
-- Aggregate invocations to the spell caster
 - Add toggle on character name to show details
 - Add a test for isControlledByAi mobs
 - Add tests for friendly fire

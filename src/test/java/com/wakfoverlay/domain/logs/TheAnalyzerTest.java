@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.*;
@@ -93,7 +94,7 @@ class TheAnalyzerTest {
             // Given
             String logLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque";
             Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0, false);
-            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(Optional.of(mockCharacter));
 
             // When
             analyzer.analyze(logLine);
@@ -108,7 +109,7 @@ class TheAnalyzerTest {
             // Given
             String logLine = "INFO 13:14:14,947 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque (Critiques)";
             Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0, false);
-            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(Optional.of(mockCharacter));
 
             // When
             analyzer.analyze(logLine);
@@ -127,7 +128,7 @@ class TheAnalyzerTest {
             String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Kinte lance le sort Bourrasque";
             String statusLogLine = "INFO 10:07:24,886 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Kinte: Distorsion (Niv.8)";
             Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Kinte"), 0, 0, 0, false);
-            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(Optional.of(mockCharacter));
 
             // When
             analyzer.analyze(spellLogLine);
@@ -147,7 +148,7 @@ class TheAnalyzerTest {
             String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Sizt lance le sort Bourrasque";
             String statusLogLine = "INFO 13:54:48,615 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Sizt: Précision (+160 Niv.)";
             Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Sizt"), 0, 0, 0, false);
-            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(Optional.of(mockCharacter));
 
             // When
             analyzer.analyze(spellLogLine);
@@ -167,7 +168,7 @@ class TheAnalyzerTest {
             String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Bourrasque";
             String statusLogLine = "INFO 13:14:14,000 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: Toxines (Niv.2)";
             Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0, false);
-            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(Optional.of(mockCharacter));
 
             // When
             analyzer.analyze(spellLogLine);
@@ -188,7 +189,7 @@ class TheAnalyzerTest {
             String statusLogLine = " INFO 22:41:55,582 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz: Garde feuille (Niv.6)";
             String healsLogLine = " INFO 22:41:24,967 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz: +774 PV (Lumière) (Eau) (Prière Sadida)";
             Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0, false);
-            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(Optional.of(mockCharacter));
 
             // When
             analyzer.analyze(spellLogLine);
@@ -209,7 +210,7 @@ class TheAnalyzerTest {
             String spellLogLine = "INFO 13:14:13,763 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz lance le sort Arbre de sadida";
             String statusLogLine = " INFO 22:41:55,582 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Qwartz: Engraine (Niv.6)";
             Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0, false);
-            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(Optional.of(mockCharacter));
 
             // When
             analyzer.analyze(spellLogLine);
@@ -233,7 +234,7 @@ class TheAnalyzerTest {
             String damagesLogLine = "INFO 13:14:04,548 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 713 PV (Eau)";
 
             Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0, false);
-            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(Optional.of(mockCharacter));
 
             // When
             analyzer.analyze(spellLogLine);
@@ -261,7 +262,7 @@ class TheAnalyzerTest {
             CharacterName toxinesCaster = new CharacterName("Jeanne Jackeline Qwartz");
             Character mockToxinesCaster = new Character(toxinesCaster, 0, 0, 0, false);
 
-            when(fetchCharacter.character(eq(toxinesCaster))).thenReturn(mockToxinesCaster);
+            when(fetchCharacter.character(eq(toxinesCaster))).thenReturn(Optional.of(mockToxinesCaster));
 
             // When
             analyzer.analyze(spellLogLine);
@@ -288,7 +289,7 @@ class TheAnalyzerTest {
             String damagesLogLine = "INFO 13:14:04,548 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Sac à patates: -1 713 PV (Eau)";
 
             Character unknownCharacter = new Character(new CharacterName("Unknown"), 0, 0, 0, false);
-            when(fetchCharacter.character(eq(new CharacterName("Unknown")))).thenReturn(unknownCharacter);
+            when(fetchCharacter.character(eq(new CharacterName("Unknown")))).thenReturn(Optional.of(unknownCharacter));
 
             // When
             analyzer.analyze(damagesLogLine);
@@ -307,7 +308,7 @@ class TheAnalyzerTest {
             String healsLogLine = "INFO 21:02:54,410 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] La Gonflable: +1 200 PV (Eau)";
 
             Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0, false);
-            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(Optional.of(mockCharacter));
 
             // When
             analyzer.analyze(spellLogLine);
@@ -332,7 +333,7 @@ class TheAnalyzerTest {
             String healsLogLine = "INFO 21:02:54,410 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] La Gonflable: +1 200 PV (Engrainé)";
 
             Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0, false);
-            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(Optional.of(mockCharacter));
 
             // When
             analyzer.analyze(spellLogLine);
@@ -352,7 +353,7 @@ class TheAnalyzerTest {
             String shieldsLogLine = "INFO 21:02:56,407 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jeanne Jackeline Kinte: 1 324 Armure";
 
             Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0, false);
-            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(Optional.of(mockCharacter));
 
             // When
             analyzer.analyze(spellLogLine);
@@ -375,7 +376,7 @@ class TheAnalyzerTest {
             String summonerLogLine = " INFO 20:33:42,268 [AWT-EventQueue-0] (aSn:174) - [Information (jeu)] Jean Jack Deuz: Invoque un(e) Gobgob";
 
             Character mockCharacter = new Character(new CharacterName("Jeanne Jackeline Qwartz"), 0, 0, 0, false);
-            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(mockCharacter);
+            when(fetchCharacter.character(any(CharacterName.class))).thenReturn(Optional.of(mockCharacter));
 
             // When
             analyzer.analyze(spellLogLine);

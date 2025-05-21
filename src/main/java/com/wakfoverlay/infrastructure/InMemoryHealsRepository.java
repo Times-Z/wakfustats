@@ -30,4 +30,8 @@ public class InMemoryHealsRepository implements HealsRepository {
     public Map<AmountAndElementsKey, LocalTime> getHealsMap() {
         return Map.copyOf(healsMap);
     }
+
+    public void resetHeals() {
+        healsMap.clear();
+    }
 }

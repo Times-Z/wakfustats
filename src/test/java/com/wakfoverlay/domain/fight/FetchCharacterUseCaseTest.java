@@ -30,7 +30,7 @@ class FetchCharacterUseCaseTest {
         charactersRepository.addOrUpdate(expectedCharacter);
 
         // When
-        Character result = fetchCharacterUseCase.character(name);
+        Character result = fetchCharacterUseCase.character(name).get();
 
         // Then
         assertEquals(expectedCharacter, result);
@@ -42,7 +42,7 @@ class FetchCharacterUseCaseTest {
         CharacterName name = new CharacterName("NonExistentCharacter");
 
         // When
-        Character result = fetchCharacterUseCase.character(name);
+        Character result = fetchCharacterUseCase.character(name).get();
 
         // Then
         assertEquals(name, result.name());
@@ -55,7 +55,7 @@ class FetchCharacterUseCaseTest {
         CharacterName nullName = null;
 
         // When
-        Character result = fetchCharacterUseCase.character(nullName);
+        Character result = fetchCharacterUseCase.character(nullName).get();
 
         // Then
         assertEquals(nullName, result.name());

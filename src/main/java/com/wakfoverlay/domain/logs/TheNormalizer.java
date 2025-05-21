@@ -9,6 +9,7 @@ public class TheNormalizer {
         return Normalizer.normalize(text, Normalizer.Form.NFD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
                 .toLowerCase()
+                .replaceAll("_", " ")
                 .trim();
     }
 }

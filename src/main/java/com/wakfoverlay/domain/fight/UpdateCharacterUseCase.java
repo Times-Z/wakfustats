@@ -11,6 +11,7 @@ import com.wakfoverlay.domain.fight.port.secondary.HealsRepository;
 import com.wakfoverlay.domain.fight.port.secondary.ShieldsRepository;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.Optional;
 
 public record UpdateCharacterUseCase(
@@ -28,6 +29,10 @@ public record UpdateCharacterUseCase(
         if (existingCharacter.isEmpty()) {
             charactersRepository.addOrUpdate(character);
         }
+    }
+
+    public void update(Character character) {
+        charactersRepository.addOrUpdate(character);
     }
 
     @Override

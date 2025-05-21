@@ -4,9 +4,11 @@ import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
 import com.wakfoverlay.domain.fight.FetchStatusEffectUseCase;
 import com.wakfoverlay.domain.fight.UpdateCharacterUseCase;
 import com.wakfoverlay.domain.fight.UpdateStatusEffectUseCase;
+import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.logs.model.FileReadStatus;
 import com.wakfoverlay.infrastructure.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -44,6 +46,12 @@ class LogParserE2ETest {
 
         Path resourcePath = Paths.get("src", "test", "resources", "wakfu.log");
         testLogPath = resourcePath.toAbsolutePath().toString();
+
+        charactersRepository.resetCharacters();
+        damagesRepository.resetDamages();
+        healsRepository.resetHeals();
+        shieldsRepository.resetShields();
+        statusEffectRepository.resetStatusEffects();
     }
 
     @Test
@@ -53,11 +61,11 @@ class LogParserE2ETest {
 
         // When
         FileReadStatus status = logParser.readNewLogLines(testLogPath);
-        System.out.println("*****Damages*****");
+        System.out.println("\n*****Damages*****");
         fetchCharacter.rankedCharactersByDamages().characters().forEach(character -> System.out.println(character.name().value() + ": " + character.damages()));
-        System.out.println("*****Heals*****");
+        System.out.println("\n*****Heals*****");
         fetchCharacter.rankedCharactersByHeals().characters().forEach(character -> System.out.println(character.name().value() + ": " + character.heals()));
-        System.out.println("*****Shields*****");
+        System.out.println("\n*****Shields*****");
         fetchCharacter.rankedCharactersByShields().characters().forEach(character -> System.out.println(character.name().value() + ": " + character.shields()));
     }
 }

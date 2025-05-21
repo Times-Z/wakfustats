@@ -5,10 +5,7 @@ import com.wakfoverlay.domain.fight.model.Character.CharacterName;
 import com.wakfoverlay.domain.fight.model.Characters;
 import com.wakfoverlay.domain.fight.port.secondary.CharactersRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class InMemoryCharactersRepository implements CharactersRepository {
     private final Map<CharacterName, Character> characters = new HashMap<>();

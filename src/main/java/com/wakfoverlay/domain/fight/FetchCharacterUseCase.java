@@ -7,17 +7,17 @@ import com.wakfoverlay.domain.fight.port.primary.FetchCharacter;
 import com.wakfoverlay.domain.fight.port.secondary.CharactersRepository;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public record FetchCharacterUseCase(
         CharactersRepository charactersRepository
 ) implements FetchCharacter {
     @Override
-    public Character character(CharacterName name) {
+    public Optional<Character> character(CharacterName name) {
         return charactersRepository.character(name)
                 .stream()
-                .findFirst()
-                .orElse(new Character(name, 0, 0, 0, false)); // TODO: test create an Unknown Character
+                .findFirst();
     }
 
     @Override

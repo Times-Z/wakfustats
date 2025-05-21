@@ -28,4 +28,8 @@ public class InMemoryDamagesRepository implements DamagesRepository {
     public Map<AmountAndElementsKey, LocalTime> getDamagesMap() {
         return Collections.unmodifiableMap(damagesMap);
     }
+
+    public void resetDamages() {
+        damagesMap.clear();
+    }
 }

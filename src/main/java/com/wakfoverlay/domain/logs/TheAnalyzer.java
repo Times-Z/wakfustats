@@ -10,16 +10,14 @@ import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 
 import java.time.LocalTime;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.wakfoverlay.domain.fight.model.StatusEffect.StatusEffectName;
 import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.*;
 import static com.wakfoverlay.domain.logs.TheNormalizer.normalize;
+import static java.util.Optional.empty;
 
 public class TheAnalyzer {
     private final FetchCharacter fetchCharacter;
@@ -30,7 +28,7 @@ public class TheAnalyzer {
 
     private Character lastSpellCaster = null;
     private Character lastSummoner = null;
-    private List<String> summonIds = List.of();
+    private final List<String> summonIds = new ArrayList<>();
 
     public TheAnalyzer(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
         this.fetchCharacter = fetchCharacter;
@@ -81,37 +79,18 @@ public class TheAnalyzer {
         }
 
         if (summoningMatcher1.find()) {
-            System.out.println("Summon ID from matcher1: " + summoningMatcher1.group(2));
+            handleSummoning(summoningMatcher1);
         }
 
         if (summoningMatcher2.find()) {
-            System.out.println("Summon ID from matcher2: " + summoningMatcher2.group(2));
+            handleSummoning(summoningMatcher2);
         }
 
         if (summonMatcher.find()) {
-            String summonName = summonMatcher.group(2);
-            String summonId = summonMatcher.group(3);
-
-            Optional<String> optionalSummon = summonIds.stream()
-                    .filter(it -> it.equals(summonId))
-                    .findFirst();
-
-            summonIds.remove(summonId);
-
-            if (optionalSummon.isPresent()) {
-                Character summon = new Character(
-                        new CharacterName(summonName),
-                        0,
-                        0,
-                        0,
-                        true,
-                        Optional.of(lastSummoner));
-
-                updateCharacter.create(summon);
+            if (lastSummoner != null) {
+                handleSummon(summonMatcher);
             }
         }
-        // modifier les damages pour check les invocations et récupérer les dégats
-        // assigner les dégats au summoner
     }
 
     public void analyzeFighter(String logLine) {
@@ -127,19 +106,27 @@ public class TheAnalyzer {
         boolean isControlledByAI = Boolean.parseBoolean(fighterMatcher.group(5));
 
         CharacterName name = new CharacterName(fighterName);
+        Optional<Character> existingCharacter = fetchCharacter.character(name);
 
-        Character character = new Character(name, 0, 0, 0, isControlledByAI);
-        updateCharacter.create(character);
+        if (existingCharacter.isEmpty()) {
+            Character character = new Character(name, 0, 0, 0, isControlledByAI, empty());
+            updateCharacter.create(character);
+        }
     }
 
     private void handleSpellCasting(Matcher spellCastMatcher) {
         String casterName = spellCastMatcher.group(2);
 
-        if (casterName == null || casterName.isEmpty()) {
-            casterName = "Unknown";
-        }
+        CharacterName name = new CharacterName(casterName);
+        Optional<Character> existingCharacter = fetchCharacter.character(name);
 
-        lastSpellCaster = fetchCharacter.character(new CharacterName(casterName));
+        if (existingCharacter.isEmpty()) {
+            Character character = new Character(name, 0, 0, 0, false, empty());
+            updateCharacter.create(character);
+            lastSpellCaster = character;
+        } else {
+            lastSpellCaster = existingCharacter.get();
+        }
     }
 
     private void handleStatusEffect(Matcher statusEffectMatcher) {
@@ -211,9 +198,19 @@ public class TheAnalyzer {
             }
         };
 
-        lastSpellCaster = fetchCharacter.character(casterName);
+        Optional<Character> existingCharacter = fetchCharacter.character(casterName);
 
-        updateCharacter.updateDamages(lastSpellCaster, damages);
+        if (existingCharacter.isPresent()) {
+            lastSpellCaster = existingCharacter.get();
+
+            Optional<Character> summoner;
+            if (lastSpellCaster.summoner().isPresent()) {
+                summoner = fetchCharacter.character(lastSpellCaster.summoner().get().name());
+                summoner.ifPresent(character -> lastSpellCaster = character);
+            }
+
+            updateCharacter.updateDamages(lastSpellCaster, damages);
+        }
     }
 
     private void handleHeals(Matcher healsMatcher) {
@@ -242,10 +239,20 @@ public class TheAnalyzer {
             }
         };
 
-        if (casterName != null) {
-            lastSpellCaster = fetchCharacter.character(casterName);
+        Optional<Character> existingCharacter = fetchCharacter.character(casterName);
+
+        if (existingCharacter.isPresent()) {
+            lastSpellCaster = existingCharacter.get();
+
+            Optional<Character> summoner;
+            if (lastSpellCaster.summoner().isPresent()) {
+                summoner = fetchCharacter.character(lastSpellCaster.summoner().get().name());
+                summoner.ifPresent(character -> lastSpellCaster = character);
+            }
+
             updateCharacter.updateHeals(lastSpellCaster, heals);
         }
+
     }
 
     private void handleShields(Matcher shieldsMatcher) {
@@ -254,15 +261,53 @@ public class TheAnalyzer {
 
         Shields shields = new Shields(timestamp, shieldsAmount);
 
+        Optional<Character> summoner;
+        if (lastSpellCaster.summoner().isPresent()) {
+            summoner = fetchCharacter.character(lastSpellCaster.summoner().get().name());
+            summoner.ifPresent(character -> lastSpellCaster = character);
+        }
+
         updateCharacter.updateShields(lastSpellCaster, shields);
     }
 
     private void handleSummoner(Matcher summonMatcher) {
         CharacterName summonerName = new CharacterName(summonMatcher.group(2));
-        Character character = fetchCharacter.character(summonerName);
+        Optional<Character> character = fetchCharacter.character(summonerName);
 
-        if (!character.isControlledByAI()) {
-            lastSummoner = character;
+        if (character.isPresent() && !character.get().isControlledByAI()) {
+            lastSummoner = character.get();
+        }
+    }
+
+    private void handleSummoning(Matcher summoningMatcher1) {
+        String summonId = summoningMatcher1.group(2);
+
+        summonIds.add(summonId);
+    }
+
+    private void handleSummon(Matcher summonMatcher) {
+        String summonName = summonMatcher.group(2);
+        String summonId = summonMatcher.group(3);
+
+        Optional<String> existingSummonId = summonIds.stream()
+                .filter(it -> it.equals(summonId))
+                .findFirst();
+
+
+        if (existingSummonId.isPresent()) {
+            Optional<Character> existingCharacter = fetchCharacter.character(new CharacterName(summonName));
+            if (existingCharacter.isPresent()) {
+                Character summon = new Character(
+                        existingCharacter.get().name(),
+                        existingCharacter.get().damages(),
+                        existingCharacter.get().heals(),
+                        existingCharacter.get().shields(),
+                        true,
+                        Optional.of(lastSummoner));
+
+                updateCharacter.update(summon);
+                summonIds.remove(summonId);
+            }
         }
     }
 
