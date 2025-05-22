@@ -20,7 +20,7 @@ public class InMemoryDamagesRepository implements DamagesRepository {
         AmountAndElementsKey key = new AmountAndElementsKey(damages.amount(), damages.elements());
         LocalTime timestamp = damagesMap.get(key);
         if (timestamp != null) {
-            return Optional.of(new Damages(timestamp, damages.amount(), damages.elements()));
+            return Optional.of(new Damages(timestamp, damages.targetName(), damages.amount(), damages.elements()));
         }
         return Optional.empty();
     }

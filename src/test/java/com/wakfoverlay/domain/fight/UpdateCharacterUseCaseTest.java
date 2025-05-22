@@ -42,7 +42,7 @@ class UpdateCharacterUseCaseTest {
         Character character = new Character(new Character.CharacterName("TestCharacter"), 100, 0, 0, empty());
         charactersRepository.addOrUpdate(character);
 
-        Damages newDamages = new Damages(now, 50, Set.of("Fire", "Ice"));
+        Damages newDamages = new Damages(now, "Pouet", 50, Set.of("Fire", "Ice"));
 
         // When
         updateCharacterUseCase.updateDamages(character, newDamages);
@@ -59,10 +59,10 @@ class UpdateCharacterUseCaseTest {
         Character character = new Character(new Character.CharacterName("TestCharacter"), 100, 0, 0, empty());
         charactersRepository.addOrUpdate(character);
 
-        Damages existingDamages = new Damages(now.minus(500, MILLIS), 50, Set.of("Fire", "Ice"));
+        Damages existingDamages = new Damages(now.minus(500, MILLIS), "Pouet", 50, Set.of("Fire", "Ice"));
         damagesRepository.addDamages(existingDamages);
 
-        Damages newDamages = new Damages(now, 50, Set.of("Fire", "Ice"));
+        Damages newDamages = new Damages(now, "Pouet", 50, Set.of("Fire", "Ice"));
 
         // When
         damagesRepository.addDamages(newDamages);
