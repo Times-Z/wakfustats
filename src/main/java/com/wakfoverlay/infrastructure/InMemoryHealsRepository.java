@@ -31,6 +31,7 @@ public class InMemoryHealsRepository implements HealsRepository {
         return Map.copyOf(healsMap);
     }
 
+    @Override
     public void resetHeals() {
         healsMap.clear();
     }

@@ -14,20 +14,17 @@ public class LogParser {
     private final TheAnalyzer theAnalyzer;
     private String currentFilePath;
 
-    private boolean firstLaunch = true;
-
     public LogParser(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
         this.theFileReader = new TheFileReader();
         this.theAnalyzer = new TheAnalyzer(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
         this.currentFilePath = null;
     }
 
-    public FileReadStatus readNewLogLines(String filePath) {
+    public FileReadStatus readNewLogLines(String filePath, boolean isFirstLaunch) {
         if (currentFilePath == null || !currentFilePath.equals(filePath)) {
             currentFilePath = filePath;
-            if (firstLaunch) {
+            if (isFirstLaunch) {
                 theFileReader.resetPosition(filePath);
-                firstLaunch = false;
             } else {
                 theFileReader.setPositionToEnd(filePath);
             }

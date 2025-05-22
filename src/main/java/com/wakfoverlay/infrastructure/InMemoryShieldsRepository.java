@@ -27,6 +27,7 @@ public class InMemoryShieldsRepository implements ShieldsRepository {
         return Optional.empty();
     }
 
+    @Override
     public void resetShields() {
         shieldsMap.clear();
     }

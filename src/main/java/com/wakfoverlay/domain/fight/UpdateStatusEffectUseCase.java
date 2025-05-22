@@ -18,9 +18,4 @@ public class UpdateStatusEffectUseCase implements UpdateStatusEffect {
     public void update(StatusEffect statusEffect, Character.CharacterName characterName) {
         statusEffectRepository.addOrUpdate(statusEffect, characterName);
     }
-
-    @Override
-    public void resetStatusEffects() {
-        statusEffectRepository.resetStatusEffects();
-    }
 }

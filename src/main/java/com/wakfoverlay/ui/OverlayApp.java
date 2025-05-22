@@ -45,7 +45,7 @@ public class OverlayApp extends Application {
 
         LogParser logParser = new LogParser(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
 
-        MainWindow mainWindow = new MainWindow(fetchCharacter, updateCharacter, updateStatusEffect, logParser);
+        MainWindow mainWindow = new MainWindow(fetchCharacter, updateCharacter, updateStatusEffect, damagesRepository, healsRepository, shieldsRepository, logParser);
 
         Scene scene = new Scene(mainWindow, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         scene.setFill(Color.rgb(18, 18, 18));

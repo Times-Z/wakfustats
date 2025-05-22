@@ -32,9 +32,6 @@ public class RegexProvider {
     private static final Pattern SUMMONING_PATTERN_2 = Pattern
             .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(eIA:92\\)\\s+-\\s+New summon with id -?(\\d+)",
                     Pattern.UNICODE_CHARACTER_CLASS);
-//    private static final Pattern SUMMON_PATTERN = Pattern
-//            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(eLk:1384\\)\\s+-.*?fightId=\\d+\\s+(.+?)\\s+breed\\s*:\\s*\\d+\\s+\\[-?(\\d+)]",
-//                    Pattern.UNICODE_CHARACTER_CLASS);
 
     public DateTimeFormatter timeFormatterPattern() {
         return TIME_FORMATTER;

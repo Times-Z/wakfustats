@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface DamagesRepository {
     void addDamages(Damages damages);
     Optional<Damages> find(Damages damages);
+    void resetDamages();
 }

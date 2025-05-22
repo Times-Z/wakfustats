@@ -9,5 +9,4 @@ import java.util.Optional;
 public interface StatusEffectRepository {
     void addOrUpdate(StatusEffect statusEffect, Character.CharacterName characterName);
     Character.CharacterName characterFor(StatusEffectName name);
-    void resetStatusEffects();
 }

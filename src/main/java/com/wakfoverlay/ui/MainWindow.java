@@ -4,6 +4,9 @@ import com.wakfoverlay.domain.fight.model.Characters;
 import com.wakfoverlay.domain.fight.port.primary.FetchCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
+import com.wakfoverlay.domain.fight.port.secondary.DamagesRepository;
+import com.wakfoverlay.domain.fight.port.secondary.HealsRepository;
+import com.wakfoverlay.domain.fight.port.secondary.ShieldsRepository;
 import com.wakfoverlay.domain.logs.model.FileReadStatus;
 import com.wakfoverlay.exposition.LogParser;
 import com.wakfoverlay.exposition.UserPreferences;
@@ -22,6 +25,9 @@ public class MainWindow extends VBox {
     private final FetchCharacter fetchCharacter;
     private final UpdateCharacter updateCharacter;
     private final UpdateStatusEffect updateStatusEffect;
+    private final DamagesRepository damagesRepository;
+    private final HealsRepository healsRepository;
+    private final ShieldsRepository shieldsRepository;
     private final LogParser logParser;
     private final UserPreferences userPreferences;
 
@@ -31,10 +37,23 @@ public class MainWindow extends VBox {
 
     private View currentView = View.DPT_VIEW;
 
-    public MainWindow(FetchCharacter fetchCharacter, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect, LogParser logParser) {
+    private boolean firstLaunch = true;
+
+    public MainWindow(
+            FetchCharacter fetchCharacter,
+            UpdateCharacter updateCharacter,
+            UpdateStatusEffect updateStatusEffect,
+            DamagesRepository damagesRepository,
+            HealsRepository healsRepository,
+            ShieldsRepository shieldsRepository,
+            LogParser logParser
+    ) {
         this.fetchCharacter = fetchCharacter;
         this.updateCharacter = updateCharacter;
         this.updateStatusEffect = updateStatusEffect;
+        this.damagesRepository = damagesRepository;
+        this.healsRepository = healsRepository;
+        this.shieldsRepository = shieldsRepository;
         this.logParser = logParser;
         this.userPreferences = new UserPreferences(MainWindow.class);
         this.selectedFilePath = userPreferences.getFilePath();
@@ -58,11 +77,17 @@ public class MainWindow extends VBox {
     public void updateDamagesDisplay() {
         contentContainer.getChildren().clear();
 
-        FileReadStatus status = logParser.readNewLogLines(selectedFilePath);
+        FileReadStatus status = logParser.readNewLogLines(selectedFilePath, firstLaunch);
 
         if (status != FileReadStatus.SUCCESS) {
             showStatusMessage(getMessageForStatus(status));
             return;
+        }
+
+        if (firstLaunch) {
+            resetStats();
+            firstLaunch = false;
+
         }
 
         Characters rankedCharacters = fetchCharacter.rankedCharactersByDamages();
@@ -77,11 +102,16 @@ public class MainWindow extends VBox {
     public void updateHealsDisplay() {
         contentContainer.getChildren().clear();
 
-        FileReadStatus status = logParser.readNewLogLines(selectedFilePath);
+        FileReadStatus status = logParser.readNewLogLines(selectedFilePath, firstLaunch);
 
         if (status != FileReadStatus.SUCCESS) {
             showStatusMessage(getMessageForStatus(status));
             return;
+        }
+
+        if (firstLaunch) {
+            resetStats();
+            firstLaunch = false;
         }
 
         Characters rankedCharacters = fetchCharacter.rankedCharactersByHeals();
@@ -96,11 +126,16 @@ public class MainWindow extends VBox {
     public void updateShieldsDisplay() {
         contentContainer.getChildren().clear();
 
-        FileReadStatus status = logParser.readNewLogLines(selectedFilePath);
+        FileReadStatus status = logParser.readNewLogLines(selectedFilePath, firstLaunch);
 
         if (status != FileReadStatus.SUCCESS) {
             showStatusMessage(getMessageForStatus(status));
             return;
+        }
+
+        if (firstLaunch) {
+            resetStats();
+            firstLaunch = false;
         }
 
         Characters rankedCharacters = fetchCharacter.rankedCharactersByShields();
@@ -218,7 +253,10 @@ public class MainWindow extends VBox {
 
     private void resetStats() {
         updateCharacter.resetCharacters();
-        updateStatusEffect.resetStatusEffects();
+        damagesRepository.resetDamages();
+        healsRepository.resetHeals();
+        shieldsRepository.resetShields();
+        // TODO: should i reset status ? For now no
 
         FileReadStatus status = logParser.readForFighters(selectedFilePath);
 

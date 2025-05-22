@@ -105,14 +105,6 @@ public class TheAnalyzer {
         }
 
         if (!fetchCharacter.exist(characterName) && isControlledByAI && lastSummoner.isPresent()) {
-            // TODO: check for ID
-//            String summonId = summonMatcher.group(3);
-//
-//            Optional<String> existingSummonId = summonIds.stream()
-//                    .filter(it -> it.equals(summonId))
-//                    .findFirst();
-//            summonIds.remove(summonId);
-
             Character summoner = fetchCharacter.character(lastSummoner.get());
             Character summon = new Character(characterName, 0, 0, 0, Optional.of(summoner));
 
@@ -126,10 +118,6 @@ public class TheAnalyzer {
 
         if (fetchCharacter.exist(casterName)) {
             lastSpellCaster = fetchCharacter.character(casterName);
-        } else {
-            Character character = new Character(casterName, 0, 0, 0, empty());
-            updateCharacter.create(character);
-            lastSpellCaster = character;
         }
     }
 
@@ -259,6 +247,7 @@ public class TheAnalyzer {
 
     private void handleSummoner(Matcher summonMatcher) {
         CharacterName summonerName = new CharacterName(summonMatcher.group(2));
+        lastSummoner = empty();
 
         if (fetchCharacter.exist(summonerName)) {
             lastSummoner = Optional.ofNullable(fetchCharacter.character(summonerName).name());

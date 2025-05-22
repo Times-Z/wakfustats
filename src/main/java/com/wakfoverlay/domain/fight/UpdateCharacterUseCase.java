@@ -94,9 +94,6 @@ public record UpdateCharacterUseCase(
     }
 
     private void addOrUpdateDamages(Character character, Damages damages) {
-        if (Objects.equals(character.name().value(), "Jeanne Jackeline Sizt")) {
-            System.out.println("Character damages before update : " + character.damages());
-        }
         Character updatedCharacter = new Character(
                 character.name(),
                 character.damages() + damages.amount(),

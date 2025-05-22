@@ -9,6 +9,8 @@ import com.wakfoverlay.domain.fight.port.secondary.CharactersRepository;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.empty;
+
 public record FetchCharacterUseCase(
         CharactersRepository charactersRepository
 ) implements FetchCharacter {
@@ -17,7 +19,7 @@ public record FetchCharacterUseCase(
         return charactersRepository.character(name)
                 .stream()
                 .findFirst()
-                .orElseThrow();
+                .orElse(new Character(new CharacterName("Unknown"), 0, 0, 0, empty()));
     }
 
     @Override
@@ -26,6 +28,7 @@ public record FetchCharacterUseCase(
                 .characters()
                 .stream()
                 .sorted((p1, p2) -> Integer.compare(p2.damages(), p1.damages()))
+                .filter(character -> character.damages() > 0)
                 .collect(Collectors.toCollection(ArrayList::new)));
     }
 
@@ -35,6 +38,7 @@ public record FetchCharacterUseCase(
                 .characters()
                 .stream()
                 .sorted((p1, p2) -> Integer.compare(p2.heals(), p1.heals()))
+                .filter(character -> character.heals() > 0)
                 .collect(Collectors.toCollection(ArrayList::new)));
     }
 
@@ -44,6 +48,7 @@ public record FetchCharacterUseCase(
                 .characters()
                 .stream()
                 .sorted((p1, p2) -> Integer.compare(p2.shields(), p1.shields()))
+                .filter(character -> character.shields() > 0)
                 .collect(Collectors.toCollection(ArrayList::new)));
     }
 

@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface ShieldsRepository {
     void addShields(Shields shields);
     Optional<Shields> find(Shields shields);
+    void resetShields();
 }

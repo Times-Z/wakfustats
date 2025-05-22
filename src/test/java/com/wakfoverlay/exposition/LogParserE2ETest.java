@@ -51,16 +51,13 @@ class LogParserE2ETest {
         damagesRepository.resetDamages();
         healsRepository.resetHeals();
         shieldsRepository.resetShields();
-        statusEffectRepository.resetStatusEffects();
+//        statusEffectRepository.resetStatusEffects();
     }
 
     @Test
     void should_parse_log_file_and_display_results() {
-        // Given
-        logParser.resetReadPosition();
-
         // When
-        FileReadStatus status = logParser.readNewLogLines(testLogPath);
+        FileReadStatus status = logParser.readNewLogLines(testLogPath, true);
         System.out.println("\n*****Damages*****");
         fetchCharacter.rankedCharactersByDamages().characters().forEach(character -> System.out.println(character.name().value() + ": " + character.damages()));
         System.out.println("\n*****Heals*****");

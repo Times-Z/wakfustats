@@ -29,14 +29,17 @@ public class InMemoryCharactersRepository implements CharactersRepository {
     @Override
     public void addOrUpdate(Character character) {
         characters.put(character.name(), character);
-        if (Objects.equals(character.name().value(), "Jeanne Jackeline Sizt")) {
-            System.out.println("Character damages after update : " + character.damages());
-        }
     }
 
     @Override
     public void resetCharacters() {
-        characters.clear();
+        characters.replaceAll((name, character) -> new Character(
+                character.name(),
+                0,
+                0,
+                0,
+                character.summoner()
+        ));
     }
 
     public Map<CharacterName, Character> getCharacters() {

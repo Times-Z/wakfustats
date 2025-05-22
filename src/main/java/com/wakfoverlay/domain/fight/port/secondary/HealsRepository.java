@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface HealsRepository {
     void addHeals(Heals heals);
     Optional<Heals> find(Heals heals);
+    void resetHeals();
 }

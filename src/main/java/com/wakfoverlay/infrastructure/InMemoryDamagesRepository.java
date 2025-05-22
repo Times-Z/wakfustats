@@ -29,6 +29,7 @@ public class InMemoryDamagesRepository implements DamagesRepository {
         return Collections.unmodifiableMap(damagesMap);
     }
 
+    @Override
     public void resetDamages() {
         damagesMap.clear();
     }
