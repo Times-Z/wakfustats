@@ -4,11 +4,9 @@ import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
 import com.wakfoverlay.domain.fight.FetchStatusEffectUseCase;
 import com.wakfoverlay.domain.fight.UpdateCharacterUseCase;
 import com.wakfoverlay.domain.fight.UpdateStatusEffectUseCase;
-import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.logs.model.FileReadStatus;
 import com.wakfoverlay.infrastructure.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -47,17 +45,18 @@ class LogParserE2ETest {
         Path resourcePath = Paths.get("src", "test", "resources", "wakfu.log");
         testLogPath = resourcePath.toAbsolutePath().toString();
 
+        charactersRepository.resetCharactersStats();
         charactersRepository.resetCharacters();
         damagesRepository.resetDamages();
         healsRepository.resetHeals();
         shieldsRepository.resetShields();
-//        statusEffectRepository.resetStatusEffects();
+        statusEffectRepository.resetStatusEffects();
     }
 
     @Test
     void should_parse_log_file_and_display_results() {
         // When
-        FileReadStatus status = logParser.readNewLogLines(testLogPath, true);
+        logParser.readNewLogLines(testLogPath, true);
         System.out.println("\n*****Damages*****");
         fetchCharacter.rankedCharactersByDamages().characters().forEach(character -> System.out.println(character.name().value() + ": " + character.damages()));
         System.out.println("\n*****Heals*****");

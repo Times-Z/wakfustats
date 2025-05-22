@@ -97,20 +97,23 @@ public class TheAnalyzer {
     private void handleFighter(Matcher fighterMatcher) {
         CharacterName characterName = new CharacterName(fighterMatcher.group(3));
         boolean isControlledByAI = Boolean.parseBoolean(fighterMatcher.group(5));
+        System.out.println("Fighter found: " + characterName + " controlled by AI: " + isControlledByAI);
 
         if (!fetchCharacter.exist(characterName) && !isControlledByAI) {
             Character character = new Character(characterName, 0, 0, 0, empty());
-
+            System.out.println("Adding character: " + characterName);
             updateCharacter.create(character);
         }
 
         if (!fetchCharacter.exist(characterName) && isControlledByAI && lastSummoner.isPresent()) {
             Character summoner = fetchCharacter.character(lastSummoner.get());
             Character summon = new Character(characterName, 0, 0, 0, Optional.of(summoner));
+            System.out.println("Adding summon: " + characterName + " controlled by: " + lastSummoner.get());
 
             updateCharacter.create(summon);
-            lastSummoner = empty();
         }
+
+        lastSummoner = empty();
     }
 
     private void handleSpellCasting(Matcher spellCastMatcher) {

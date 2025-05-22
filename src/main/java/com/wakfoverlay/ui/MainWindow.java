@@ -252,11 +252,16 @@ public class MainWindow extends VBox {
     }
 
     private void resetStats() {
-        updateCharacter.resetCharacters();
+        updateCharacter.resetCharactersStats();
         damagesRepository.resetDamages();
         healsRepository.resetHeals();
         shieldsRepository.resetShields();
-        // TODO: should i reset status ? For now no
+
+        if (firstLaunch) {
+            updateCharacter.resetCharacters();
+            updateStatusEffect.resetStatusEffects();
+            firstLaunch = false;
+        }
 
         FileReadStatus status = logParser.readForFighters(selectedFilePath);
 

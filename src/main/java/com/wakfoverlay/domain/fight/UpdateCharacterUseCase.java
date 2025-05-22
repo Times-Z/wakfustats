@@ -11,10 +11,7 @@ import com.wakfoverlay.domain.fight.port.secondary.HealsRepository;
 import com.wakfoverlay.domain.fight.port.secondary.ShieldsRepository;
 
 import java.time.Duration;
-import java.util.Objects;
 import java.util.Optional;
-
-import static java.util.Optional.*;
 
 public record UpdateCharacterUseCase(
         CharactersRepository charactersRepository,
@@ -71,6 +68,11 @@ public record UpdateCharacterUseCase(
             shieldsRepository.addShields(shields);
             addOrUpdateShields(character, shields);
         }
+    }
+
+    @Override
+    public void resetCharactersStats() {
+        charactersRepository.resetCharactersStats();
     }
 
     @Override

@@ -32,7 +32,7 @@ public class InMemoryCharactersRepository implements CharactersRepository {
     }
 
     @Override
-    public void resetCharacters() {
+    public void resetCharactersStats() {
         characters.replaceAll((name, character) -> new Character(
                 character.name(),
                 0,
@@ -40,6 +40,11 @@ public class InMemoryCharactersRepository implements CharactersRepository {
                 0,
                 character.summoner()
         ));
+    }
+
+    @Override
+    public void resetCharacters() {
+        characters.clear();
     }
 
     public Map<CharacterName, Character> getCharacters() {

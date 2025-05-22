@@ -26,4 +26,9 @@ public class InMemoryStatusEffectRepository implements StatusEffectRepository {
                 .findFirst()
                 .orElse(new CharacterName("Unknown"));
     }
+
+    @Override
+    public void resetStatusEffects() {
+        statusEffects.clear();
+    }
 }

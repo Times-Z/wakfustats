@@ -10,5 +10,6 @@ public interface CharactersRepository {
     Optional<Character> character(CharacterName name);
     Characters characters();
     void addOrUpdate(Character character);
+    void resetCharactersStats();
     void resetCharacters();
 }

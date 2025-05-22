@@ -11,5 +11,6 @@ public interface UpdateCharacter {
     void updateDamages(Character character, Damages damages);
     void updateHeals(Character character, Heals heals);
     void updateShields(Character character, Shields shields);
+    void resetCharactersStats();
     void resetCharacters();
 }
