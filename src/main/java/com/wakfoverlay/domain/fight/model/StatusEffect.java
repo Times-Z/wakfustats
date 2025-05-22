@@ -3,15 +3,11 @@ package com.wakfoverlay.domain.fight.model;
 import java.time.LocalTime;
 
 public class StatusEffect {
-//    private final LocalTime timestamp;
     private final StatusEffectName name;
-//    private final Integer level;
     private final SubType subType;
 
-    public StatusEffect(LocalTime timestamp, StatusEffectName name, Integer level, SubType subType) {
-//        this.timestamp = timestamp;
+    public StatusEffect(LocalTime timestamp, StatusEffectName name, SubType subType) {
         this.name = name;
-//        this.level = level;
         this.subType = subType;
     }
 
@@ -26,9 +22,7 @@ public class StatusEffect {
     @Override
     public String toString() {
         return "StatusEffect{" +
-//                "timestamp=" + timestamp +
                 ", statusName='" + name + '\'' +
-//                ", level=" + level +
                 ", subType=" + subType +
                 '}';
     }

@@ -7,9 +7,10 @@ import com.wakfoverlay.domain.fight.model.Characters;
 import java.util.Optional;
 
 public interface FetchCharacter {
-    Optional<Character> character(CharacterName name);
+    Character character(CharacterName name);
     Characters rankedCharactersByDamages();
     Characters rankedCharactersByHeals();
     Characters rankedCharactersByShields();
+    boolean exist(CharacterName name);
     boolean isAllied(CharacterName characterName);
 }

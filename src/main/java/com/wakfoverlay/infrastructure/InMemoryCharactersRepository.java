@@ -29,6 +29,9 @@ public class InMemoryCharactersRepository implements CharactersRepository {
     @Override
     public void addOrUpdate(Character character) {
         characters.put(character.name(), character);
+        if (Objects.equals(character.name().value(), "Jeanne Jackeline Sizt")) {
+            System.out.println("Character damages after update : " + character.damages());
+        }
     }
 
     @Override

@@ -8,7 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
+import static java.util.Optional.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FetchCharacterUseCaseTest {
@@ -26,11 +28,11 @@ class FetchCharacterUseCaseTest {
     void should_return_character_when_found_in_repository() {
         // Given
         CharacterName name = new CharacterName("TestCharacter");
-        Character expectedCharacter = new Character(name, 100, 0, 0, false);
+        Character expectedCharacter = new Character(name, 100, 0, 0, empty());
         charactersRepository.addOrUpdate(expectedCharacter);
 
         // When
-        Character result = fetchCharacterUseCase.character(name).get();
+        Character result = fetchCharacterUseCase.character(name);
 
         // Then
         assertEquals(expectedCharacter, result);
@@ -42,7 +44,7 @@ class FetchCharacterUseCaseTest {
         CharacterName name = new CharacterName("NonExistentCharacter");
 
         // When
-        Character result = fetchCharacterUseCase.character(name).get();
+        Character result = fetchCharacterUseCase.character(name);
 
         // Then
         assertEquals(name, result.name());
@@ -55,7 +57,7 @@ class FetchCharacterUseCaseTest {
         CharacterName nullName = null;
 
         // When
-        Character result = fetchCharacterUseCase.character(nullName).get();
+        Character result = fetchCharacterUseCase.character(nullName);
 
         // Then
         assertEquals(nullName, result.name());
@@ -65,9 +67,9 @@ class FetchCharacterUseCaseTest {
     @Test
     void should_return_characters_sorted_by_damages_in_descending_order() {
         // Given
-        Character char1 = new Character(new CharacterName("Character1"), 100, 0, 0, false);
-        Character char2 = new Character(new CharacterName("Character2"), 300, 0, 0, false);
-        Character char3 = new Character(new CharacterName("Character3"), 200, 0, 0, false);
+        Character char1 = new Character(new CharacterName("Character1"), 100, 0, 0, empty());
+        Character char2 = new Character(new CharacterName("Character2"), 300, 0, 0, empty());
+        Character char3 = new Character(new CharacterName("Character3"), 200, 0, 0, empty());
 
         charactersRepository.addOrUpdate(char1);
         charactersRepository.addOrUpdate(char2);
@@ -98,9 +100,9 @@ class FetchCharacterUseCaseTest {
     @Test
     void should_handle_characters_with_equal_damages() {
         // Given
-        Character char1 = new Character(new CharacterName("CharacterA"), 200, 0, 0, false);
-        Character char2 = new Character(new CharacterName("CharacterB"), 200, 0, 0, false);
-        Character char3 = new Character(new CharacterName("CharacterC"), 100, 0, 0, false);
+        Character char1 = new Character(new CharacterName("CharacterA"), 200, 0, 0, empty());
+        Character char2 = new Character(new CharacterName("CharacterB"), 200, 0, 0, empty());
+        Character char3 = new Character(new CharacterName("CharacterC"), 100, 0, 0, empty());
 
         charactersRepository.addOrUpdate(char1);
         charactersRepository.addOrUpdate(char2);

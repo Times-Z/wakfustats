@@ -27,7 +27,7 @@ public class TheAnalyzer {
     private final RegexProvider regexProvider;
 
     private Character lastSpellCaster = null;
-    private Character lastSummoner = null;
+    private Optional<CharacterName> lastSummoner = empty();
     private final List<String> summonIds = new ArrayList<>();
 
     public TheAnalyzer(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
@@ -48,7 +48,6 @@ public class TheAnalyzer {
         Matcher summonerMatcher = regexProvider.summonerPattern().matcher(logLine);
         Matcher summoningMatcher1 = regexProvider.summoningPattern1().matcher(logLine);
         Matcher summoningMatcher2 = regexProvider.summoningPattern2().matcher(logLine);
-        Matcher summonMatcher = regexProvider.summonPattern().matcher(logLine);
 
         if (fighterMatcher.find()) {
             handleFighter(fighterMatcher);
@@ -85,12 +84,6 @@ public class TheAnalyzer {
         if (summoningMatcher2.find()) {
             handleSummoning(summoningMatcher2);
         }
-
-        if (summonMatcher.find()) {
-            if (lastSummoner != null) {
-                handleSummon(summonMatcher);
-            }
-        }
     }
 
     public void analyzeFighter(String logLine) {
@@ -102,62 +95,66 @@ public class TheAnalyzer {
     }
 
     private void handleFighter(Matcher fighterMatcher) {
-        String fighterName = fighterMatcher.group(3);
+        CharacterName characterName = new CharacterName(fighterMatcher.group(3));
         boolean isControlledByAI = Boolean.parseBoolean(fighterMatcher.group(5));
 
-        CharacterName name = new CharacterName(fighterName);
-        Optional<Character> existingCharacter = fetchCharacter.character(name);
+        if (!fetchCharacter.exist(characterName) && !isControlledByAI) {
+            Character character = new Character(characterName, 0, 0, 0, empty());
 
-        if (existingCharacter.isEmpty()) {
-            Character character = new Character(name, 0, 0, 0, isControlledByAI, empty());
             updateCharacter.create(character);
+        }
+
+        if (!fetchCharacter.exist(characterName) && isControlledByAI && lastSummoner.isPresent()) {
+            // TODO: check for ID
+//            String summonId = summonMatcher.group(3);
+//
+//            Optional<String> existingSummonId = summonIds.stream()
+//                    .filter(it -> it.equals(summonId))
+//                    .findFirst();
+//            summonIds.remove(summonId);
+
+            Character summoner = fetchCharacter.character(lastSummoner.get());
+            Character summon = new Character(characterName, 0, 0, 0, Optional.of(summoner));
+
+            updateCharacter.create(summon);
+            lastSummoner = empty();
         }
     }
 
     private void handleSpellCasting(Matcher spellCastMatcher) {
-        String casterName = spellCastMatcher.group(2);
+        CharacterName casterName = new CharacterName(spellCastMatcher.group(2));
 
-        CharacterName name = new CharacterName(casterName);
-        Optional<Character> existingCharacter = fetchCharacter.character(name);
-
-        if (existingCharacter.isEmpty()) {
-            Character character = new Character(name, 0, 0, 0, false, empty());
+        if (fetchCharacter.exist(casterName)) {
+            lastSpellCaster = fetchCharacter.character(casterName);
+        } else {
+            Character character = new Character(casterName, 0, 0, 0, empty());
             updateCharacter.create(character);
             lastSpellCaster = character;
-        } else {
-            lastSpellCaster = existingCharacter.get();
         }
     }
 
     private void handleStatusEffect(Matcher statusEffectMatcher) {
         LocalTime timestamp = LocalTime.parse(statusEffectMatcher.group(1), regexProvider.timeFormatterPattern());
         String statusName = statusEffectMatcher.group(3);
-        String statusLevel = statusEffectMatcher.group(4);
-
-        Matcher levelMatcher = Pattern.compile("(\\d+)").matcher(statusLevel);
-        Integer level = null;
-        if (levelMatcher.find()) {
-            level = Integer.parseInt(levelMatcher.group(1));
-        }
 
         StatusEffect effect;
         switch (normalize(statusName)) {
             case "toxines" ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, TETATOXINE);
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), TETATOXINE);
             case "intoxique" ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, INTOXIQUE);
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), INTOXIQUE);
             case "maudit" ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, MAUDIT);
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), MAUDIT);
             case "distorsion" ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, DISTORSION);
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)),  DISTORSION);
             case "garde feuille" ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, PRIERE_SADIDA);
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), PRIERE_SADIDA);
             default ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), level, NO_SUB_TYPE);
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)),  NO_SUB_TYPE);
         }
 
         if (lastSpellCaster == null) {
-            lastSpellCaster = new Character(new Character.CharacterName("Unknown"), 0, 0, 0, false); // TODO: isControlloed true ?
+            lastSpellCaster = new Character(new Character.CharacterName("Unknown"), 0, 0, 0, empty());
         }
 
         updateStatusEffect.update(effect, lastSpellCaster.name());
@@ -167,11 +164,11 @@ public class TheAnalyzer {
         LocalTime timestamp = LocalTime.parse(damagesMatcher.group(1), regexProvider.timeFormatterPattern());
 
         String targetName = damagesMatcher.group(2);
+        int damageAmount = Integer.parseInt(damagesMatcher.group(3).replaceAll("[^\\d-]+", ""));
+
         if (friendlyFire(targetName)) {
             return;
         }
-
-        int damageAmount = Integer.parseInt(damagesMatcher.group(3).replaceAll("[^\\d-]+", ""));
 
         String elements = damagesMatcher.group(4);
         Matcher elementMatcher = Pattern.compile("\\(([^)]+)\\)").matcher(elements);
@@ -191,22 +188,18 @@ public class TheAnalyzer {
                  "garde feuille" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
             default -> {
                 if (lastSpellCaster == null) {
-                    lastSpellCaster = new Character(new CharacterName("Unknown"), 0, 0, 0, false);
+                    lastSpellCaster = new Character(new CharacterName("Unknown"), 0, 0, 0, empty());
                 }
 
                 yield lastSpellCaster.name();
             }
         };
 
-        Optional<Character> existingCharacter = fetchCharacter.character(casterName);
+        if (fetchCharacter.exist(casterName)) {
+            lastSpellCaster = fetchCharacter.character(casterName);
 
-        if (existingCharacter.isPresent()) {
-            lastSpellCaster = existingCharacter.get();
-
-            Optional<Character> summoner;
             if (lastSpellCaster.summoner().isPresent()) {
-                summoner = fetchCharacter.character(lastSpellCaster.summoner().get().name());
-                summoner.ifPresent(character -> lastSpellCaster = character);
+                lastSpellCaster = fetchCharacter.character(lastSpellCaster.summoner().get().name());
             }
 
             updateCharacter.updateDamages(lastSpellCaster, damages);
@@ -232,22 +225,18 @@ public class TheAnalyzer {
             case "engraine" -> null;
             default -> {
                 if (lastSpellCaster == null) {
-                    lastSpellCaster = new Character(new CharacterName("Unknown"), 0, 0, 0, false);
+                    lastSpellCaster = new Character(new CharacterName("Unknown"), 0, 0, 0, empty());
                 }
 
                 yield lastSpellCaster.name();
             }
         };
 
-        Optional<Character> existingCharacter = fetchCharacter.character(casterName);
+        if (fetchCharacter.exist(casterName)) {
+            lastSpellCaster = fetchCharacter.character(casterName);
 
-        if (existingCharacter.isPresent()) {
-            lastSpellCaster = existingCharacter.get();
-
-            Optional<Character> summoner;
             if (lastSpellCaster.summoner().isPresent()) {
-                summoner = fetchCharacter.character(lastSpellCaster.summoner().get().name());
-                summoner.ifPresent(character -> lastSpellCaster = character);
+                lastSpellCaster = fetchCharacter.character(lastSpellCaster.summoner().get().name());
             }
 
             updateCharacter.updateHeals(lastSpellCaster, heals);
@@ -261,10 +250,8 @@ public class TheAnalyzer {
 
         Shields shields = new Shields(timestamp, shieldsAmount);
 
-        Optional<Character> summoner;
         if (lastSpellCaster.summoner().isPresent()) {
-            summoner = fetchCharacter.character(lastSpellCaster.summoner().get().name());
-            summoner.ifPresent(character -> lastSpellCaster = character);
+            lastSpellCaster = fetchCharacter.character(lastSpellCaster.summoner().get().name());
         }
 
         updateCharacter.updateShields(lastSpellCaster, shields);
@@ -272,10 +259,9 @@ public class TheAnalyzer {
 
     private void handleSummoner(Matcher summonMatcher) {
         CharacterName summonerName = new CharacterName(summonMatcher.group(2));
-        Optional<Character> character = fetchCharacter.character(summonerName);
 
-        if (character.isPresent() && !character.get().isControlledByAI()) {
-            lastSummoner = character.get();
+        if (fetchCharacter.exist(summonerName)) {
+            lastSummoner = Optional.ofNullable(fetchCharacter.character(summonerName).name());
         }
     }
 
@@ -283,32 +269,6 @@ public class TheAnalyzer {
         String summonId = summoningMatcher1.group(2);
 
         summonIds.add(summonId);
-    }
-
-    private void handleSummon(Matcher summonMatcher) {
-        String summonName = summonMatcher.group(2);
-        String summonId = summonMatcher.group(3);
-
-        Optional<String> existingSummonId = summonIds.stream()
-                .filter(it -> it.equals(summonId))
-                .findFirst();
-
-
-        if (existingSummonId.isPresent()) {
-            Optional<Character> existingCharacter = fetchCharacter.character(new CharacterName(summonName));
-            if (existingCharacter.isPresent()) {
-                Character summon = new Character(
-                        existingCharacter.get().name(),
-                        existingCharacter.get().damages(),
-                        existingCharacter.get().heals(),
-                        existingCharacter.get().shields(),
-                        true,
-                        Optional.of(lastSummoner));
-
-                updateCharacter.update(summon);
-                summonIds.remove(summonId);
-            }
-        }
     }
 
     private boolean friendlyFire(String targetName) {

@@ -14,6 +14,8 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Optional.*;
+
 public record UpdateCharacterUseCase(
         CharactersRepository charactersRepository,
         DamagesRepository damagesRepository,
@@ -92,12 +94,15 @@ public record UpdateCharacterUseCase(
     }
 
     private void addOrUpdateDamages(Character character, Damages damages) {
+        if (Objects.equals(character.name().value(), "Jeanne Jackeline Sizt")) {
+            System.out.println("Character damages before update : " + character.damages());
+        }
         Character updatedCharacter = new Character(
                 character.name(),
                 character.damages() + damages.amount(),
                 character.heals(),
                 character.shields(),
-                character.isControlledByAI()
+                character.summoner()
         );
 
         charactersRepository.addOrUpdate(updatedCharacter);
@@ -109,7 +114,7 @@ public record UpdateCharacterUseCase(
                 character.damages(),
                 character.heals() + heals.amount(),
                 character.shields(),
-                character.isControlledByAI()
+                character.summoner()
         );
 
         charactersRepository.addOrUpdate(updatedCharacter);
@@ -121,7 +126,7 @@ public record UpdateCharacterUseCase(
                 character.damages(),
                 character.heals(),
                 character.shields() + shields.amount(),
-                character.isControlledByAI()
+                character.summoner()
         );
 
         charactersRepository.addOrUpdate(updatedCharacter);

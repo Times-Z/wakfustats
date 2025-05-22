@@ -7,17 +7,17 @@ import com.wakfoverlay.domain.fight.port.primary.FetchCharacter;
 import com.wakfoverlay.domain.fight.port.secondary.CharactersRepository;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public record FetchCharacterUseCase(
         CharactersRepository charactersRepository
 ) implements FetchCharacter {
     @Override
-    public Optional<Character> character(CharacterName name) {
+    public Character character(CharacterName name) {
         return charactersRepository.character(name)
                 .stream()
-                .findFirst();
+                .findFirst()
+                .orElseThrow();
     }
 
     @Override
@@ -25,7 +25,6 @@ public record FetchCharacterUseCase(
         return new Characters(charactersRepository.characters()
                 .characters()
                 .stream()
-                .filter(character -> !character.isControlledByAI())
                 .sorted((p1, p2) -> Integer.compare(p2.damages(), p1.damages()))
                 .collect(Collectors.toCollection(ArrayList::new)));
     }
@@ -35,7 +34,6 @@ public record FetchCharacterUseCase(
         return new Characters(charactersRepository.characters()
                 .characters()
                 .stream()
-                .filter(character -> !character.isControlledByAI())
                 .sorted((p1, p2) -> Integer.compare(p2.heals(), p1.heals()))
                 .collect(Collectors.toCollection(ArrayList::new)));
     }
@@ -45,9 +43,16 @@ public record FetchCharacterUseCase(
         return new Characters(charactersRepository.characters()
                 .characters()
                 .stream()
-                .filter(character -> !character.isControlledByAI())
                 .sorted((p1, p2) -> Integer.compare(p2.shields(), p1.shields()))
                 .collect(Collectors.toCollection(ArrayList::new)));
+    }
+
+    @Override
+    public boolean exist(CharacterName name) {
+        return charactersRepository.character(name)
+                .stream()
+                .findFirst()
+                .isPresent();
     }
 
     @Override
@@ -55,6 +60,6 @@ public record FetchCharacterUseCase(
         return charactersRepository.characters()
                 .characters()
                 .stream()
-                .anyMatch(character -> character.name().equals(characterName) && !character.isControlledByAI());
+                .anyMatch(character -> character.name().equals(characterName));
     }
 }
