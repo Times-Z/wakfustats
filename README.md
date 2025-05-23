@@ -4,20 +4,17 @@ to image: ./gradlew jlink
 to package: ./gradlew jpackage (if needed--info or --debug)
 
 TODO:
-
+- Apply multi accounting on heals and shields
 - Analyze all possible interactions in Dungeons ("cocons en sabléo" that auto take damages, ...)
 - Toggle that shows the statistics details of the character (by spells)
 - Toggle friendly fire
 - Graph's colors by character, not position
 
 LOVE:
-
 - Refactoring duplicated code
 - Add more tests
-- E2E test should be more precise
 
 Known issues:
-
 - Sadida's poisons (and DoTs / HoTs in general) could be badly compute sometimes (combining with Xelor big turns)
 - For now, impossible to compute Feca's glyphs damages / heals / Shields.
 - A lot of spells effects are not taken into account (like Steamer's "Modérateur d'énergie")

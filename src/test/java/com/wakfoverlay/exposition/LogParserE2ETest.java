@@ -4,6 +4,8 @@ import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
 import com.wakfoverlay.domain.fight.FetchStatusEffectUseCase;
 import com.wakfoverlay.domain.fight.UpdateCharacterUseCase;
 import com.wakfoverlay.domain.fight.UpdateStatusEffectUseCase;
+import com.wakfoverlay.domain.fight.model.Character;
+import com.wakfoverlay.domain.fight.model.Character.CharacterName;
 import com.wakfoverlay.infrastructure.InMemoryCharactersRepository;
 import com.wakfoverlay.infrastructure.InMemoryDamagesRepository;
 import com.wakfoverlay.infrastructure.InMemoryHealsRepository;
@@ -14,6 +16,8 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LogParserE2ETest {
     private LogParser logParser;
@@ -43,7 +47,7 @@ class LogParserE2ETest {
 
         logParser = new LogParser(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
 
-        Path resourcePath = Paths.get("src", "test", "resources", "temp.log");
+        Path resourcePath = Paths.get("src", "test", "resources", "wakfu.log");
         testLogPath = resourcePath.toAbsolutePath().toString();
 
         charactersRepository.resetCharactersStats();
@@ -58,11 +62,36 @@ class LogParserE2ETest {
     void should_parse_log_file_and_display_results() {
         // When
         logParser.readNewLogLines(testLogPath, true);
-        System.out.println("\n*****Damages*****");
-        fetchCharacter.rankedCharactersByDamages().characters().forEach(character -> System.out.println(character.name().value() + ": " + character.damages()));
-        System.out.println("\n*****Heals*****");
-        fetchCharacter.rankedCharactersByHeals().characters().forEach(character -> System.out.println(character.name().value() + ": " + character.heals()));
-        System.out.println("\n*****Shields*****");
-        fetchCharacter.rankedCharactersByShields().characters().forEach(character -> System.out.println(character.name().value() + ": " + character.shields()));
+
+        // Then
+        Character osamoda = fetchCharacter.character(new CharacterName("Jean Jack Deuz"));
+        assertEquals(526, osamoda.damages());
+        assertEquals(0, osamoda.heals());
+        assertEquals(5931, osamoda.shields());
+
+        Character feca = fetchCharacter.character(new CharacterName("Jean Jack Qwartz"));
+        assertEquals(196, feca.damages());
+        assertEquals(0, feca.heals());
+        assertEquals(9485, feca.shields());
+
+        Character steamer = fetchCharacter.character(new CharacterName("Jean Jack Kinte"));
+        assertEquals(36503, steamer.damages());
+        assertEquals(0, steamer.heals());
+        assertEquals(0, steamer.shields());
+
+        Character roublard = fetchCharacter.character(new CharacterName("Jeanne Jackeline Deuz"));
+        assertEquals(1381, roublard.damages());
+        assertEquals(0, roublard.heals());
+        assertEquals(0, roublard.shields());
+
+        Character sadida = fetchCharacter.character(new CharacterName("Jeanne Jackeline Qwartz"));
+        assertEquals(1614, sadida.damages());
+        assertEquals(7185, sadida.heals());
+        assertEquals(0, sadida.shields());
+
+        Character cra = fetchCharacter.character(new CharacterName("Jeanne Jackeline Sizt"));
+        assertEquals(20991, cra.damages());
+        assertEquals(0, cra.heals());
+        assertEquals(30, cra.shields()); // This is wrong
     }
 }
