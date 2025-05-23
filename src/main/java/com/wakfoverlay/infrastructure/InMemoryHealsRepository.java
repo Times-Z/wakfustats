@@ -13,16 +13,16 @@ public class InMemoryHealsRepository implements HealsRepository {
 
     @Override
     public void addHeals(Heals heals) {
-        AmountAndElementsKey key = new AmountAndElementsKey(heals.amount(), heals.elements());
+        AmountAndElementsKey key = new AmountAndElementsKey(heals.amount(), heals.targetName(), heals.elements());
         healsMap.put(key, heals.timestamp());
     }
 
     @Override
     public Optional<Heals> find(Heals heals) {
-        AmountAndElementsKey key = new AmountAndElementsKey(heals.amount(), heals.elements());
+        AmountAndElementsKey key = new AmountAndElementsKey(heals.amount(), heals.targetName(), heals.elements());
         LocalTime timestamp = healsMap.get(key);
         if (timestamp != null) {
-            return Optional.of(new Heals(timestamp, heals.amount(), heals.elements()));
+            return Optional.of(new Heals(timestamp, heals.targetName(), heals.amount(), heals.elements()));
         }
         return Optional.empty();
     }

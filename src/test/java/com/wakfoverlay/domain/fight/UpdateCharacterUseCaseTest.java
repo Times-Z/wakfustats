@@ -79,7 +79,7 @@ class UpdateCharacterUseCaseTest {
         Character character = new Character(new CharacterName("TestCharacter"), 100, 0, 0, empty());
         charactersRepository.addOrUpdate(character);
 
-        Heals newHeals = new Heals(now, 50, Set.of("Fire", "Ice"));
+        Heals newHeals = new Heals(now, "Pouet", 50, Set.of("Fire", "Ice"));
 
         // When
         updateCharacterUseCase.updateHeals(character, newHeals);
@@ -96,10 +96,10 @@ class UpdateCharacterUseCaseTest {
         Character character = new Character(new Character.CharacterName("TestCharacter"), 100, 0, 0, empty());
         charactersRepository.addOrUpdate(character);
 
-        Heals existingHeals = new Heals(now.minus(500, MILLIS), 50, Set.of("Fire", "Ice"));
+        Heals existingHeals = new Heals(now.minus(500, MILLIS),  "Pouet",50, Set.of("Fire", "Ice"));
         healsRepository.addHeals(existingHeals);
 
-        Heals newHeals = new Heals(now, 50, Set.of("Fire", "Ice"));
+        Heals newHeals = new Heals(now,  "Pouet",50, Set.of("Fire", "Ice"));
 
         // When
         healsRepository.addHeals(newHeals);

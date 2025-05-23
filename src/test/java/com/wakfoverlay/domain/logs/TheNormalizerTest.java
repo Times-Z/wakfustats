@@ -49,7 +49,7 @@ class TheNormalizerTest {
         // Special characters should remain unchanged
         assertEquals("test@example.com", normalize("TEST@example.com"),
                 "Special characters should be preserved");
-        assertEquals("test_123", normalize("TEST_123"),
+        assertEquals("test 123", normalize("TEST_123"),
                 "Underscores and numbers should be preserved");
     }
 

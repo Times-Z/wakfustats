@@ -4,6 +4,7 @@ import java.time.LocalTime;
 
 public record Shields(
         LocalTime timestamp,
+        String targetName,
         int amount
 ) {
 }

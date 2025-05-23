@@ -11,13 +11,13 @@ public class InMemoryDamagesRepository implements DamagesRepository {
 
     @Override
     public void addDamages(Damages damages) {
-        AmountAndElementsKey key = new AmountAndElementsKey(damages.amount(), damages.elements());
+        AmountAndElementsKey key = new AmountAndElementsKey(damages.amount(), damages.targetName(), damages.elements());
         damagesMap.put(key, damages.timestamp());
     }
 
     @Override
     public Optional<Damages> find(Damages damages) {
-        AmountAndElementsKey key = new AmountAndElementsKey(damages.amount(), damages.elements());
+        AmountAndElementsKey key = new AmountAndElementsKey(damages.amount(), damages.targetName(), damages.elements());
         LocalTime timestamp = damagesMap.get(key);
         if (timestamp != null) {
             return Optional.of(new Damages(timestamp, damages.targetName(), damages.amount(), damages.elements()));

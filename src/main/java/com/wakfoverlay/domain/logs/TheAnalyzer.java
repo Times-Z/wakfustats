@@ -165,7 +165,7 @@ public class TheAnalyzer {
             damagesElements.add(normalize(elementMatcher.group(1).trim()));
         }
 
-        Damages damages = new Damages(timestamp, targetName, damageAmount, damagesElements);
+        Damages damages = new Damages(timestamp, normalize(targetName), damageAmount, damagesElements);
 
         String lastElement = damagesElements.toArray()[damagesElements.size() - 1].toString();
         CharacterName casterName = switch (normalize(lastElement)) {
@@ -196,6 +196,8 @@ public class TheAnalyzer {
 
     private void handleHeals(Matcher healsMatcher) {
         LocalTime timestamp = LocalTime.parse(healsMatcher.group(1), regexProvider.timeFormatterPattern());
+        String targetName = healsMatcher.group(2);
+
         int healsAmount = Integer.parseInt(healsMatcher.group(3).replaceAll("[^\\d-]+", ""));
 
         String elements = healsMatcher.group(4);
@@ -205,7 +207,7 @@ public class TheAnalyzer {
             healsElements.add(normalize(elementMatcher.group(1).trim()));
         }
 
-        Heals heals = new Heals(timestamp, healsAmount, healsElements);
+        Heals heals = new Heals(timestamp, normalize(targetName), healsAmount, healsElements);
 
         String lastElement = healsElements.toArray()[healsElements.size() - 1].toString();
         CharacterName casterName = switch (normalize(lastElement)) {
@@ -234,9 +236,11 @@ public class TheAnalyzer {
 
     private void handleShields(Matcher shieldsMatcher) {
         LocalTime timestamp = LocalTime.parse(shieldsMatcher.group(1), regexProvider.timeFormatterPattern());
+        String targetName = shieldsMatcher.group(2);
+
         int shieldsAmount = Integer.parseInt(shieldsMatcher.group(3).replaceAll("[^\\d-]+", ""));
 
-        Shields shields = new Shields(timestamp, shieldsAmount);
+        Shields shields = new Shields(timestamp, normalize(targetName), shieldsAmount);
 
         if (lastSpellCaster.summoner().isPresent()) {
             lastSpellCaster = fetchCharacter.character(lastSpellCaster.summoner().get().name());

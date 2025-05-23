@@ -13,16 +13,16 @@ public class InMemoryShieldsRepository implements ShieldsRepository {
 
     @Override
     public void addShields(Shields shields) {
-        AmountKey key = new AmountKey(shields.amount());
+        AmountKey key = new AmountKey(shields.targetName(), shields.amount());
         shieldsMap.put(key, shields.timestamp());
     }
 
     @Override
     public Optional<Shields> find(Shields shields) {
-        AmountKey key = new AmountKey(shields.amount());
+        AmountKey key = new AmountKey(shields.targetName(), shields.amount());
         LocalTime timestamp = shieldsMap.get(key);
         if (timestamp != null) {
-            return Optional.of(new Shields(timestamp, shields.amount()));
+            return Optional.of(new Shields(timestamp, shields.targetName(), shields.amount()));
         }
         return Optional.empty();
     }

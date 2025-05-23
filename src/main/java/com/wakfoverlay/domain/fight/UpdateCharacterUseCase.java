@@ -41,11 +41,7 @@ public record UpdateCharacterUseCase(
                 .stream()
                 .findFirst();
 
-        if (
-                existingDamages.isEmpty() ||
-                !areDamagesTooClose(existingDamages.get(), damages) ||
-                (areDamagesTooClose(existingDamages.get(), damages) && haveDifferentTargets(existingDamages.get().targetName(), damages.targetName()))
-        ) {
+        if (existingDamages.isEmpty() || !areDamagesTooClose(existingDamages.get(), damages)) {
             damagesRepository.addDamages(damages);
             addOrUpdateDamages(character, damages);
         }
@@ -90,10 +86,6 @@ public record UpdateCharacterUseCase(
         return duration.toMillis() <= MAX_TIMESTAMP_DIFFERENCE_MILLIS;
     }
 
-    private boolean haveDifferentTargets(String existingTarget, String target) {
-        return !existingTarget.equals(target);
-    }
-
     private boolean areHealsTooClose(Heals existingHeals, Heals incomingHeals) {
         Duration duration = Duration.between(existingHeals.timestamp(), incomingHeals.timestamp()).abs();
         return duration.toMillis() <= MAX_TIMESTAMP_DIFFERENCE_MILLIS;
@@ -105,10 +97,6 @@ public record UpdateCharacterUseCase(
     }
 
     private void addOrUpdateDamages(Character character, Damages damages) {
-        if (Objects.equals(character.name().value(), "Jeanne Jackeline Sizt")) {
-            System.out.println("damages: " + damages.amount());
-            System.out.println("character damages before: " + character.damages());
-        }
         Character updatedCharacter = new Character(
                 character.name(),
                 character.damages() + damages.amount(),
@@ -116,9 +104,6 @@ public record UpdateCharacterUseCase(
                 character.shields(),
                 character.summoner()
         );
-        if (Objects.equals(character.name().value(), "Jeanne Jackeline Sizt")) {
-            System.out.println("character damages after: " + updatedCharacter.damages());
-        }
 
         charactersRepository.addOrUpdate(updatedCharacter);
     }
