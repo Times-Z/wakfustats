@@ -110,11 +110,25 @@ public class TheAnalyzer {
     }
 
     public void analyzeFighter(String logLine) {
+        Matcher fightCreationMatcher = regexProvider.fightCreationPattern().matcher(logLine);
+        Matcher fightEndMatcher = regexProvider.fightEndPattern().matcher(logLine);
         Matcher fighterMatcher = regexProvider.fighterPattern().matcher(logLine);
+
+        if (fightCreationMatcher.find()) {
+            account++;
+        }
+
+        if (fightEndMatcher.find()) {
+            account--;
+        }
 
         if (fighterMatcher.find()) {
             handleFighter(fighterMatcher);
         }
+    }
+
+    public void resetAccounting() {
+        account = 0;
     }
 
     private void handleFighter(Matcher fighterMatcher) {

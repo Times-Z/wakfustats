@@ -87,7 +87,6 @@ public class MainWindow extends VBox {
         if (firstLaunch) {
             resetStats();
             firstLaunch = false;
-
         }
 
         Characters rankedCharacters = fetchCharacter.rankedCharactersByDamages();

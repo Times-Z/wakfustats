@@ -44,6 +44,7 @@ public class LogParser {
         ReadResult result = theFileReader.readNewLines(filePath);
 
         if (result.status() == FileReadStatus.SUCCESS && !result.lines().isEmpty()) {
+            theAnalyzer.resetAccounting();
             result.lines().forEach(theAnalyzer::analyzeFighter);
         }
 
