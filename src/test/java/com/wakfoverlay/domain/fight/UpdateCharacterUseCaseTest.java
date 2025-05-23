@@ -66,7 +66,7 @@ class UpdateCharacterUseCaseTest {
 
         // When
         damagesRepository.addDamages(newDamages);
-        updateCharacterUseCase.updateDamages(character, newDamages, false);
+        updateCharacterUseCase.updateDamages(character, newDamages, true);
 
         // Then
         assertEquals(100, charactersRepository.getCharacters().get(character.name()).damages());
@@ -96,10 +96,10 @@ class UpdateCharacterUseCaseTest {
         Character character = new Character(new Character.CharacterName("TestCharacter"), 100, 0, 0, empty());
         charactersRepository.addOrUpdate(character);
 
-        Heals existingHeals = new Heals(now.minus(500, MILLIS),  "Pouet",50, Set.of("Fire", "Ice"));
+        Heals existingHeals = new Heals(now.minus(500, MILLIS), "Pouet", 50, Set.of("Fire", "Ice"));
         healsRepository.addHeals(existingHeals);
 
-        Heals newHeals = new Heals(now,  "Pouet",50, Set.of("Fire", "Ice"));
+        Heals newHeals = new Heals(now, "Pouet", 50, Set.of("Fire", "Ice"));
 
         // When
         healsRepository.addHeals(newHeals);

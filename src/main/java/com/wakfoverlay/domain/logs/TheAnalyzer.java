@@ -1,21 +1,33 @@
 package com.wakfoverlay.domain.logs;
 
 import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
-import com.wakfoverlay.domain.fight.model.*;
 import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.fight.model.Character.CharacterName;
+import com.wakfoverlay.domain.fight.model.Damages;
+import com.wakfoverlay.domain.fight.model.Heals;
+import com.wakfoverlay.domain.fight.model.Shields;
+import com.wakfoverlay.domain.fight.model.StatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.FetchCharacter;
 import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.wakfoverlay.domain.fight.model.StatusEffect.StatusEffectName;
-import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.*;
+import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.DISTORSION;
+import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.INTOXIQUE;
+import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.MAUDIT;
+import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.NO_SUB_TYPE;
+import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.PRIERE_SADIDA;
+import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.TETATOXINE;
 import static com.wakfoverlay.domain.logs.TheNormalizer.normalize;
 import static java.util.Optional.empty;
 
@@ -52,13 +64,11 @@ public class TheAnalyzer {
         Matcher summoningMatcher1 = regexProvider.summoningPattern1().matcher(logLine);
         Matcher summoningMatcher2 = regexProvider.summoningPattern2().matcher(logLine);
 
-        if (fightCreationMatcher.find())  {
-            System.out.println("incrementing account");
+        if (fightCreationMatcher.find()) {
             account++;
         }
 
-        if (fightEndMatcher.find())  {
-            System.out.println("decrementing account");
+        if (fightEndMatcher.find()) {
             account--;
         }
 
@@ -108,8 +118,8 @@ public class TheAnalyzer {
     }
 
     private void handleFighter(Matcher fighterMatcher) {
-        // TODO: add fightId
-        System.out.println(fighterMatcher.group(2));
+        // TODO: add fightId ?
+        //System.out.println(fighterMatcher.group(2));
         CharacterName characterName = new CharacterName(fighterMatcher.group(3));
         boolean isControlledByAI = Boolean.parseBoolean(fighterMatcher.group(5));
 
@@ -146,14 +156,12 @@ public class TheAnalyzer {
                     effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), TETATOXINE);
             case "intoxique" ->
                     effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), INTOXIQUE);
-            case "maudit" ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), MAUDIT);
+            case "maudit" -> effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), MAUDIT);
             case "distorsion" ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)),  DISTORSION);
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), DISTORSION);
             case "garde feuille" ->
                     effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), PRIERE_SADIDA);
-            default ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)),  NO_SUB_TYPE);
+            default -> effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), NO_SUB_TYPE);
         }
 
         if (lastSpellCaster == null) {

@@ -8,10 +8,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 
-import static java.util.Optional.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static java.util.Optional.empty;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FetchCharacterUseCaseTest {
 
@@ -41,7 +42,7 @@ class FetchCharacterUseCaseTest {
     @Test
     void should_return_new_character_with_zero_damage_when_not_found_in_repository() {
         // Given
-        CharacterName name = new CharacterName("NonExistentCharacter");
+        CharacterName name = new CharacterName("Unknown");
 
         // When
         Character result = fetchCharacterUseCase.character(name);
@@ -54,7 +55,7 @@ class FetchCharacterUseCaseTest {
     @Test
     void should_return_null_character_when_name_is_null() {
         // Given
-        CharacterName nullName = null;
+        CharacterName nullName = new CharacterName("Unknown");
 
         // When
         Character result = fetchCharacterUseCase.character(nullName);

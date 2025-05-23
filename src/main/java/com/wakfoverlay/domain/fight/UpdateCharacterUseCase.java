@@ -11,7 +11,6 @@ import com.wakfoverlay.domain.fight.port.secondary.HealsRepository;
 import com.wakfoverlay.domain.fight.port.secondary.ShieldsRepository;
 
 import java.time.Duration;
-import java.util.Objects;
 import java.util.Optional;
 
 public record UpdateCharacterUseCase(
@@ -37,24 +36,27 @@ public record UpdateCharacterUseCase(
 
     @Override
     public void updateDamages(Character character, Damages damages, boolean multiAccounting) {
-        // TODO: add fightId
-        Optional<Damages> existingDamages = damagesRepository.find(damages)
-                .stream()
-                .findFirst();
-
-        // TODO: refacto
-        if (existingDamages.isPresent() && !multiAccounting && areDamagesTooClose(existingDamages.get(), damages)) {
+        if (!multiAccounting) {
             damagesRepository.addDamages(damages);
             addOrUpdateDamages(character, damages);
         }
 
-        if (existingDamages.isPresent() && areDamagesTooClose(existingDamages.get(), damages)) {
-            return;
-        }
+        if (multiAccounting) {
+            Optional<Damages> existingDamages = damagesRepository.find(damages)
+                    .stream()
+                    .findFirst();
 
-        if (existingDamages.isEmpty()) {
-            damagesRepository.addDamages(damages);
-            addOrUpdateDamages(character, damages);
+            if (existingDamages.isEmpty()) {
+                damagesRepository.addDamages(damages);
+                addOrUpdateDamages(character, damages);
+            }
+
+            if (existingDamages.isPresent()) {
+                if (!areDamagesTooClose(existingDamages.get(), damages)) {
+                    damagesRepository.addDamages(damages);
+                    addOrUpdateDamages(character, damages);
+                }
+            }
         }
     }
 
