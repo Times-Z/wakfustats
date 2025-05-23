@@ -7,7 +7,7 @@ import com.wakfoverlay.domain.fight.model.Shields;
 
 public interface UpdateCharacter {
     void create(Character character);
-    void updateDamages(Character character, Damages damages, boolean multiAccounting);
+    void updateDamages(Character character, Damages damages, boolean multiAccounting, int numberOfAccounts);
     void updateHeals(Character character, Heals heals);
     void updateShields(Character character, Shields shields);
     void resetCharactersStats();

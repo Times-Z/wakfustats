@@ -132,8 +132,6 @@ public class TheAnalyzer {
     }
 
     private void handleFighter(Matcher fighterMatcher) {
-        // TODO: add fightId ?
-        //System.out.println(fighterMatcher.group(2));
         CharacterName characterName = new CharacterName(fighterMatcher.group(3));
         boolean isControlledByAI = Boolean.parseBoolean(fighterMatcher.group(5));
 
@@ -227,7 +225,7 @@ public class TheAnalyzer {
                 lastSpellCaster = fetchCharacter.character(lastSpellCaster.summoner().get().name());
             }
 
-            updateCharacter.updateDamages(lastSpellCaster, damages, multiAccounting);
+            updateCharacter.updateDamages(lastSpellCaster, damages, multiAccounting, account);
         }
     }
 

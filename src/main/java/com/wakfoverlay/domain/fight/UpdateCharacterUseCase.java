@@ -35,28 +35,32 @@ public record UpdateCharacterUseCase(
     }
 
     @Override
-    public void updateDamages(Character character, Damages damages, boolean multiAccounting) {
+    public void updateDamages(Character character, Damages damages, boolean multiAccounting, int numberOfAccounts) {
         if (!multiAccounting) {
             damagesRepository.addDamages(damages);
             addOrUpdateDamages(character, damages);
         }
 
         if (multiAccounting) {
-            Optional<Damages> existingDamages = damagesRepository.find(damages)
-                    .stream()
-                    .findFirst();
-
-            if (existingDamages.isEmpty()) {
-                damagesRepository.addDamages(damages);
-                addOrUpdateDamages(character, damages);
-            }
-
-            if (existingDamages.isPresent()) {
-                if (!areDamagesTooClose(existingDamages.get(), damages)) {
-                    damagesRepository.addDamages(damages);
-                    addOrUpdateDamages(character, damages);
-                }
-            }
+            Damages newDamages = new Damages(damages.timestamp(), damages.targetName(), damages.amount() / numberOfAccounts, damages.elements());
+            damagesRepository.addDamages(newDamages);
+            addOrUpdateDamages(character, newDamages);
+            // TODO: nothing better for now
+//            Optional<Damages> existingDamages = damagesRepository.find(damages)
+//                    .stream()
+//                    .findFirst();
+//
+//            if (existingDamages.isEmpty()) {
+//                damagesRepository.addDamages(damages);
+//                addOrUpdateDamages(character, damages);
+//            }
+//
+//            if (existingDamages.isPresent()) {
+//                if (!areDamagesTooClose(existingDamages.get(), damages)) {
+//                    damagesRepository.addDamages(damages);
+//                    addOrUpdateDamages(character, damages);
+//                }
+//            }
         }
     }
 

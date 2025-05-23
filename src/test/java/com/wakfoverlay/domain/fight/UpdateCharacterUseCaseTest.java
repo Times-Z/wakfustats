@@ -45,7 +45,7 @@ class UpdateCharacterUseCaseTest {
         Damages newDamages = new Damages(now, "Pouet", 50, Set.of("Fire", "Ice"));
 
         // When
-        updateCharacterUseCase.updateDamages(character, newDamages, false);
+        updateCharacterUseCase.updateDamages(character, newDamages, false, 1);
 
         // Then
         assertEquals(1, damagesRepository.getDamagesMap().size());
@@ -66,7 +66,7 @@ class UpdateCharacterUseCaseTest {
 
         // When
         damagesRepository.addDamages(newDamages);
-        updateCharacterUseCase.updateDamages(character, newDamages, true);
+        updateCharacterUseCase.updateDamages(character, newDamages, true, 2);
 
         // Then
         assertEquals(100, charactersRepository.getCharacters().get(character.name()).damages());
