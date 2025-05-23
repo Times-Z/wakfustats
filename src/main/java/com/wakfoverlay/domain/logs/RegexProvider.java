@@ -5,6 +5,12 @@ import java.util.regex.Pattern;
 
 public class RegexProvider {
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss,SSS");
+    private static final Pattern FIGHT_CREATION = Pattern
+            .compile( "INFO (\\d{2}:\\d{2}:\\d{2},\\d{3}) \\[.*?] \\(bae:47\\) - CREATION DU COMBAT",
+                    Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern FIGHT_END = Pattern
+            .compile( "INFO (\\d{2}:\\d{2}:\\d{2},\\d{3}) \\[.*?] \\(aZb:92\\) - \\[FIGHT] End fight with id (\\d+)",
+                    Pattern.UNICODE_CHARACTER_CLASS);
     private static final Pattern FIGHTER_PATTERN = Pattern
             .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?\\]\\s+\\(.*?\\)\\s+-\\s+\\[_FL_\\]\\s+fightId=(\\d+)\\s+(.*?)\\s+breed\\s*:\\s*(\\d+).*?isControlledByAI=(\\w+)",
                     Pattern.UNICODE_CHARACTER_CLASS);
@@ -35,6 +41,14 @@ public class RegexProvider {
 
     public DateTimeFormatter timeFormatterPattern() {
         return TIME_FORMATTER;
+    }
+
+    public Pattern fightCreationPattern() {
+        return FIGHT_CREATION;
+    }
+
+    public Pattern fightEndPattern() {
+        return FIGHT_END;
     }
 
     public Pattern fighterPattern() {

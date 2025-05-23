@@ -26,7 +26,7 @@ public class TheAnalyzer {
     private final UpdateStatusEffect updateStatusEffect;
     private final RegexProvider regexProvider;
 
-    private boolean multiAccounting = false;
+    private int account = 0;
     private Character lastSpellCaster = null;
     private Optional<CharacterName> lastSummoner = empty();
     private final List<String> summonIds = new ArrayList<>();
@@ -40,6 +40,8 @@ public class TheAnalyzer {
     }
 
     public void analyze(String logLine) {
+        Matcher fightCreationMatcher = regexProvider.fightCreationPattern().matcher(logLine);
+        Matcher fightEndMatcher = regexProvider.fightEndPattern().matcher(logLine);
         Matcher fighterMatcher = regexProvider.fighterPattern().matcher(logLine);
         Matcher spellCastMatcher = regexProvider.spellCastPattern().matcher(logLine);
         Matcher statusEffectMatcher = regexProvider.statusEffectPattern().matcher(logLine);
@@ -49,6 +51,16 @@ public class TheAnalyzer {
         Matcher summonerMatcher = regexProvider.summonerPattern().matcher(logLine);
         Matcher summoningMatcher1 = regexProvider.summoningPattern1().matcher(logLine);
         Matcher summoningMatcher2 = regexProvider.summoningPattern2().matcher(logLine);
+
+        if (fightCreationMatcher.find())  {
+            System.out.println("incrementing account");
+            account++;
+        }
+
+        if (fightEndMatcher.find())  {
+            System.out.println("decrementing account");
+            account--;
+        }
 
         if (fighterMatcher.find()) {
             handleFighter(fighterMatcher);
@@ -63,7 +75,7 @@ public class TheAnalyzer {
         }
 
         if (damagesMatcher.find()) {
-            handleDamages(damagesMatcher, multiAccounting);
+            handleDamages(damagesMatcher, multiAccounting());
         }
 
         if (healsMatcher.find()) {
@@ -265,6 +277,10 @@ public class TheAnalyzer {
         String summonId = summoningMatcher1.group(2);
 
         summonIds.add(summonId);
+    }
+
+    private boolean multiAccounting() {
+        return account > 1;
     }
 
     private boolean friendlyFire(String targetName) {

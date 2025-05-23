@@ -4,15 +4,16 @@ import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
 import com.wakfoverlay.domain.fight.FetchStatusEffectUseCase;
 import com.wakfoverlay.domain.fight.UpdateCharacterUseCase;
 import com.wakfoverlay.domain.fight.UpdateStatusEffectUseCase;
-import com.wakfoverlay.domain.logs.model.FileReadStatus;
-import com.wakfoverlay.infrastructure.*;
+import com.wakfoverlay.infrastructure.InMemoryCharactersRepository;
+import com.wakfoverlay.infrastructure.InMemoryDamagesRepository;
+import com.wakfoverlay.infrastructure.InMemoryHealsRepository;
+import com.wakfoverlay.infrastructure.InMemoryShieldsRepository;
+import com.wakfoverlay.infrastructure.InMemoryStatusEffectRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LogParserE2ETest {
     private LogParser logParser;
@@ -42,7 +43,7 @@ class LogParserE2ETest {
 
         logParser = new LogParser(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
 
-        Path resourcePath = Paths.get("src", "test", "resources", "wakfu.log");
+        Path resourcePath = Paths.get("src", "test", "resources", "temp.log");
         testLogPath = resourcePath.toAbsolutePath().toString();
 
         charactersRepository.resetCharactersStats();
