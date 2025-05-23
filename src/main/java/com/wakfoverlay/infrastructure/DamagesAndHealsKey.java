@@ -3,10 +3,10 @@ package com.wakfoverlay.infrastructure;
 import java.util.Objects;
 import java.util.Set;
 
-public class AmountAndElementsKey extends AmountKey {
+public class DamagesAndHealsKey extends ShieldsKey {
     private final Set<String> elements;
 
-    public AmountAndElementsKey(int value, String targetName, Set<String> elements) {
+    public DamagesAndHealsKey(int value, String targetName, Set<String> elements) {
         super(targetName, value);
         this.elements = elements;
     }
@@ -15,7 +15,7 @@ public class AmountAndElementsKey extends AmountKey {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        AmountAndElementsKey that = (AmountAndElementsKey) o;
+        DamagesAndHealsKey that = (DamagesAndHealsKey) o;
         return Objects.equals(elements, that.elements);
     }
 

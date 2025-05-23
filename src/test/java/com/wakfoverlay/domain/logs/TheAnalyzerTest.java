@@ -242,7 +242,7 @@ class TheAnalyzerTest {
             analyzer.analyze(damagesLogLine);
 
             // Then
-            verify(updateCharacter).updateDamages(eq(mockCharacter), damagesCaptor.capture());
+            verify(updateCharacter).updateDamages(eq(mockCharacter), damagesCaptor.capture(), false);
 
             Damages capturedDamages = damagesCaptor.getValue();
             assertEquals(1713, capturedDamages.amount());
@@ -272,7 +272,7 @@ class TheAnalyzerTest {
 
             // Then
             verify(updateStatusEffect).update(statusEffectCaptor.capture(), eq(mockToxinesCaster.name()));
-            verify(updateCharacter).updateDamages(eq(mockToxinesCaster), damagesCaptor.capture());
+            verify(updateCharacter).updateDamages(eq(mockToxinesCaster), damagesCaptor.capture(), false);
 
             Damages capturedDamages = damagesCaptor.getValue();
             assertEquals(550, capturedDamages.amount());
@@ -296,7 +296,7 @@ class TheAnalyzerTest {
             analyzer.analyze(damagesLogLine);
 
             // Then
-            verify(updateCharacter).updateDamages(eq(unknownCharacter), any(Damages.class));
+            verify(updateCharacter).updateDamages(eq(unknownCharacter), any(Damages.class), false);
         }
     }
 

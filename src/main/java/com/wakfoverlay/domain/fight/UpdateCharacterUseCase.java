@@ -36,12 +36,23 @@ public record UpdateCharacterUseCase(
     }
 
     @Override
-    public void updateDamages(Character character, Damages damages) {
+    public void updateDamages(Character character, Damages damages, boolean multiAccounting) {
+        // TODO: add fightId
         Optional<Damages> existingDamages = damagesRepository.find(damages)
                 .stream()
                 .findFirst();
 
-        if (existingDamages.isEmpty() || !areDamagesTooClose(existingDamages.get(), damages)) {
+        // TODO: refacto
+        if (existingDamages.isPresent() && !multiAccounting && areDamagesTooClose(existingDamages.get(), damages)) {
+            damagesRepository.addDamages(damages);
+            addOrUpdateDamages(character, damages);
+        }
+
+        if (existingDamages.isPresent() && areDamagesTooClose(existingDamages.get(), damages)) {
+            return;
+        }
+
+        if (existingDamages.isEmpty()) {
             damagesRepository.addDamages(damages);
             addOrUpdateDamages(character, damages);
         }

@@ -7,17 +7,17 @@ import java.time.LocalTime;
 import java.util.*;
 
 public class InMemoryDamagesRepository implements DamagesRepository {
-    private final Map<AmountAndElementsKey, LocalTime> damagesMap = new HashMap<>();
+    private final Map<DamagesAndHealsKey, LocalTime> damagesMap = new HashMap<>();
 
     @Override
     public void addDamages(Damages damages) {
-        AmountAndElementsKey key = new AmountAndElementsKey(damages.amount(), damages.targetName(), damages.elements());
+        DamagesAndHealsKey key = new DamagesAndHealsKey(damages.amount(), damages.targetName(), damages.elements());
         damagesMap.put(key, damages.timestamp());
     }
 
     @Override
     public Optional<Damages> find(Damages damages) {
-        AmountAndElementsKey key = new AmountAndElementsKey(damages.amount(), damages.targetName(), damages.elements());
+        DamagesAndHealsKey key = new DamagesAndHealsKey(damages.amount(), damages.targetName(), damages.elements());
         LocalTime timestamp = damagesMap.get(key);
         if (timestamp != null) {
             return Optional.of(new Damages(timestamp, damages.targetName(), damages.amount(), damages.elements()));
@@ -25,7 +25,7 @@ public class InMemoryDamagesRepository implements DamagesRepository {
         return Optional.empty();
     }
 
-    public Map<AmountAndElementsKey, LocalTime> getDamagesMap() {
+    public Map<DamagesAndHealsKey, LocalTime> getDamagesMap() {
         return Collections.unmodifiableMap(damagesMap);
     }
 

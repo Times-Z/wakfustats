@@ -26,6 +26,7 @@ public class TheAnalyzer {
     private final UpdateStatusEffect updateStatusEffect;
     private final RegexProvider regexProvider;
 
+    private boolean multiAccounting = false;
     private Character lastSpellCaster = null;
     private Optional<CharacterName> lastSummoner = empty();
     private final List<String> summonIds = new ArrayList<>();
@@ -62,7 +63,7 @@ public class TheAnalyzer {
         }
 
         if (damagesMatcher.find()) {
-            handleDamages(damagesMatcher);
+            handleDamages(damagesMatcher, multiAccounting);
         }
 
         if (healsMatcher.find()) {
@@ -95,6 +96,8 @@ public class TheAnalyzer {
     }
 
     private void handleFighter(Matcher fighterMatcher) {
+        // TODO: add fightId
+        System.out.println(fighterMatcher.group(2));
         CharacterName characterName = new CharacterName(fighterMatcher.group(3));
         boolean isControlledByAI = Boolean.parseBoolean(fighterMatcher.group(5));
 
@@ -148,7 +151,7 @@ public class TheAnalyzer {
         updateStatusEffect.update(effect, lastSpellCaster.name());
     }
 
-    private void handleDamages(Matcher damagesMatcher) {
+    private void handleDamages(Matcher damagesMatcher, boolean multiAccounting) {
         LocalTime timestamp = LocalTime.parse(damagesMatcher.group(1), regexProvider.timeFormatterPattern());
 
         String targetName = damagesMatcher.group(2);
@@ -190,7 +193,7 @@ public class TheAnalyzer {
                 lastSpellCaster = fetchCharacter.character(lastSpellCaster.summoner().get().name());
             }
 
-            updateCharacter.updateDamages(lastSpellCaster, damages);
+            updateCharacter.updateDamages(lastSpellCaster, damages, multiAccounting);
         }
     }
 
