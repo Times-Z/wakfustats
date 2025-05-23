@@ -5,17 +5,19 @@ to package: ./gradlew jpackage (if needed--info or --debug)
 
 TODO:
 
-- Enrich E2E test
-- Add toggle on character name to show details
-- Add a test for isControlledByAi mobs
-- Add tests for friendly fire
-- Couleur des graphs par perso et pas par position
-- Refacto duplicated code
+- Analyze all possible interactions in Dungeons ("cocons en sabléo" that auto take damages, ...)
+- Toggle that shows the statistics details of the character (by spells)
 - Toggle friendly fire
+- Graph's colors by character, not position
+
+LOVE:
+
+- Refactoring duplicated code
+- Add more tests
+- E2E test should be more precise
 
 Known issues:
 
-- Bug Sadi poison & Xelor
-- Compute des heals HoT
-- Check computing Feca glyph --> Aucune indication autre que le cast
-- Modérateur d'énergie du Steamer donne l'armure à quelqu'un d'autre
+- Sadida's poisons (and DoTs / HoTs in general) could be badly compute sometimes (combining with Xelor big turns)
+- For now, impossible to compute Feca's glyphs damages / heals / Shields.
+- A lot of spells effects are not taken into account (like Steamer's "Modérateur d'énergie")
