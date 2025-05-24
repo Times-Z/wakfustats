@@ -30,10 +30,6 @@ public record UpdateCharacterUseCase(
         }
     }
 
-    public void update(Character character) {
-        charactersRepository.addOrUpdate(character);
-    }
-
     @Override
     public void updateDamages(Character character, Damages damages, boolean multiAccounting, int numberOfAccounts) {
         if (!multiAccounting) {
@@ -42,42 +38,28 @@ public record UpdateCharacterUseCase(
         }
 
         if (multiAccounting) {
-            Damages newDamages = new Damages(damages.timestamp(), damages.targetName(), damages.amount() / numberOfAccounts, damages.elements());
+            Damages newDamages = new Damages(damages.timestamp(), damages.targetName(), Math.ceilDivExact(damages.amount(), numberOfAccounts), damages.elements());
             damagesRepository.addDamages(newDamages);
             addOrUpdateDamages(character, newDamages);
-            // TODO: nothing better for now
-//            Optional<Damages> existingDamages = damagesRepository.find(damages)
-//                    .stream()
-//                    .findFirst();
-//
-//            if (existingDamages.isEmpty()) {
-//                damagesRepository.addDamages(damages);
-//                addOrUpdateDamages(character, damages);
-//            }
-//
-//            if (existingDamages.isPresent()) {
-//                if (!areDamagesTooClose(existingDamages.get(), damages)) {
-//                    damagesRepository.addDamages(damages);
-//                    addOrUpdateDamages(character, damages);
-//                }
-//            }
         }
     }
 
     @Override
-    public void updateHeals(Character character, Heals heals) {
-        Optional<Heals> existingHeals = healsRepository.find(heals)
-                .stream()
-                .findFirst();
-
-        if (existingHeals.isEmpty() || !areHealsTooClose(existingHeals.get(), heals)) {
+    public void updateHeals(Character character, Heals heals, boolean multiAccounting, int numberOfAccounts) {
+        if (!multiAccounting) {
             healsRepository.addHeals(heals);
             addOrUpdateHeals(character, heals);
         }
+
+        if (multiAccounting) {
+            Heals newHeals = new Heals(heals.timestamp(), heals.targetName(), Math.ceilDivExact(heals.amount(), numberOfAccounts), heals.elements());
+            healsRepository.addHeals(newHeals);
+            addOrUpdateHeals(character, newHeals);
+        }
     }
 
     @Override
-    public void updateShields(Character character, Shields shields) {
+    public void updateShields(Character character, Shields shields, boolean multiAccounting, int numberOfAccounts) {
         Optional<Shields> existingShields = shieldsRepository.find(shields)
                 .stream()
                 .findFirst();

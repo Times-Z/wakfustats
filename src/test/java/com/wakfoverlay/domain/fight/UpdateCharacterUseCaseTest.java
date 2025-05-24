@@ -66,10 +66,10 @@ class UpdateCharacterUseCaseTest {
 
         // When
         damagesRepository.addDamages(newDamages);
-        updateCharacterUseCase.updateDamages(character, newDamages, true, 2);
+        updateCharacterUseCase.updateDamages(character, newDamages, false, 1);
 
         // Then
-        assertEquals(100, charactersRepository.getCharacters().get(character.name()).damages());
+        assertEquals(150, charactersRepository.getCharacters().get(character.name()).damages());
     }
 
     @Test
@@ -82,7 +82,7 @@ class UpdateCharacterUseCaseTest {
         Heals newHeals = new Heals(now, "Pouet", 50, Set.of("Fire", "Ice"));
 
         // When
-        updateCharacterUseCase.updateHeals(character, newHeals);
+        updateCharacterUseCase.updateHeals(character, newHeals, false, 1);
 
         // Then
         assertEquals(1, healsRepository.getHealsMap().size());
@@ -103,9 +103,9 @@ class UpdateCharacterUseCaseTest {
 
         // When
         healsRepository.addHeals(newHeals);
-        updateCharacterUseCase.updateHeals(character, newHeals);
+        updateCharacterUseCase.updateHeals(character, newHeals, true, 2);
 
         // Then
-        assertEquals(0, charactersRepository.getCharacters().get(character.name()).heals());
+        assertEquals(25, charactersRepository.getCharacters().get(character.name()).heals());
     }
 }

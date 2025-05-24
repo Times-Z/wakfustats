@@ -1,33 +1,20 @@
 package com.wakfoverlay.domain.logs;
 
 import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
+import com.wakfoverlay.domain.fight.model.*;
 import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.fight.model.Character.CharacterName;
-import com.wakfoverlay.domain.fight.model.Damages;
-import com.wakfoverlay.domain.fight.model.Heals;
-import com.wakfoverlay.domain.fight.model.Shields;
-import com.wakfoverlay.domain.fight.model.StatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.FetchCharacter;
 import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.wakfoverlay.domain.fight.model.StatusEffect.StatusEffectName;
-import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.DISTORSION;
-import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.INTOXIQUE;
-import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.MAUDIT;
-import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.NO_SUB_TYPE;
-import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.PRIERE_SADIDA;
-import static com.wakfoverlay.domain.fight.model.StatusEffect.SubType.TETATOXINE;
 import static com.wakfoverlay.domain.logs.TheNormalizer.normalize;
 import static java.util.Optional.empty;
 
@@ -54,6 +41,7 @@ public class TheAnalyzer {
     public void analyze(String logLine) {
         Matcher fightCreationMatcher = regexProvider.fightCreationPattern().matcher(logLine);
         Matcher fightEndMatcher = regexProvider.fightEndPattern().matcher(logLine);
+        Matcher connectionLostMatcher = regexProvider.connectionLostPattern().matcher(logLine);
         Matcher fighterMatcher = regexProvider.fighterPattern().matcher(logLine);
         Matcher spellCastMatcher = regexProvider.spellCastPattern().matcher(logLine);
         Matcher statusEffectMatcher = regexProvider.statusEffectPattern().matcher(logLine);
@@ -65,11 +53,15 @@ public class TheAnalyzer {
         Matcher summoningMatcher2 = regexProvider.summoningPattern2().matcher(logLine);
 
         if (fightCreationMatcher.find()) {
-            account++;
+            handleAccounting(true);
         }
 
         if (fightEndMatcher.find()) {
-            account--;
+            handleAccounting(false);
+        }
+
+        if (connectionLostMatcher.find()) {
+            handleAccounting(false);
         }
 
         if (fighterMatcher.find()) {
@@ -85,7 +77,7 @@ public class TheAnalyzer {
         }
 
         if (damagesMatcher.find()) {
-            handleDamages(damagesMatcher, multiAccounting());
+            handleDamages(damagesMatcher);
         }
 
         if (healsMatcher.find()) {
@@ -112,14 +104,19 @@ public class TheAnalyzer {
     public void analyzeFighter(String logLine) {
         Matcher fightCreationMatcher = regexProvider.fightCreationPattern().matcher(logLine);
         Matcher fightEndMatcher = regexProvider.fightEndPattern().matcher(logLine);
+        Matcher connectionLostMatcher = regexProvider.connectionLostPattern().matcher(logLine);
         Matcher fighterMatcher = regexProvider.fighterPattern().matcher(logLine);
 
         if (fightCreationMatcher.find()) {
-            account++;
+            handleAccounting(true);
         }
 
         if (fightEndMatcher.find()) {
-            account--;
+            handleAccounting(false);
+        }
+
+        if (connectionLostMatcher.find()) {
+            handleAccounting(false);
         }
 
         if (fighterMatcher.find()) {
@@ -129,6 +126,18 @@ public class TheAnalyzer {
 
     public void resetAccounting() {
         account = 0;
+    }
+
+    private void handleAccounting(boolean increasing) {
+        if (increasing) {
+            account++;
+        } else {
+            account--;
+
+            if (account < 0) {
+                account = 0;
+            }
+        }
     }
 
     private void handleFighter(Matcher fighterMatcher) {
@@ -155,6 +164,10 @@ public class TheAnalyzer {
 
         if (fetchCharacter.exist(casterName)) {
             lastSpellCaster = fetchCharacter.character(casterName);
+
+            if (lastSpellCaster.summoner().isPresent()) {
+                lastSpellCaster = fetchCharacter.character(lastSpellCaster.summoner().get().name());
+            }
         }
     }
 
@@ -164,16 +177,12 @@ public class TheAnalyzer {
 
         StatusEffect effect;
         switch (normalize(statusName)) {
-            case "toxines" ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), TETATOXINE);
-            case "intoxique" ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), INTOXIQUE);
-            case "maudit" -> effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), MAUDIT);
-            case "distorsion" ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), DISTORSION);
             case "garde feuille" ->
-                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), PRIERE_SADIDA);
-            default -> effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), NO_SUB_TYPE);
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), "priere sadida");
+            case "toxines" ->
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), "tetatoxine");
+            default ->
+                    effect = new StatusEffect(timestamp, new StatusEffectName(normalize(statusName)), normalize(statusName));
         }
 
         if (lastSpellCaster == null) {
@@ -183,7 +192,7 @@ public class TheAnalyzer {
         updateStatusEffect.update(effect, lastSpellCaster.name());
     }
 
-    private void handleDamages(Matcher damagesMatcher, boolean multiAccounting) {
+    private void handleDamages(Matcher damagesMatcher) {
         LocalTime timestamp = LocalTime.parse(damagesMatcher.group(1), regexProvider.timeFormatterPattern());
 
         String targetName = damagesMatcher.group(2);
@@ -202,30 +211,29 @@ public class TheAnalyzer {
 
         Damages damages = new Damages(timestamp, normalize(targetName), damageAmount, damagesElements);
 
-        String lastElement = damagesElements.toArray()[damagesElements.size() - 1].toString();
-        CharacterName casterName = switch (normalize(lastElement)) {
-            case "tetatoxine",
-                 "intoxique",
-                 "maudit",
-                 "distorsion",
-                 "garde feuille" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
-            default -> {
-                if (lastSpellCaster == null) {
-                    lastSpellCaster = new Character(new CharacterName("Unknown"), 0, 0, 0, empty());
-                }
-
-                yield lastSpellCaster.name();
-            }
-        };
+        String lastElement = normalize(damagesElements.toArray()[damagesElements.size() - 1].toString());
+        CharacterName casterName = new CharacterName("Unknown");
+        if (!Objects.equals(lastElement, "lumiere") &&
+                !Objects.equals(lastElement, "stasis") &&
+                !Objects.equals(lastElement, "feu") &&
+                !Objects.equals(lastElement, "air") &&
+                !Objects.equals(lastElement, "eau") &&
+                !Objects.equals(lastElement, "terre")
+        ) {
+            casterName = fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
+        }
 
         if (fetchCharacter.exist(casterName)) {
-            lastSpellCaster = fetchCharacter.character(casterName);
+            Character casterToAttribute = fetchCharacter.character(casterName);
 
-            if (lastSpellCaster.summoner().isPresent()) {
-                lastSpellCaster = fetchCharacter.character(lastSpellCaster.summoner().get().name());
+            if (casterToAttribute.summoner().isPresent()) {
+                casterToAttribute = fetchCharacter.character(casterToAttribute.summoner().get().name());
             }
 
-            updateCharacter.updateDamages(lastSpellCaster, damages, multiAccounting, account);
+            updateCharacter.updateDamages(casterToAttribute, damages, multiAccounting(), account);
+        } else {
+            lastSpellCaster = fetchCharacter.character(lastSpellCaster.name());
+            updateCharacter.updateDamages(lastSpellCaster, damages, multiAccounting(), account);
         }
     }
 
@@ -242,12 +250,16 @@ public class TheAnalyzer {
             healsElements.add(normalize(elementMatcher.group(1).trim()));
         }
 
-        Heals heals = new Heals(timestamp, normalize(targetName), healsAmount, healsElements);
+        Heals heals;
+        heals = new Heals(timestamp, normalize(targetName), healsAmount, healsElements);
 
         String lastElement = healsElements.toArray()[healsElements.size() - 1].toString();
         CharacterName casterName = switch (normalize(lastElement)) {
             case "priere sadida" -> fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
-            case "engraine" -> null;
+            case "engraine" ->  {
+                heals = new Heals(timestamp, normalize(targetName), 0, healsElements);
+                yield null;
+            }
             default -> {
                 if (lastSpellCaster == null) {
                     lastSpellCaster = new Character(new CharacterName("Unknown"), 0, 0, 0, empty());
@@ -258,15 +270,19 @@ public class TheAnalyzer {
         };
 
         if (fetchCharacter.exist(casterName)) {
-            lastSpellCaster = fetchCharacter.character(casterName);
+            Character casterToAttribute = fetchCharacter.character(casterName);
 
-            if (lastSpellCaster.summoner().isPresent()) {
-                lastSpellCaster = fetchCharacter.character(lastSpellCaster.summoner().get().name());
+            if (casterToAttribute.summoner().isPresent()) {
+                casterToAttribute = fetchCharacter.character(casterToAttribute.summoner().get().name());
             }
 
-            updateCharacter.updateHeals(lastSpellCaster, heals);
+            System.out.println("Updating heals for summoner: " + casterToAttribute.name().value() + " with amount: " + heals.amount());
+            updateCharacter.updateHeals(casterToAttribute, heals, multiAccounting(), account);
+        } else {
+            lastSpellCaster = fetchCharacter.character(lastSpellCaster.name());
+            System.out.println("Updating heals for lastSpellCaster: " + lastSpellCaster.name().value() + " with amount: " + heals.amount());
+            updateCharacter.updateHeals(lastSpellCaster, heals, multiAccounting(), account);
         }
-
     }
 
     private void handleShields(Matcher shieldsMatcher) {
@@ -281,7 +297,8 @@ public class TheAnalyzer {
             lastSpellCaster = fetchCharacter.character(lastSpellCaster.summoner().get().name());
         }
 
-        updateCharacter.updateShields(lastSpellCaster, shields);
+        lastSpellCaster = fetchCharacter.character(lastSpellCaster.name());
+        updateCharacter.updateShields(lastSpellCaster, shields, multiAccounting(), account);
     }
 
     private void handleSummoner(Matcher summonMatcher) {

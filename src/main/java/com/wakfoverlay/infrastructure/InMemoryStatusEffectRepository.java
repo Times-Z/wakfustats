@@ -21,7 +21,7 @@ public class InMemoryStatusEffectRepository implements StatusEffectRepository {
     @Override
     public CharacterName characterFor(StatusEffectName name) {
         return statusEffects.entrySet().stream()
-                .filter(entry -> normalize(entry.getKey().subType().name()).equals(normalize(name.value())))
+                .filter(entry -> normalize(entry.getKey().subType()).equals(normalize(name.value())))
                 .map(Map.Entry::getValue)
                 .findFirst()
                 .orElse(new CharacterName("Unknown"));

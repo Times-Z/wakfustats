@@ -4,9 +4,9 @@ import java.time.LocalTime;
 
 public class StatusEffect {
     private final StatusEffectName name;
-    private final SubType subType;
+    private final String subType;
 
-    public StatusEffect(LocalTime timestamp, StatusEffectName name, SubType subType) {
+    public StatusEffect(LocalTime timestamp, StatusEffectName name, String subType) {
         this.name = name;
         this.subType = subType;
     }
@@ -15,7 +15,7 @@ public class StatusEffect {
         return name;
     }
 
-    public SubType subType() {
+    public String subType() {
         return subType;
     }
 
@@ -28,14 +28,5 @@ public class StatusEffect {
     }
 
     public record StatusEffectName(String value) {
-    }
-
-    public enum SubType {
-        NO_SUB_TYPE,
-        DISTORSION,
-        INTOXIQUE,
-        MAUDIT,
-        PRIERE_SADIDA,
-        TETATOXINE,
     }
 }

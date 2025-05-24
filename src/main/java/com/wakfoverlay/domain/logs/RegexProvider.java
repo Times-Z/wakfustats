@@ -11,6 +11,9 @@ public class RegexProvider {
     private static final Pattern FIGHT_END = Pattern
             .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(aZb:92\\)\\s+-\\s+\\[FIGHT] End fight with id (\\d+)",
                     Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern CONNECTION_LOST = Pattern
+            .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?]\\s+\\(ccN:45\\)\\s+-\\s+Connexion avec le serveur perdue",
+                    Pattern.UNICODE_CHARACTER_CLASS);
     private static final Pattern FIGHTER_PATTERN = Pattern
             .compile("INFO (\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+\\[.*?\\]\\s+\\(.*?\\)\\s+-\\s+\\[_FL_\\]\\s+fightId=(\\d+)\\s+(.*?)\\s+breed\\s*:\\s*(\\d+).*?isControlledByAI=(\\w+)",
                     Pattern.UNICODE_CHARACTER_CLASS);
@@ -49,6 +52,10 @@ public class RegexProvider {
 
     public Pattern fightEndPattern() {
         return FIGHT_END;
+    }
+
+    public Pattern connectionLostPattern() {
+        return CONNECTION_LOST;
     }
 
     public Pattern fighterPattern() {
