@@ -223,7 +223,8 @@ public class TheAnalyzer {
             casterName = fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
         }
 
-        if (fetchCharacter.exist(casterName)) {
+
+        if (fetchCharacter.exist(casterName) && !casterName.value().equals("Unknown")) {
             Character casterToAttribute = fetchCharacter.character(casterName);
 
             if (casterToAttribute.summoner().isPresent()) {
@@ -276,11 +277,9 @@ public class TheAnalyzer {
                 casterToAttribute = fetchCharacter.character(casterToAttribute.summoner().get().name());
             }
 
-            System.out.println("Updating heals for summoner: " + casterToAttribute.name().value() + " with amount: " + heals.amount());
             updateCharacter.updateHeals(casterToAttribute, heals, multiAccounting(), account);
         } else {
             lastSpellCaster = fetchCharacter.character(lastSpellCaster.name());
-            System.out.println("Updating heals for lastSpellCaster: " + lastSpellCaster.name().value() + " with amount: " + heals.amount());
             updateCharacter.updateHeals(lastSpellCaster, heals, multiAccounting(), account);
         }
     }
