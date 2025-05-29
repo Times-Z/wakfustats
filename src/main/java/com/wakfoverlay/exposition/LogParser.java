@@ -13,8 +13,10 @@ public class LogParser {
     private final TheFileReader theFileReader;
     private final TheAnalyzer theAnalyzer;
     private String currentFilePath;
+    private boolean isInInitializationMode = false;
 
-    public LogParser(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
+    public LogParser(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect,
+                     UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
         this.theFileReader = new TheFileReader();
         this.theAnalyzer = new TheAnalyzer(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
         this.currentFilePath = null;
@@ -30,6 +32,10 @@ public class LogParser {
             }
         }
 
+        if (isInInitializationMode) {
+            return FileReadStatus.SUCCESS;
+        }
+
         ReadResult result = theFileReader.readNewLines(filePath);
 
         if (result.status() == FileReadStatus.SUCCESS && !result.lines().isEmpty()) {
@@ -39,21 +45,25 @@ public class LogParser {
         return result.status();
     }
 
-    public FileReadStatus readForFighters(String filePath) {
-        theFileReader.resetPosition(filePath);
-        ReadResult result = theFileReader.readNewLines(filePath);
-
-        if (result.status() == FileReadStatus.SUCCESS && !result.lines().isEmpty()) {
-            theAnalyzer.resetAccounting();
-            result.lines().forEach(theAnalyzer::analyzeFighter);
+    public FileReadStatus initializeFromFile(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return FileReadStatus.NO_FILE_SELECTED;
         }
 
-        return result.status();
-    }
+        isInInitializationMode = true;
 
-    public void resetReadPosition() {
-        if (currentFilePath != null) {
-            theFileReader.resetPosition(currentFilePath);
+        try {
+            theFileReader.resetPosition(filePath);
+            ReadResult result = theFileReader.readFullFile(filePath);
+
+            if (result.status() == FileReadStatus.SUCCESS && !result.lines().isEmpty()) {
+                theAnalyzer.resetAccounting();
+                result.lines().forEach(theAnalyzer::analyzeFighter);
+            }
+
+            return result.status();
+        } finally {
+            isInInitializationMode = false;
         }
     }
 }

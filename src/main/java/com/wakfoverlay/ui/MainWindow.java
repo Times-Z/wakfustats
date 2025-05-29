@@ -10,6 +10,7 @@ import com.wakfoverlay.domain.fight.port.secondary.ShieldsRepository;
 import com.wakfoverlay.domain.logs.model.FileReadStatus;
 import com.wakfoverlay.exposition.LogParser;
 import com.wakfoverlay.exposition.UserPreferences;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
@@ -17,6 +18,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.concurrent.CompletableFuture;
 
 import static javafx.scene.layout.Priority.ALWAYS;
 
@@ -34,10 +36,9 @@ public class MainWindow extends VBox {
     private final VBox contentContainer;
 
     private String selectedFilePath;
-
     private View currentView = View.DPT_VIEW;
-
     private boolean firstLaunch = true;
+    private boolean isInitializing = false;
 
     public MainWindow(
             FetchCharacter fetchCharacter,
@@ -67,31 +68,76 @@ public class MainWindow extends VBox {
 
         this.getChildren().addAll(titleBar, contentScrollPane);
 
+        if (selectedFilePath != null) {
+            initializeFromFile(selectedFilePath);
+        }
+
         showCurrentView();
     }
 
+    public void readLogData() {
+        if (selectedFilePath != null && !isInitializing) {
+            FileReadStatus status = logParser.readNewLogLines(selectedFilePath, false);
+
+            if (status != FileReadStatus.SUCCESS) {
+                handleFileReadStatus(status);
+            }
+        }
+    }
+
     public void updateDisplay() {
+        if (selectedFilePath == null) {
+            contentContainer.getChildren().clear();
+            showStatusMessage("Aucun fichier sélectionné. Veuillez sélectionner un fichier de log.");
+            return;
+        }
+
+        if (isInitializing) {
+            contentContainer.getChildren().clear();
+            showStatusMessage("Initialisation en cours... Veuillez patienter.");
+            return;
+        }
+
         showCurrentView();
+    }
+
+    private void initializeFromFile(String filePath) {
+        if (filePath == null) return;
+
+        isInitializing = true;
+
+        resetInMemoryData();
+
+        CompletableFuture.supplyAsync(() -> {
+            return logParser.initializeFromFile(filePath);
+        }).thenAcceptAsync(status -> {
+            Platform.runLater(() -> {
+                if (status != FileReadStatus.SUCCESS) {
+                    handleFileReadStatus(status);
+                }
+
+                firstLaunch = false;
+                isInitializing = false;
+            });
+        }, Platform::runLater);
+    }
+
+    private void resetInMemoryData() {
+        updateCharacter.resetCharactersStats();
+        updateCharacter.resetCharacters();
+        updateStatusEffect.resetStatusEffects();
+        damagesRepository.resetDamages();
+        healsRepository.resetHeals();
+        shieldsRepository.resetShields();
     }
 
     public void updateDamagesDisplay() {
         contentContainer.getChildren().clear();
 
-        FileReadStatus status = logParser.readNewLogLines(selectedFilePath, firstLaunch);
-
-        if (status != FileReadStatus.SUCCESS) {
-            showStatusMessage(getMessageForStatus(status));
-            return;
-        }
-
-        if (firstLaunch) {
-            resetStats();
-            firstLaunch = false;
-        }
-
         Characters rankedCharacters = fetchCharacter.rankedCharactersByDamages();
 
         if (rankedCharacters.characters().isEmpty()) {
+            showStatusMessage("Aucune donnée de dégâts disponible.");
             return;
         }
 
@@ -101,21 +147,10 @@ public class MainWindow extends VBox {
     public void updateHealsDisplay() {
         contentContainer.getChildren().clear();
 
-        FileReadStatus status = logParser.readNewLogLines(selectedFilePath, firstLaunch);
-
-        if (status != FileReadStatus.SUCCESS) {
-            showStatusMessage(getMessageForStatus(status));
-            return;
-        }
-
-        if (firstLaunch) {
-            resetStats();
-            firstLaunch = false;
-        }
-
         Characters rankedCharacters = fetchCharacter.rankedCharactersByHeals();
 
         if (rankedCharacters.characters().isEmpty()) {
+            showStatusMessage("Aucune donnée de soins disponible.");
             return;
         }
 
@@ -125,21 +160,10 @@ public class MainWindow extends VBox {
     public void updateShieldsDisplay() {
         contentContainer.getChildren().clear();
 
-        FileReadStatus status = logParser.readNewLogLines(selectedFilePath, firstLaunch);
-
-        if (status != FileReadStatus.SUCCESS) {
-            showStatusMessage(getMessageForStatus(status));
-            return;
-        }
-
-        if (firstLaunch) {
-            resetStats();
-            firstLaunch = false;
-        }
-
         Characters rankedCharacters = fetchCharacter.rankedCharactersByShields();
 
         if (rankedCharacters.characters().isEmpty()) {
+            showStatusMessage("Aucune donnée de boucliers disponible.");
             return;
         }
 
@@ -162,7 +186,10 @@ public class MainWindow extends VBox {
     }
 
     private void showCurrentView() {
-        contentContainer.getChildren().clear();
+        if (isInitializing) {
+            updateDisplay();
+            return;
+        }
 
         switch (currentView) {
             case DPT_VIEW:
@@ -174,8 +201,13 @@ public class MainWindow extends VBox {
             case SHIELD_VIEW:
                 updateShieldsDisplay();
                 break;
-            default:
-                break;
+        }
+    }
+
+    private void handleFileReadStatus(FileReadStatus status) {
+        if (status != FileReadStatus.SUCCESS) {
+            contentContainer.getChildren().clear();
+            showStatusMessage(getMessageForStatus(status));
         }
     }
 
@@ -223,7 +255,8 @@ public class MainWindow extends VBox {
         if (selectedFile != null) {
             this.selectedFilePath = selectedFile.getAbsolutePath();
             userPreferences.saveFilePath(this.selectedFilePath);
-            logParser.resetReadPosition();
+
+            initializeFromFile(this.selectedFilePath);
         }
     }
 
@@ -251,21 +284,8 @@ public class MainWindow extends VBox {
     }
 
     private void resetStats() {
-        updateCharacter.resetCharactersStats();
-        damagesRepository.resetDamages();
-        healsRepository.resetHeals();
-        shieldsRepository.resetShields();
-
-        if (firstLaunch) {
-            updateCharacter.resetCharacters();
-            updateStatusEffect.resetStatusEffects();
-            firstLaunch = false;
-        }
-
-        FileReadStatus status = logParser.readForFighters(selectedFilePath);
-
-        if (status != FileReadStatus.SUCCESS) {
-            showStatusMessage(getMessageForStatus(status));
+        if (selectedFilePath != null) {
+            initializeFromFile(selectedFilePath);
         }
     }
 
@@ -312,4 +332,3 @@ public class MainWindow extends VBox {
         SHIELD_VIEW
     }
 }
-

@@ -11,11 +11,14 @@ import com.wakfoverlay.infrastructure.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+
+import java.util.concurrent.CompletableFuture;
 
 public class OverlayApp extends Application {
 
@@ -64,8 +67,18 @@ public class OverlayApp extends Application {
     }
 
     private void updateData(MainWindow mainWindow) {
-        Timeline displayTimeline = new Timeline(new KeyFrame(Duration.millis(500), e -> mainWindow.updateDisplay()));
+        Timeline fileReadTimeline = new Timeline(new KeyFrame(Duration.millis(200), e -> {
+            mainWindow.readLogData();
+        }));
+
+        Timeline displayTimeline = new Timeline(new KeyFrame(Duration.millis(500), e -> {
+            Platform.runLater(mainWindow::updateDisplay);
+        }));
+
+        fileReadTimeline.setCycleCount(Timeline.INDEFINITE);
         displayTimeline.setCycleCount(Timeline.INDEFINITE);
+
+        fileReadTimeline.play();
         displayTimeline.play();
     }
 }
