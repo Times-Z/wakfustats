@@ -7,6 +7,7 @@ import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
 import com.wakfoverlay.domain.fight.port.secondary.DamagesRepository;
 import com.wakfoverlay.domain.fight.port.secondary.HealsRepository;
 import com.wakfoverlay.domain.fight.port.secondary.ShieldsRepository;
+import com.wakfoverlay.domain.fight.port.secondary.TargetedDamagesRepository;
 import com.wakfoverlay.domain.logs.model.FileReadStatus;
 import com.wakfoverlay.exposition.LogParser;
 import com.wakfoverlay.exposition.UserPreferences;
@@ -28,6 +29,7 @@ public class MainWindow extends VBox {
     private final UpdateCharacter updateCharacter;
     private final UpdateStatusEffect updateStatusEffect;
     private final DamagesRepository damagesRepository;
+    private final TargetedDamagesRepository targetedDamagesRepository;
     private final HealsRepository healsRepository;
     private final ShieldsRepository shieldsRepository;
     private final LogParser logParser;
@@ -39,12 +41,13 @@ public class MainWindow extends VBox {
     private View currentView = View.DPT_VIEW;
     private boolean firstLaunch = true;
     private boolean isInitializing = false;
+    private boolean onlyBossDamages = false;
 
     public MainWindow(
             FetchCharacter fetchCharacter,
             UpdateCharacter updateCharacter,
             UpdateStatusEffect updateStatusEffect,
-            DamagesRepository damagesRepository,
+            DamagesRepository damagesRepository, TargetedDamagesRepository targetedDamagesRepository,
             HealsRepository healsRepository,
             ShieldsRepository shieldsRepository,
             LogParser logParser
@@ -53,6 +56,7 @@ public class MainWindow extends VBox {
         this.updateCharacter = updateCharacter;
         this.updateStatusEffect = updateStatusEffect;
         this.damagesRepository = damagesRepository;
+        this.targetedDamagesRepository = targetedDamagesRepository;
         this.healsRepository = healsRepository;
         this.shieldsRepository = shieldsRepository;
         this.logParser = logParser;
@@ -127,14 +131,20 @@ public class MainWindow extends VBox {
         updateCharacter.resetCharacters();
         updateStatusEffect.resetStatusEffects();
         damagesRepository.resetDamages();
+        targetedDamagesRepository.resetTargetedDamages();
         healsRepository.resetHeals();
         shieldsRepository.resetShields();
     }
 
     public void updateDamagesDisplay() {
         contentContainer.getChildren().clear();
+        Characters rankedCharacters;
 
-        Characters rankedCharacters = fetchCharacter.rankedCharactersByDamages();
+        if (onlyBossDamages) {
+            rankedCharacters = fetchCharacter.rankedCharactersByDamagesForBoss();
+        } else {
+            rankedCharacters = fetchCharacter.rankedCharactersByDamages();
+        }
 
         if (rankedCharacters.characters().isEmpty()) {
             showStatusMessage("Aucune donnée de dégâts disponible.");
@@ -239,7 +249,8 @@ public class MainWindow extends VBox {
                 this::closeWindow,
                 this::showDamagesView,
                 this::showHealsView,
-                this::showShieldsView
+                this::showShieldsView,
+                this::toggleOnlyBossDamages
         );
     }
 
@@ -293,6 +304,13 @@ public class MainWindow extends VBox {
         Stage stage = (Stage) this.getScene().getWindow();
         if (stage != null) {
             stage.close();
+        }
+    }
+
+    private void toggleOnlyBossDamages(boolean enabled) {
+        this.onlyBossDamages = enabled;
+        if (currentView == View.DPT_VIEW && !isInitializing) {
+            updateDamagesDisplay();
         }
     }
 

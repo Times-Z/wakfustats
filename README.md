@@ -7,7 +7,6 @@ TODO:
 - Analyze all possible interactions in Dungeons ("cocons en sabléo" that auto take damages, ...)
 - Toggle that shows the statistics details of the character (by spells)
 - Toggle friendly fire
-- Graph's colors by character, not position
 
   LOVE:
 - Refactor the multi accounting check

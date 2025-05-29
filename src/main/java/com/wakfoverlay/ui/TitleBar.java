@@ -2,18 +2,17 @@ package com.wakfoverlay.ui;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+
+import java.util.function.Consumer;
 
 import static javafx.scene.layout.Priority.ALWAYS;
 
 public class TitleBar extends HBox {
 
-    public TitleBar(Runnable onOpenFile, Runnable onReset, Runnable onClose, Runnable onShowDptView, Runnable onShowHealView, Runnable onShowShieldView) {
+    public TitleBar(Runnable onOpenFile, Runnable onReset, Runnable onClose, Runnable onShowDptView, Runnable onShowHealView, Runnable onShowShieldView, Consumer<Boolean> onToggleBossDamages) {
         this.setPadding(new Insets(5));
         this.setAlignment(Pos.CENTER_LEFT);
 
@@ -25,6 +24,9 @@ public class TitleBar extends HBox {
 
         HBox navigationMenu = createCustomMenu(onShowDptView, onShowHealView, onShowShieldView);
         HBox.setMargin(navigationMenu, new Insets(0, 0, 0, 15));
+
+        CheckBox bossDamagesCheckBox = createBossDamagesCheckBox(onToggleBossDamages);
+        HBox.setMargin(bossDamagesCheckBox, new Insets(0, 10, 0, 15));
 
         Button folderButton = createIconButton("📁", "#2ecc71");
         folderButton.setTooltip(new javafx.scene.control.Tooltip("Ouvrir un fichier"));
@@ -40,7 +42,7 @@ public class TitleBar extends HBox {
         closeButton.setTooltip(new javafx.scene.control.Tooltip("Fermer"));
         closeButton.setOnAction(event -> onClose.run());
 
-        this.getChildren().addAll(titleLabel, navigationMenu, spacer, folderButton, resetButton, closeButton);
+        this.getChildren().addAll(titleLabel, navigationMenu, spacer, bossDamagesCheckBox, folderButton, resetButton, closeButton);
     }
 
     private HBox createCustomMenu(Runnable OnShowDptView, Runnable onShowHealView, Runnable onShowShieldView) {
@@ -87,6 +89,22 @@ public class TitleBar extends HBox {
         menuContainer.getChildren().addAll(menuLabel, menuButton);
 
         return menuContainer;
+    }
+
+    private CheckBox createBossDamagesCheckBox(Consumer<Boolean> onToggleBossDamages) {
+        CheckBox checkBox = new CheckBox("Boss");
+        checkBox.setStyle(
+                "-fx-text-fill: white; " +
+                        "-fx-font-size: 11px; " +
+                        "-fx-cursor: hand;"
+        );
+        checkBox.setTooltip(new Tooltip("Afficher uniquement les dégâts sur les boss"));
+
+        checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            onToggleBossDamages.accept(newValue);
+        });
+
+        return checkBox;
     }
 
     private Button createIconButton(String text, String color) {

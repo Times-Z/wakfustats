@@ -6,11 +6,7 @@ import com.wakfoverlay.domain.fight.UpdateCharacterUseCase;
 import com.wakfoverlay.domain.fight.UpdateStatusEffectUseCase;
 import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.fight.model.Character.CharacterName;
-import com.wakfoverlay.infrastructure.InMemoryCharactersRepository;
-import com.wakfoverlay.infrastructure.InMemoryDamagesRepository;
-import com.wakfoverlay.infrastructure.InMemoryHealsRepository;
-import com.wakfoverlay.infrastructure.InMemoryShieldsRepository;
-import com.wakfoverlay.infrastructure.InMemoryStatusEffectRepository;
+import com.wakfoverlay.infrastructure.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -23,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class LogParserE2ETest {
     private LogParser logParser;
     private InMemoryCharactersRepository charactersRepository;
+    private InMemoryTargetedDamagesRepository targetedDamagesRepository;
     private InMemoryDamagesRepository damagesRepository;
     private InMemoryHealsRepository healsRepository;
     private InMemoryShieldsRepository shieldsRepository;
@@ -37,16 +34,17 @@ class LogParserE2ETest {
     @BeforeEach
     void setUp() {
         charactersRepository = new InMemoryCharactersRepository();
+        targetedDamagesRepository = new InMemoryTargetedDamagesRepository();
         damagesRepository = new InMemoryDamagesRepository();
         healsRepository = new InMemoryHealsRepository();
         shieldsRepository = new InMemoryShieldsRepository();
         statusEffectRepository = new InMemoryStatusEffectRepository();
-        fetchCharacter = new FetchCharacterUseCase(charactersRepository);
+        fetchCharacter = new FetchCharacterUseCase(charactersRepository, targetedDamagesRepository);
         fetchStatusEffect = new FetchStatusEffectUseCase(statusEffectRepository);
         updateCharacter = new UpdateCharacterUseCase(charactersRepository, damagesRepository, healsRepository, shieldsRepository);
         updateStatusEffect = new UpdateStatusEffectUseCase(statusEffectRepository);
 
-        logParser = new LogParser(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
+        logParser = new LogParser(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect, targetedDamagesRepository);
 
         Path resourcePath = Paths.get("src", "test", "resources", "wakfu.log");
         testLogPath = resourcePath.toAbsolutePath().toString();

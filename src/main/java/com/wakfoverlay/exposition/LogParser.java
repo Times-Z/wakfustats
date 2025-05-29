@@ -4,8 +4,9 @@ import com.wakfoverlay.domain.fight.FetchCharacterUseCase;
 import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
-import com.wakfoverlay.domain.logs.TheFileReader;
+import com.wakfoverlay.domain.fight.port.secondary.TargetedDamagesRepository;
 import com.wakfoverlay.domain.logs.TheAnalyzer;
+import com.wakfoverlay.domain.logs.TheFileReader;
 import com.wakfoverlay.domain.logs.model.FileReadStatus;
 import com.wakfoverlay.domain.logs.model.ReadResult;
 
@@ -15,10 +16,15 @@ public class LogParser {
     private String currentFilePath;
     private boolean isInInitializationMode = false;
 
-    public LogParser(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect,
-                     UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
+    public LogParser(
+            FetchCharacterUseCase fetchCharacter,
+            FetchStatusEffect fetchStatusEffect,
+            UpdateCharacter updateCharacter,
+            UpdateStatusEffect updateStatusEffect,
+            TargetedDamagesRepository targetedDamagesRepository
+    ) {
         this.theFileReader = new TheFileReader();
-        this.theAnalyzer = new TheAnalyzer(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect);
+        this.theAnalyzer = new TheAnalyzer(fetchCharacter, fetchStatusEffect, updateCharacter, updateStatusEffect, targetedDamagesRepository);
         this.currentFilePath = null;
     }
 

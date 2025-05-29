@@ -4,6 +4,7 @@ import com.wakfoverlay.domain.fight.model.Character;
 import com.wakfoverlay.domain.fight.model.Character.CharacterName;
 import com.wakfoverlay.domain.fight.model.Characters;
 import com.wakfoverlay.infrastructure.InMemoryCharactersRepository;
+import com.wakfoverlay.infrastructure.InMemoryTargetedDamagesRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,12 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FetchCharacterUseCaseTest {
 
     private InMemoryCharactersRepository charactersRepository;
+    private InMemoryTargetedDamagesRepository targetedDamagesRepository;
     private FetchCharacterUseCase fetchCharacterUseCase;
 
     @BeforeEach
     void setUp() {
         charactersRepository = new InMemoryCharactersRepository();
-        fetchCharacterUseCase = new FetchCharacterUseCase(charactersRepository);
+        targetedDamagesRepository = new InMemoryTargetedDamagesRepository();
+        fetchCharacterUseCase = new FetchCharacterUseCase(charactersRepository, targetedDamagesRepository);
     }
 
     @Test

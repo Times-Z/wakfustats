@@ -8,6 +8,7 @@ import com.wakfoverlay.domain.fight.port.primary.FetchCharacter;
 import com.wakfoverlay.domain.fight.port.primary.FetchStatusEffect;
 import com.wakfoverlay.domain.fight.port.primary.UpdateCharacter;
 import com.wakfoverlay.domain.fight.port.primary.UpdateStatusEffect;
+import com.wakfoverlay.domain.fight.port.secondary.TargetedDamagesRepository;
 
 import java.time.LocalTime;
 import java.util.*;
@@ -24,17 +25,21 @@ public class TheAnalyzer {
     private final UpdateCharacter updateCharacter;
     private final UpdateStatusEffect updateStatusEffect;
     private final RegexProvider regexProvider;
+    private final TargetedDamagesRepository targetedDamagesRepository;
 
     private int account = 0;
     private Character lastSpellCaster = null;
     private Optional<CharacterName> lastSummoner = empty();
     private final List<String> summonIds = new ArrayList<>();
+    private Optional<CharacterName> firstFighter = empty();
+    private boolean waitingForFirstFighter = false;
 
-    public TheAnalyzer(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect) {
+    public TheAnalyzer(FetchCharacterUseCase fetchCharacter, FetchStatusEffect fetchStatusEffect, UpdateCharacter updateCharacter, UpdateStatusEffect updateStatusEffect, TargetedDamagesRepository targetedDamagesRepository) {
         this.fetchCharacter = fetchCharacter;
         this.fetchStatusEffect = fetchStatusEffect;
         this.updateCharacter = updateCharacter;
         this.updateStatusEffect = updateStatusEffect;
+        this.targetedDamagesRepository = targetedDamagesRepository;
         this.regexProvider = new RegexProvider();
     }
 
@@ -54,6 +59,8 @@ public class TheAnalyzer {
 
         if (fightCreationMatcher.find()) {
             handleAccounting(true);
+            handleFightCreation();
+            targetedDamagesRepository.resetTargetedDamages();
         }
 
         if (fightEndMatcher.find()) {
@@ -128,6 +135,11 @@ public class TheAnalyzer {
         account = 0;
     }
 
+    private void handleFightCreation() {
+        firstFighter = empty();
+        waitingForFirstFighter = true;
+    }
+
     private void handleAccounting(boolean increasing) {
         if (increasing) {
             account++;
@@ -136,6 +148,8 @@ public class TheAnalyzer {
 
             if (account < 0) {
                 account = 0;
+                firstFighter = empty();
+                waitingForFirstFighter = false;
             }
         }
     }
@@ -143,6 +157,11 @@ public class TheAnalyzer {
     private void handleFighter(Matcher fighterMatcher) {
         CharacterName characterName = new CharacterName(fighterMatcher.group(3));
         boolean isControlledByAI = Boolean.parseBoolean(fighterMatcher.group(5));
+
+        if (waitingForFirstFighter) {
+            firstFighter = Optional.of(characterName);
+            waitingForFirstFighter = false;
+        }
 
         if (!fetchCharacter.exist(characterName) && !isControlledByAI) {
             Character character = new Character(characterName, 0, 0, 0, empty());
@@ -223,7 +242,6 @@ public class TheAnalyzer {
             casterName = fetchStatusEffect.characterFor(new StatusEffectName(lastElement));
         }
 
-
         if (fetchCharacter.exist(casterName) && !casterName.value().equals("Unknown")) {
             Character casterToAttribute = fetchCharacter.character(casterName);
 
@@ -232,9 +250,14 @@ public class TheAnalyzer {
             }
 
             updateCharacter.updateDamages(casterToAttribute, damages, multiAccounting(), account);
+            lastSpellCaster = casterToAttribute;
         } else {
             lastSpellCaster = fetchCharacter.character(lastSpellCaster.name());
             updateCharacter.updateDamages(lastSpellCaster, damages, multiAccounting(), account);
+        }
+
+        if (firstFighter.isPresent() && firstFighter.get().value().equals(targetName)) {
+            targetedDamagesRepository.addDamages(lastSpellCaster, damages);
         }
     }
 
