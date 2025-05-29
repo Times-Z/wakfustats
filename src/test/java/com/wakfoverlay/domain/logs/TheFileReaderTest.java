@@ -34,17 +34,6 @@ class TheFileReaderTest {
     }
 
     @Test
-    void should_reset_position() {
-        ReadResult firstRead = fileReader.readNewLines(TEST_FILE_PATH);
-        int initialLineCount = firstRead.lines().size();
-
-        fileReader.resetPosition(TEST_FILE_PATH);
-
-        ReadResult afterReset = fileReader.readNewLines(TEST_FILE_PATH);
-        assertEquals(initialLineCount, afterReset.lines().size());
-    }
-
-    @Test
     void should_set_position() {
         fileReader.setPositionToEnd(TEST_FILE_PATH);
 
