@@ -257,7 +257,14 @@ public class TheAnalyzer {
         }
 
         if (firstFighter.isPresent() && firstFighter.get().value().equals(targetName)) {
-            targetedDamagesRepository.addDamages(lastSpellCaster, damages);
+            if (!multiAccounting()) {
+                targetedDamagesRepository.addDamages(lastSpellCaster, damages);
+            }
+
+            if (multiAccounting()) {
+                Damages newDamages = new Damages(damages.timestamp(), damages.targetName(), Math.ceilDivExact(damages.amount(), account), damages.elements());
+                targetedDamagesRepository.addDamages(lastSpellCaster, newDamages);
+            }
         }
     }
 

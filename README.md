@@ -11,6 +11,7 @@ TODO:
   LOVE:
 - Refactor the multi accounting check
 - Refactoring duplicated code
+- Refactoring TheAnalyzer
 - Add more tests
 
 Known issues:
