@@ -10,16 +10,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static javafx.scene.layout.Priority.ALWAYS;
 
 public class CharactersShieldsView extends VBox {
-    private static final List<String> CHARACTER_COLORS = Arrays.asList(
-            "#33fffe", "#EE1DED", "#7DFA00", "#FF4A00", "#FBE33B", "#6D1FA9"
-    );
-
     private static final int NAME_MAX_LENGTH = 40;
     private static final double NAME_COLUMN_WIDTH = 120;
 
@@ -29,9 +24,8 @@ public class CharactersShieldsView extends VBox {
         List<Character> characters = charactersData.characters();
         int totalShields = calculateTotalShields(characters);
 
-        for (int i = 0; i < characters.size(); i++) {
-            com.wakfoverlay.domain.fight.model.Character character = characters.get(i);
-            HBox characterRow = createCharacterRow(character, i, totalShields);
+        for (Character character : characters) {
+            HBox characterRow = createCharacterRow(character, totalShields);
             this.getChildren().add(characterRow);
         }
     }
@@ -40,7 +34,7 @@ public class CharactersShieldsView extends VBox {
         return characters.stream().mapToInt(Character::shields).sum();
     }
 
-    private HBox createCharacterRow(Character character, int index, int totalShields) {
+    private HBox createCharacterRow(Character character, int totalShields) {
         HBox characterBox = new HBox();
         characterBox.setPadding(new Insets(2, 5, 2, 5));
         characterBox.setSpacing(10);
@@ -50,7 +44,7 @@ public class CharactersShieldsView extends VBox {
         nameContainer.setPrefWidth(NAME_COLUMN_WIDTH);
         nameContainer.setMinWidth(NAME_COLUMN_WIDTH);
 
-        Pane shieldBar = createShieldsBar(character, index, totalShields);
+        Pane shieldBar = createShieldBar(character, totalShields);
 
         Label shieldLabel = createShieldLabel(character, totalShields);
 
@@ -58,7 +52,7 @@ public class CharactersShieldsView extends VBox {
         return characterBox;
     }
 
-    private Label createNameLabel(com.wakfoverlay.domain.fight.model.Character character) {
+    private Label createNameLabel(Character character) {
         String displayName = character.name().value();
         String fullName = character.name().value();
 
@@ -86,7 +80,7 @@ public class CharactersShieldsView extends VBox {
         return label;
     }
 
-    private Pane createShieldsBar(com.wakfoverlay.domain.fight.model.Character character, int index, int totalShields) {
+    private Pane createShieldBar(Character character, int totalShields) {
         Pane pane = new Pane();
         pane.setPrefSize(100, 20);
         HBox.setHgrow(pane, ALWAYS);
@@ -98,7 +92,7 @@ public class CharactersShieldsView extends VBox {
         double shieldPercentage = totalShields == 0 ? 0 : (character.shields() / (double) totalShields) * 100;
         Rectangle progressBar = new Rectangle(0, 0, shieldPercentage, 20);
 
-        String color = CHARACTER_COLORS.get(index % CHARACTER_COLORS.size());
+        String color = CharacterColorManager.getColorForCharacter(character.name().value());
         progressBar.setFill(Color.web(color));
 
         pane.getChildren().addAll(border, progressBar);

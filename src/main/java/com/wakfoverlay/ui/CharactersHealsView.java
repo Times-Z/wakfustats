@@ -10,16 +10,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static javafx.scene.layout.Priority.ALWAYS;
 
 public class CharactersHealsView extends VBox {
-    private static final List<String> CHARACTER_COLORS = Arrays.asList(
-            "#33fffe", "#EE1DED", "#7DFA00", "#FF4A00", "#FBE33B", "#6D1FA9"
-    );
-
     private static final int NAME_MAX_LENGTH = 40;
     private static final double NAME_COLUMN_WIDTH = 120;
 
@@ -29,9 +24,8 @@ public class CharactersHealsView extends VBox {
         List<Character> characters = charactersData.characters();
         int totalHeals = calculateTotalHeals(characters);
 
-        for (int i = 0; i < characters.size(); i++) {
-            Character character = characters.get(i);
-            HBox characterRow = createCharacterRow(character, i, totalHeals);
+        for (Character character : characters) {
+            HBox characterRow = createCharacterRow(character, totalHeals);
             this.getChildren().add(characterRow);
         }
     }
@@ -40,7 +34,7 @@ public class CharactersHealsView extends VBox {
         return characters.stream().mapToInt(Character::heals).sum();
     }
 
-    private HBox createCharacterRow(Character character, int index, int totalHeals) {
+    private HBox createCharacterRow(Character character, int totalHeals) {
         HBox characterBox = new HBox();
         characterBox.setPadding(new Insets(2, 5, 2, 5));
         characterBox.setSpacing(10);
@@ -50,7 +44,7 @@ public class CharactersHealsView extends VBox {
         nameContainer.setPrefWidth(NAME_COLUMN_WIDTH);
         nameContainer.setMinWidth(NAME_COLUMN_WIDTH);
 
-        Pane healBar = createHealBar(character, index, totalHeals);
+        Pane healBar = createHealBar(character, totalHeals);
 
         Label healLabel = createHealLabel(character, totalHeals);
 
@@ -86,7 +80,7 @@ public class CharactersHealsView extends VBox {
         return label;
     }
 
-    private Pane createHealBar(Character character, int index, int totalHeals) {
+    private Pane createHealBar(Character character, int totalHeals) {
         Pane pane = new Pane();
         pane.setPrefSize(100, 20);
         HBox.setHgrow(pane, ALWAYS);
@@ -98,7 +92,7 @@ public class CharactersHealsView extends VBox {
         double healPercentage = totalHeals == 0 ? 0 : (character.heals() / (double) totalHeals) * 100;
         Rectangle progressBar = new Rectangle(0, 0, healPercentage, 20);
 
-        String color = CHARACTER_COLORS.get(index % CHARACTER_COLORS.size());
+        String color = CharacterColorManager.getColorForCharacter(character.name().value());
         progressBar.setFill(Color.web(color));
 
         pane.getChildren().addAll(border, progressBar);
