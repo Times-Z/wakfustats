@@ -56,12 +56,7 @@ jlink {
     jpackage {
         icon = "src/main/resources/${resolveIcon()}"
         installerType = findProperty('imageType') ?: resolveInstallerType()
-        installerOptions = [
-            '--win-per-user-install',
-            '--win-dir-chooser',
-            '--win-menu',
-            '--win-shortcut'
-        ]
+        installerOptions = resolveInstallerOptions()
     }
 }
 
@@ -77,4 +72,17 @@ def resolveInstallerType() {
     if (os.isWindows()) return "exe"
     if (os.isMacOsX()) return "dmg"
     return "deb"
+}
+
+def resolveInstallerOptions() {
+    def os = org.gradle.internal.os.OperatingSystem.current()
+    if (os.isWindows()) {
+        return [
+            '--win-per-user-install',
+            '--win-dir-chooser',
+            '--win-menu',
+            '--win-shortcut'
+        ]
+    }
+    return []
 }
