@@ -31,6 +31,7 @@ jobs:
 
       - name: Detect OS and set jpackage type
         id: package-type
+        shell: bash
         run: |
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             echo "type=exe" >> $GITHUB_OUTPUT
