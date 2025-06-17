@@ -49,8 +49,9 @@ run {
 jlink {
     launcher {
         name = 'WakfOverlay'
+        mainClass = 'com.wakfoverlay.ui.OverlayApp'
     }
-    mainModule = 'com.wakfoverlay' 
+
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
     jpackage {
         icon = "src/main/resources/${resolveIcon()}"
